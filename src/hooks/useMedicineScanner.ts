@@ -1,72 +1,91 @@
 import { useState, useCallback } from "react";
 import { MedicineInfo } from "@/components/MedicineResult";
 
-// Mock medicine database for demonstration
+// Mock medicine database for demonstration (offline/demo mode)
+// Note: Brand formulations can vary by market/manufacturer. Always follow the pack label.
 const MEDICINE_DATABASE: Record<string, MedicineInfo> = {
   paracip: {
     name: "PARACIP-500",
-    generic: "Paracetamol",
+    generic: "Paracetamol (Acetaminophen)",
     uses: [
-      "Paracip-500 is used to relieve mild to moderate pain and reduce fever.",
-      "Pain relief",
-      "Fever reduction",
+      "Used to reduce fever and relieve mild to moderate pain.",
+      "Headache, toothache, body aches, backache, muscle aches",
+      "Pain and fever associated with cold/flu",
     ],
-    composition: "Each uncoated tablet contains Paracetamol IP 500 mg",
-    dosage: "Adults: 500 mg to 1000 mg (1 to 2 tablets) up to a maximum of 4000 mg (8 tablets) daily in divided doses or as directed by the physician.",
+    composition: "Paracetamol IP 500 mg per tablet (may vary by manufacturer)",
+    dosage:
+      "Typical adult dose: 500–1000 mg every 4–6 hours as needed. Do not exceed 4000 mg/day from all sources unless your doctor advises otherwise.",
     precautions: [
-      "Store below 30°C",
-      "Protect from light and moisture",
-      "Keep out of reach of children",
+      "Use caution if you have liver disease, drink alcohol regularly, or are malnourished.",
+      "If symptoms persist (fever > 3 days or pain > 5 days), seek medical advice.",
+      "Use age/weight-based dosing for children (pediatric formulation preferred).",
     ],
     warnings: [
-      "Do not exceed the recommended dose",
-      "Avoid alcohol while taking this medication",
-      "Consult doctor if symptoms persist for more than 3 days",
-      "Not recommended for patients with liver disease",
+      "Do not take with other medicines that contain paracetamol (risk of overdose).",
+      "Overdose can cause serious liver damage—seek emergency help if too much is taken.",
+      "Stop and seek help if rash, swelling, breathing trouble, or severe allergy occurs.",
     ],
   },
   dolo: {
     name: "DOLO-650",
-    generic: "Paracetamol",
+    generic: "Paracetamol (Acetaminophen)",
     uses: [
-      "Used to treat mild to moderate pain including headache, migraine, toothache, and muscle pain.",
-      "Fever reduction",
-      "Body ache relief",
+      "Used to reduce fever and relieve mild to moderate pain.",
+      "Headache, toothache, body aches, post-vaccination fever",
+      "Pain and fever associated with cold/flu",
     ],
-    composition: "Each tablet contains Paracetamol IP 650 mg",
-    dosage: "Adults: 1 tablet every 4-6 hours. Maximum 4 tablets in 24 hours.",
+    composition: "Paracetamol IP 650 mg per tablet (may vary by manufacturer)",
+    dosage:
+      "Typical adult dose: 650 mg every 4–6 hours as needed. Keep total paracetamol from all sources within the daily limit on the pack/doctor’s advice.",
     precautions: [
-      "Store in a cool, dry place",
-      "Keep away from direct sunlight",
-      "Do not use if seal is broken",
+      "Use caution with liver disease or regular alcohol use.",
+      "Avoid duplicate paracetamol products (cold/flu combos often contain it).",
+      "Use age/weight-based dosing for children (pediatric formulation preferred).",
     ],
     warnings: [
-      "Do not take with other paracetamol-containing products",
-      "Consult doctor before use if pregnant or breastfeeding",
-      "Discontinue use if allergic reaction occurs",
+      "Do not exceed recommended dose (serious liver injury risk).",
+      "Seek urgent help if you suspect overdose, even if you feel well.",
+      "Stop and seek help if severe skin reaction or allergy occurs.",
     ],
   },
   crocin: {
     name: "CROCIN ADVANCE",
-    generic: "Paracetamol",
+    generic: "Paracetamol (Acetaminophen)",
     uses: [
-      "Fast relief from headache, toothache, and body pain.",
-      "Reduces fever quickly",
-      "Relieves cold and flu symptoms",
+      "Used to reduce fever and relieve mild to moderate pain.",
+      "Headache, toothache, body aches, muscle pain",
+      "Pain and fever associated with cold/flu",
     ],
-    composition: "Paracetamol 500 mg with optizorb technology",
-    dosage: "Adults and children over 12: 1-2 tablets every 4-6 hours. Max 8 tablets daily.",
+    composition: "Paracetamol 500 mg per tablet (may vary by manufacturer)",
+    dosage:
+      "Typical adult dose: 500–1000 mg every 4–6 hours as needed. Do not exceed 4000 mg/day from all sources unless your doctor advises otherwise.",
     precautions: [
-      "Store below 25°C",
-      "Keep in original packaging",
-      "Not for children under 12 without medical advice",
+      "Use caution if you have liver disease or consume alcohol.",
+      "If symptoms persist (fever > 3 days or pain > 5 days), seek medical advice.",
+      "Use age/weight-based dosing for children (pediatric formulation preferred).",
     ],
     warnings: [
-      "Contains paracetamol - avoid with similar medicines",
-      "Seek immediate medical help if overdose suspected",
-      "May cause liver damage if taken in excess",
+      "Do not take with other paracetamol-containing products.",
+      "Overdose can cause serious liver damage—seek emergency help if too much is taken.",
+      "Stop and seek help if rash, swelling, breathing trouble, or severe allergy occurs.",
     ],
   },
+};
+
+const cloneMedicine = (medicine: MedicineInfo): MedicineInfo => ({
+  ...medicine,
+  uses: [...medicine.uses],
+  precautions: [...medicine.precautions],
+  warnings: [...medicine.warnings],
+});
+
+const hashString = (input: string) => {
+  // Lightweight, stable hash so different images usually map to different demo results.
+  let hash = 0;
+  for (let i = 0; i < input.length; i += 97) {
+    hash = (hash * 31 + input.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
 };
 
 export const useMedicineScanner = () => {
@@ -74,21 +93,25 @@ export const useMedicineScanner = () => {
   const [result, setResult] = useState<MedicineInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const analyzeMedicine = useCallback(async (_imageData: string): Promise<MedicineInfo> => {
+  const analyzeMedicine = useCallback(async (imageData: string): Promise<MedicineInfo> => {
     // Simulate AI processing delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // For demo purposes, randomly select a medicine
+    // Demo mode: map different images to different (but fixed) medicines
     const medicines = Object.values(MEDICINE_DATABASE);
-    const randomIndex = Math.floor(Math.random() * medicines.length);
-    return medicines[randomIndex];
+    const index = hashString(imageData) % medicines.length;
+
+    // Important: return a fresh object so state updates reliably even if the same medicine is selected again.
+    return cloneMedicine(medicines[index]);
   }, []);
 
   const scanMedicine = useCallback(async (imageData: string) => {
     try {
       setIsScanning(true);
       setError(null);
-      
+      // Clear previous result immediately so the UI never shows stale medicine info.
+      setResult(null);
+
       const medicineInfo = await analyzeMedicine(imageData);
       setResult(medicineInfo);
     } catch (err) {
