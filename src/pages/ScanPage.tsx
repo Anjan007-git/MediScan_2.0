@@ -39,6 +39,11 @@ const ScanPage = () => {
         toast({ title: "Invalid file type", description: "Please upload an image file.", variant: "destructive" });
         return;
       }
+      const MAX_FILE_SIZE = 10 * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE) {
+        toast({ title: "File too large", description: "Please upload an image smaller than 10 MB.", variant: "destructive" });
+        return;
+      }
       const reader = new FileReader();
       reader.onload = async (e) => {
         const imageData = e.target?.result as string;
@@ -57,6 +62,11 @@ const ScanPage = () => {
       const file = e.dataTransfer.files[0];
       if (!file || !file.type.startsWith("image/")) {
         toast({ title: "Invalid file", description: "Please drop an image file.", variant: "destructive" });
+        return;
+      }
+      const MAX_FILE_SIZE = 10 * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE) {
+        toast({ title: "File too large", description: "Please upload an image smaller than 10 MB.", variant: "destructive" });
         return;
       }
       const reader = new FileReader();
