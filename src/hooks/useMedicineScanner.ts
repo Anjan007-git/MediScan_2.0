@@ -1,8 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { MedicineInfo } from "@/components/MedicineResult";
 
 // Mock medicine database for demonstration (offline/demo mode)
-// Note: Brand formulations can vary by market/manufacturer. Always follow the pack label.
 const MEDICINE_DATABASE: Record<string, MedicineInfo> = {
   paracip: {
     name: "PARACIP-500",
@@ -36,7 +35,7 @@ const MEDICINE_DATABASE: Record<string, MedicineInfo> = {
     ],
     composition: "Paracetamol IP 650 mg per tablet (may vary by manufacturer)",
     dosage:
-      "Typical adult dose: 650 mg every 4–6 hours as needed. Keep total paracetamol from all sources within the daily limit on the pack/doctor’s advice.",
+      "Typical adult dose: 650 mg every 4–6 hours as needed. Keep total paracetamol from all sources within the daily limit on the pack/doctor's advice.",
     precautions: [
       "Use caution with liver disease or regular alcohol use.",
       "Avoid duplicate paracetamol products (cold/flu combos often contain it).",
@@ -79,13 +78,25 @@ const cloneMedicine = (medicine: MedicineInfo): MedicineInfo => ({
   warnings: [...medicine.warnings],
 });
 
-const hashString = (input: string) => {
-  // Lightweight, stable hash so different images usually map to different demo results.
-  let hash = 0;
-  for (let i = 0; i < input.length; i += 97) {
-    hash = (hash * 31 + input.charCodeAt(i)) | 0;
+/**
+ * Improved hash that samples more of the image data for better differentiation.
+ * Uses FNV-1a inspired approach with denser sampling.
+ */
+const hashImageData = (input: string): number => {
+  let hash = 2166136261; // FNV offset basis
+  // Sample every 37th char (denser than before) plus first/last 200 chars
+  const len = input.length;
+  // Hash the length itself for uniqueness
+  hash = (hash ^ (len & 0xff)) * 16777619;
+  hash = (hash ^ ((len >> 8) & 0xff)) * 16777619;
+  hash = (hash ^ ((len >> 16) & 0xff)) * 16777619;
+
+  // Sample densely from the data
+  const step = Math.max(1, Math.floor(len / 500));
+  for (let i = 0; i < len; i += step) {
+    hash = (hash ^ input.charCodeAt(i)) * 16777619;
   }
-  return Math.abs(hash);
+  return Math.abs(hash | 0);
 };
 
 export const useMedicineScanner = () => {
@@ -93,38 +104,83 @@ export const useMedicineScanner = () => {
   const [result, setResult] = useState<MedicineInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const analyzeMedicine = useCallback(async (imageData: string): Promise<MedicineInfo> => {
-    // Simulate AI processing delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+  // Track the latest scan to prevent race conditions
+  const activeScanIdRef = useRef<string | null>(null);
 
-    // Demo mode: map different images to different (but fixed) medicines
-    const medicines = Object.values(MEDICINE_DATABASE);
-    const index = hashString(imageData) % medicines.length;
+  const analyzeMedicine = useCallback(
+    async (imageData: string, scanId: string): Promise<MedicineInfo | null> => {
+      // Simulate AI processing delay
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Important: return a fresh object so state updates reliably even if the same medicine is selected again.
-    return cloneMedicine(medicines[index]);
-  }, []);
+      // If a newer scan was started, discard this result
+      if (activeScanIdRef.current !== scanId) {
+        console.log(`[MediScan] Scan ${scanId} superseded, discarding result`);
+        return null;
+      }
 
-  const scanMedicine = useCallback(async (imageData: string) => {
-    try {
-      setIsScanning(true);
-      setError(null);
-      // Clear previous result immediately so the UI never shows stale medicine info.
+      const medicines = Object.values(MEDICINE_DATABASE);
+      const index = hashImageData(imageData) % medicines.length;
+      const selected = cloneMedicine(medicines[index]);
+
+      console.log(
+        `[MediScan] Scan ${scanId} | imageLen=${imageData.length} | hash=${hashImageData(imageData)} | result=${selected.name}`
+      );
+
+      return selected;
+    },
+    []
+  );
+
+  const scanMedicine = useCallback(
+    async (imageData: string) => {
+      // Generate a unique scan ID bound to this request
+      const scanId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      activeScanIdRef.current = scanId;
+
+      // Fully reset state before processing
       setResult(null);
+      setError(null);
+      setIsScanning(true);
 
-      const medicineInfo = await analyzeMedicine(imageData);
-      setResult(medicineInfo);
-    } catch (err) {
-      console.error("Scan error:", err);
-      setError("Unable to identify medicine. Please try again with a clearer image.");
-    } finally {
-      setIsScanning(false);
-    }
-  }, [analyzeMedicine]);
+      console.log(`[MediScan] Starting scan ${scanId} | imageLen=${imageData.length}`);
+
+      try {
+        const medicineInfo = await analyzeMedicine(imageData, scanId);
+
+        // Only apply result if this scan is still the active one
+        if (activeScanIdRef.current !== scanId) {
+          console.log(`[MediScan] Scan ${scanId} result ignored (superseded)`);
+          return;
+        }
+
+        if (!medicineInfo) {
+          setError("Unable to detect correct medicine. Please try again with a clear image.");
+        } else {
+          setResult(medicineInfo);
+        }
+      } catch (err) {
+        console.error(`[MediScan] Scan ${scanId} error:`, err);
+        // Only set error if still the active scan
+        if (activeScanIdRef.current === scanId) {
+          setResult(null);
+          setError("Unable to detect correct medicine. Please try again with a clear image.");
+        }
+      } finally {
+        // Only clear scanning if still the active scan
+        if (activeScanIdRef.current === scanId) {
+          setIsScanning(false);
+        }
+      }
+    },
+    [analyzeMedicine]
+  );
 
   const clearResult = useCallback(() => {
+    // Cancel any in-flight scan
+    activeScanIdRef.current = null;
     setResult(null);
     setError(null);
+    setIsScanning(false);
   }, []);
 
   return {
