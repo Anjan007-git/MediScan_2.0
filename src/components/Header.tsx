@@ -5,14 +5,10 @@ const Header = () => {
     <header className="relative flex flex-col items-center pt-12 pb-4 px-6">
       {/* Logo + Title row */}
       <div className="relative flex items-center gap-4 mb-4 animate-fade-in-up">
-        {/* Liquid glass app icon */}
-        <div className="relative w-20 h-20 rounded-[28px] glass-strong flex items-center justify-center shadow-float overflow-hidden">
-          <div className="absolute inset-0 gradient-primary opacity-90" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-transparent" />
-          <Pill className="relative w-9 h-9 text-white rotate-45 drop-shadow-lg" strokeWidth={2.2} />
-          <div className="absolute top-2 right-2">
-            <Sparkles className="w-3.5 h-3.5 text-white/90" strokeWidth={2.5} />
-          </div>
+        {/* Floating liquid glass app icon */}
+        <div className="glass-icon w-20 h-20 rounded-[24px] flex items-center justify-center animate-float-soft">
+          <Pill className="w-9 h-9 text-white rotate-45 drop-shadow-md" strokeWidth={2.2} />
+          <Sparkles className="absolute top-2 right-2 w-3.5 h-3.5 text-white/95" strokeWidth={2.5} />
         </div>
 
         <div>
@@ -20,13 +16,13 @@ const Header = () => {
             <span className="text-gradient">Medi</span>
             <span className="text-foreground">Scan</span>
           </h1>
-          <p className="text-[11px] font-semibold text-primary-muted tracking-[0.25em] uppercase mt-1.5">
+          <p className="text-[11px] font-semibold text-foreground-soft tracking-[0.28em] uppercase mt-2">
             AI-Powered Scanner
           </p>
         </div>
       </div>
 
-      {/* Trusted glass pill */}
+      {/* Trusted glass capsule */}
       <div
         className="glass rounded-full px-4 py-1.5 inline-flex items-center gap-1.5 mb-5 animate-fade-in-up"
         style={{ animationDelay: "100ms" }}
@@ -37,10 +33,10 @@ const Header = () => {
 
       {/* Tagline glass card */}
       <div
-        className="w-full max-w-md glass rounded-3xl py-5 px-6 text-center animate-fade-in-up"
+        className="w-full max-w-md glass rounded-[28px] py-5 px-6 text-center animate-fade-in-up"
         style={{ animationDelay: "150ms" }}
       >
-        <p className="text-foreground/80 text-base leading-relaxed font-medium">
+        <p className="text-foreground/85 text-base leading-relaxed font-medium">
           Instantly identify medicines with<br />AI-powered analysis
         </p>
       </div>

@@ -108,10 +108,9 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
               <p className="text-white mb-4">{error}</p>
               <button
                 onClick={startCamera}
-                className="glossy relative text-white px-6 py-3 rounded-full font-semibold shadow-glow overflow-hidden"
-                style={{ background: "var(--gradient-primary)" }}
+                className="liquid-button px-6 py-3 rounded-full font-semibold"
               >
-                <span className="relative">Try Again</span>
+                Try Again
               </button>
             </div>
           </div>
@@ -156,8 +155,8 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
           className="relative w-20 h-20 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-float"
         >
           <div className="absolute inset-0 rounded-full glass-strong" />
-          <div className="absolute inset-1.5 rounded-full overflow-hidden glossy flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
-            <Camera className="relative w-8 h-8 text-white" strokeWidth={2.2} />
+          <div className="absolute inset-1.5 rounded-full glass-icon flex items-center justify-center">
+            <Camera className="w-8 h-8 text-white drop-shadow-md" strokeWidth={2.2} />
           </div>
         </button>
       </div>
