@@ -120,7 +120,7 @@
   body::before {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, hsla(204, 100%, 70%, 0.5), transparent 70%);
+    background: radial-gradient(circle, hsla(168, 76%, 65%, 0.5), transparent 70%);
     top: -150px;
     right: -150px;
     animation: float-orb 20s ease-in-out infinite;
@@ -129,7 +129,7 @@
   body::after {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, hsla(217, 100%, 65%, 0.35), transparent 70%);
+    background: radial-gradient(circle, hsla(173, 80%, 50%, 0.35), transparent 70%);
     bottom: -100px;
     left: -100px;
     animation: float-orb 25s ease-in-out infinite reverse;
