@@ -33,16 +33,33 @@ interface MedicineResultProps {
 
 const ConfidenceBadge = ({ confidence }: { confidence: number }) => {
   const isLow = confidence < 80;
-  const color = confidence >= 90 
-    ? "bg-green-100 text-green-800 border-green-300" 
-    : confidence >= 80 
-    ? "bg-yellow-100 text-yellow-800 border-yellow-300"
-    : "bg-red-100 text-red-800 border-red-300";
+  const tone =
+    confidence >= 90
+      ? "bg-success/15 text-success border-success/30"
+      : confidence >= 80
+      ? "bg-warning/20 text-warning-foreground border-warning/30"
+      : "bg-danger/15 text-danger border-danger/30";
 
   return (
-    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${color}`}>
+    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${tone}`}>
       {isLow ? <AlertOctagon className="w-3.5 h-3.5" /> : <CheckCircle className="w-3.5 h-3.5" />}
       {confidence}% confidence
+    </div>
+  );
+};
+
+const StatusTag = ({ confidence }: { confidence: number }) => {
+  const status =
+    confidence >= 90
+      ? { label: "Verified", tone: "bg-success/15 text-success border-success/40", icon: CheckCircle }
+      : confidence >= 80
+      ? { label: "Caution", tone: "bg-warning/20 text-warning-foreground border-warning/40", icon: AlertTriangle }
+      : { label: "Uncertain", tone: "bg-danger/15 text-danger border-danger/40", icon: AlertOctagon };
+  const Icon = status.icon;
+  return (
+    <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status.tone}`}>
+      <Icon className="w-3 h-3" />
+      {status.label}
     </div>
   );
 };
