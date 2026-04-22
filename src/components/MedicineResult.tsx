@@ -1,11 +1,15 @@
-import { 
-  ArrowLeft, 
-  Info, 
-  Pill, 
-  Shield, 
+import {
+  ArrowLeft,
+  Info,
+  Pill,
+  Shield,
   AlertTriangle,
   CheckCircle,
-  AlertOctagon
+  AlertOctagon,
+  Share2,
+  Bookmark,
+  RefreshCw,
+  FlaskConical,
 } from "lucide-react";
 import { MediCard, MediCardTitle, MediCardContent } from "./ui/MediCard";
 
