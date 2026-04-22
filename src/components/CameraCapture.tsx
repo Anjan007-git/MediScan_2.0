@@ -108,10 +108,9 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
               <p className="text-white mb-4">{error}</p>
               <button
                 onClick={startCamera}
-                className="glossy relative text-white px-6 py-3 rounded-full font-semibold shadow-glow overflow-hidden"
-                style={{ background: "var(--gradient-primary)" }}
+                className="liquid-button px-6 py-3 rounded-full font-semibold"
               >
-                <span className="relative">Try Again</span>
+                Try Again
               </button>
             </div>
           </div>
