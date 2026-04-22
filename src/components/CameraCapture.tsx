@@ -80,21 +80,23 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-foreground z-50 flex flex-col">
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-foreground/80 to-transparent">
+    <div className="fixed inset-0 bg-foreground z-50 flex flex-col animate-fade-in-up">
+      {/* Glass header */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4">
         <button
           onClick={onClose}
-          className="w-10 h-10 rounded-full bg-card/20 backdrop-blur-sm flex items-center justify-center"
+          className="w-11 h-11 rounded-full glass-dark flex items-center justify-center active:scale-95 transition-transform"
         >
-          <X className="w-5 h-5 text-primary-foreground" />
+          <X className="w-5 h-5 text-white" />
         </button>
-        <span className="text-primary-foreground font-medium">Scan Medicine</span>
+        <div className="glass-dark rounded-full px-5 py-2">
+          <span className="text-white font-semibold text-sm tracking-wide">Scan Medicine</span>
+        </div>
         <button
           onClick={toggleCamera}
-          className="w-10 h-10 rounded-full bg-card/20 backdrop-blur-sm flex items-center justify-center"
+          className="w-11 h-11 rounded-full glass-dark flex items-center justify-center active:scale-95 transition-transform"
         >
-          <RotateCcw className="w-5 h-5 text-primary-foreground" />
+          <RotateCcw className="w-5 h-5 text-white" />
         </button>
       </div>
 
@@ -102,13 +104,14 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
       <div className="flex-1 relative">
         {error ? (
           <div className="absolute inset-0 flex items-center justify-center bg-foreground p-6">
-            <div className="text-center">
-              <p className="text-primary-foreground mb-4">{error}</p>
+            <div className="glass-dark rounded-3xl p-6 text-center max-w-sm">
+              <p className="text-white mb-4">{error}</p>
               <button
                 onClick={startCamera}
-                className="gradient-teal text-primary-foreground px-6 py-3 rounded-xl font-medium"
+                className="glossy relative text-white px-6 py-3 rounded-full font-semibold shadow-glow overflow-hidden"
+                style={{ background: "var(--gradient-primary)" }}
               >
-                Try Again
+                <span className="relative">Try Again</span>
               </button>
             </div>
           </div>
@@ -121,34 +124,41 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
               muted
               className="w-full h-full object-cover"
             />
-            
+
             {/* Scan Frame Overlay */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-64 h-64 border-2 border-primary rounded-3xl relative">
-                <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl" />
-                <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
-                <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
-                
+              <div className="w-72 h-72 rounded-[32px] relative">
+                <div className="absolute -top-1 -left-1 w-10 h-10 border-t-[3px] border-l-[3px] border-primary-glow rounded-tl-[28px]" />
+                <div className="absolute -top-1 -right-1 w-10 h-10 border-t-[3px] border-r-[3px] border-primary-glow rounded-tr-[28px]" />
+                <div className="absolute -bottom-1 -left-1 w-10 h-10 border-b-[3px] border-l-[3px] border-primary-glow rounded-bl-[28px]" />
+                <div className="absolute -bottom-1 -right-1 w-10 h-10 border-b-[3px] border-r-[3px] border-primary-glow rounded-br-[28px]" />
+
                 {/* Scanning Line */}
-                <div className="absolute left-2 right-2 h-0.5 bg-primary animate-scan-line" />
+                <div className="absolute left-3 right-3 h-0.5 bg-primary-glow shadow-glow animate-scan-line" />
               </div>
             </div>
-            
-            <p className="absolute bottom-32 left-0 right-0 text-center text-primary-foreground/80 text-sm">
-              Position the medicine within the frame
-            </p>
+
+            <div className="absolute bottom-32 left-0 right-0 flex justify-center px-6">
+              <div className="glass-dark rounded-full px-5 py-2.5">
+                <p className="text-white/90 text-sm font-medium">
+                  Position the medicine within the frame
+                </p>
+              </div>
+            </div>
           </>
         )}
       </div>
 
-      {/* Capture Button */}
+      {/* Glass capture button */}
       <div className="absolute bottom-8 left-0 right-0 flex justify-center">
         <button
           onClick={handleCapture}
-          className="w-20 h-20 rounded-full gradient-teal flex items-center justify-center shadow-card-hover active:scale-95 transition-transform"
+          className="relative w-20 h-20 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-float"
         >
-          <Camera className="w-8 h-8 text-primary-foreground" />
+          <div className="absolute inset-0 rounded-full glass-strong" />
+          <div className="absolute inset-1.5 rounded-full overflow-hidden glossy flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
+            <Camera className="relative w-8 h-8 text-white" strokeWidth={2.2} />
+          </div>
         </button>
       </div>
 

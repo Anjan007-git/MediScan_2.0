@@ -6,64 +6,82 @@
 @import '@fontsource/plus-jakarta-sans/500.css';
 @import '@fontsource/plus-jakarta-sans/600.css';
 @import '@fontsource/plus-jakarta-sans/700.css';
+@import '@fontsource/plus-jakarta-sans/800.css';
 
-/* MediScan Design System - Teal/Mint Medical Theme */
+/* MediScan — Liquid Glass Design System (VisionOS / iOS inspired) */
 
 @layer base {
   :root {
-    /* Main teal/mint color palette */
-    --primary: 168 76% 50%;
+    /* Brand blue gradient (#4facfe → #1c6cff) */
+    --primary: 217 100% 56%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 168 76% 95%;
-    --primary-muted: 168 40% 70%;
-    
-    /* Background gradient colors */
-    --background: 168 30% 98%;
-    --background-gradient-start: 0 0% 100%;
-    --background-gradient-end: 168 40% 95%;
-    --foreground: 220 20% 20%;
+    --primary-light: 210 100% 96%;
+    --primary-muted: 215 60% 60%;
+    --primary-glow: 204 100% 65%;
+    --primary-deep: 220 100% 45%;
 
-    /* Card styling */
+    /* Soft bluish-white background */
+    --background: 210 60% 98%;
+    --background-gradient-start: 210 100% 99%;
+    --background-gradient-mid: 210 80% 96%;
+    --background-gradient-end: 217 90% 92%;
+    --foreground: 222 47% 11%;
+
+    /* Glass surfaces */
+    --glass: 0 0% 100%;
+    --glass-foreground: 222 47% 11%;
+    --glass-border: 0 0% 100%;
+
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
-    --card-shadow: 168 30% 80%;
+    --card-foreground: 222 47% 11%;
+    --card-shadow: 217 60% 50%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover-foreground: 222 47% 11%;
 
-    /* Secondary - white/light cards */
-    --secondary: 0 0% 100%;
-    --secondary-foreground: 220 20% 30%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 20%;
 
-    /* Muted text */
-    --muted: 168 20% 96%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 210 40% 95%;
+    --muted-foreground: 215 20% 50%;
 
-    /* Accent - teal highlight */
-    --accent: 168 76% 50%;
+    --accent: 204 100% 65%;
     --accent-foreground: 0 0% 100%;
 
-    /* Warning colors for precautions */
     --warning: 38 92% 50%;
     --warning-foreground: 38 92% 20%;
     --warning-light: 38 92% 95%;
-    
-    /* Danger colors for important warnings */
+
     --danger: 0 84% 60%;
     --danger-foreground: 0 0% 100%;
-    --danger-light: 0 84% 95%;
+    --danger-light: 0 84% 96%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 142 71% 95%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 168 20% 90%;
-    --input: 168 20% 90%;
-    --ring: 168 76% 50%;
+    --border: 217 30% 88%;
+    --input: 217 30% 88%;
+    --ring: 217 100% 56%;
 
-    --radius: 1rem;
-    
-    /* Font */
-    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --radius: 1.5rem;
+
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(204 100% 65%) 0%, hsl(217 100% 56%) 50%, hsl(220 100% 48%) 100%);
+    --gradient-primary-soft: linear-gradient(135deg, hsl(204 100% 75%) 0%, hsl(217 100% 62%) 100%);
+    --gradient-bg: radial-gradient(ellipse at top, hsl(210 100% 98%) 0%, hsl(210 80% 94%) 40%, hsl(217 90% 90%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.7) 0%, hsla(210, 100%, 98%, 0.4) 100%);
+
+    /* Shadows */
+    --shadow-glass: 0 8px 32px 0 hsla(217, 50%, 40%, 0.12), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.6);
+    --shadow-glass-lg: 0 20px 60px -10px hsla(217, 60%, 40%, 0.18), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.7);
+    --shadow-glow: 0 8px 30px -4px hsla(217, 100%, 56%, 0.4), 0 0 0 1px hsla(217, 100%, 70%, 0.3) inset;
+    --shadow-float: 0 30px 80px -20px hsla(217, 60%, 40%, 0.25);
   }
 }
 
@@ -74,36 +92,172 @@
 
   html {
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    background: linear-gradient(
-      180deg,
-      hsl(var(--background-gradient-start)) 0%,
-      hsl(var(--background-gradient-end)) 100%
-    );
+    @apply text-foreground antialiased;
+    background: var(--gradient-bg);
+    background-attachment: fixed;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Ambient floating orbs in background */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::before {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, hsla(204, 100%, 70%, 0.5), transparent 70%);
+    top: -150px;
+    right: -150px;
+    animation: float-orb 20s ease-in-out infinite;
+  }
+
+  body::after {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, hsla(217, 100%, 65%, 0.35), transparent 70%);
+    bottom: -100px;
+    left: -100px;
+    animation: float-orb 25s ease-in-out infinite reverse;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
   }
 }
 
 @layer utilities {
+  /* Liquid glass surfaces */
+  .glass {
+    background: linear-gradient(135deg, hsla(0, 0%, 100%, 0.55) 0%, hsla(210, 100%, 98%, 0.35) 100%);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid hsla(0, 0%, 100%, 0.5);
+    box-shadow: var(--shadow-glass);
+  }
+
+  .glass-strong {
+    background: linear-gradient(135deg, hsla(0, 0%, 100%, 0.75) 0%, hsla(210, 100%, 98%, 0.55) 100%);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid hsla(0, 0%, 100%, 0.6);
+    box-shadow: var(--shadow-glass-lg);
+  }
+
+  .glass-subtle {
+    background: hsla(0, 0%, 100%, 0.35);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid hsla(0, 0%, 100%, 0.4);
+    box-shadow: 0 4px 20px -4px hsla(217, 50%, 40%, 0.08), inset 0 1px 0 0 hsla(0, 0%, 100%, 0.5);
+  }
+
+  .glass-dark {
+    background: hsla(222, 47%, 11%, 0.5);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid hsla(0, 0%, 100%, 0.15);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-primary-soft {
+    background: var(--gradient-primary-soft);
+  }
+
+  /* Legacy alias to avoid breaking imports */
   .gradient-teal {
-    background: linear-gradient(135deg, hsl(168, 76%, 50%) 0%, hsl(168, 76%, 45%) 100%);
+    background: var(--gradient-primary);
   }
-  
-  .shadow-card {
-    box-shadow: 0 4px 20px -4px hsl(var(--card-shadow) / 0.3);
-  }
-  
-  .shadow-card-hover {
-    box-shadow: 0 8px 30px -4px hsl(var(--card-shadow) / 0.4);
-  }
-  
+
   .text-gradient {
-    background: linear-gradient(135deg, hsl(168, 76%, 45%) 0%, hsl(168, 76%, 40%) 100%);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  .shadow-glass {
+    box-shadow: var(--shadow-glass);
+  }
+
+  .shadow-glass-lg {
+    box-shadow: var(--shadow-glass-lg);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-float {
+    box-shadow: var(--shadow-float);
+  }
+
+  /* Legacy aliases */
+  .shadow-card {
+    box-shadow: var(--shadow-glass);
+  }
+
+  .shadow-card-hover {
+    box-shadow: var(--shadow-glass-lg);
+  }
+
+  /* Glossy button highlight */
+  .glossy::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, hsla(0, 0%, 100%, 0.35) 0%, hsla(0, 0%, 100%, 0) 100%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  /* Shimmer sweep on hover */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, hsla(0, 0%, 100%, 0.4) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.8s ease;
+    pointer-events: none;
+  }
+  .shimmer:hover::after {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float-orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.05); }
+  66% { transform: translate(-30px, 40px) scale(0.95); }
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }

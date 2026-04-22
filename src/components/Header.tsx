@@ -2,36 +2,47 @@ import { Pill, Shield, Sparkles } from "lucide-react";
 
 const Header = () => {
   return (
-    <header className="relative flex flex-col items-center pt-10 pb-6 px-6 overflow-hidden">
-      {/* Decorative background blobs */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-      <div className="absolute -top-10 -left-16 w-48 h-48 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
-
-      {/* Logo + Title */}
-      <div className="relative flex items-center gap-4 mb-2">
-        <div className="relative w-16 h-16 rounded-2xl gradient-teal shadow-card flex items-center justify-center">
-          <Pill className="w-8 h-8 text-primary-foreground rotate-45" strokeWidth={2.5} />
-          <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-card shadow-card flex items-center justify-center">
-            <Sparkles className="w-3 h-3 text-primary" />
+    <header className="relative flex flex-col items-center pt-12 pb-4 px-6">
+      {/* Logo + Title row */}
+      <div className="relative flex items-center gap-4 mb-4 animate-fade-in-up">
+        {/* Liquid glass app icon */}
+        <div className="relative w-20 h-20 rounded-[28px] glass-strong flex items-center justify-center shadow-float overflow-hidden">
+          <div className="absolute inset-0 gradient-primary opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-transparent" />
+          <Pill className="relative w-9 h-9 text-white rotate-45 drop-shadow-lg" strokeWidth={2.2} />
+          <div className="absolute top-2 right-2">
+            <Sparkles className="w-3.5 h-3.5 text-white/90" strokeWidth={2.5} />
           </div>
         </div>
+
         <div>
-          <h1 className="text-4xl font-bold text-gradient leading-tight">MediScan</h1>
-          <p className="text-xs font-medium text-primary-muted tracking-wide uppercase">AI-Powered Scanner</p>
+          <h1 className="text-5xl font-extrabold leading-none tracking-tight">
+            <span className="text-gradient">Medi</span>
+            <span className="text-foreground">Scan</span>
+          </h1>
+          <p className="text-[11px] font-semibold text-primary-muted tracking-[0.25em] uppercase mt-1.5">
+            AI-Powered Scanner
+          </p>
         </div>
       </div>
 
-      {/* Tagline pill */}
-      <div className="mt-5 w-full max-w-sm">
-        <div className="relative bg-card/80 backdrop-blur-md rounded-2xl py-4 px-6 shadow-card border border-border/50 text-center">
-          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-0.5 rounded-full flex items-center gap-1">
-            <Shield className="w-3 h-3" />
-            Trusted
-          </div>
-          <p className="text-muted-foreground text-sm leading-relaxed mt-1">
-            Instantly identify medicines with AI-powered analysis
-          </p>
-        </div>
+      {/* Trusted glass pill */}
+      <div
+        className="glass rounded-full px-4 py-1.5 inline-flex items-center gap-1.5 mb-5 animate-fade-in-up"
+        style={{ animationDelay: "100ms" }}
+      >
+        <Shield className="w-3.5 h-3.5 text-primary" strokeWidth={2.5} />
+        <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Trusted</span>
+      </div>
+
+      {/* Tagline glass card */}
+      <div
+        className="w-full max-w-md glass rounded-3xl py-5 px-6 text-center animate-fade-in-up"
+        style={{ animationDelay: "150ms" }}
+      >
+        <p className="text-foreground/80 text-base leading-relaxed font-medium">
+          Instantly identify medicines with<br />AI-powered analysis
+        </p>
       </div>
     </header>
   );

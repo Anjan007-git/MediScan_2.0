@@ -1,11 +1,15 @@
-import { 
-  ArrowLeft, 
-  Info, 
-  Pill, 
-  Shield, 
+import {
+  ArrowLeft,
+  Info,
+  Pill,
+  Shield,
   AlertTriangle,
   CheckCircle,
-  AlertOctagon
+  AlertOctagon,
+  Share2,
+  Bookmark,
+  RefreshCw,
+  FlaskConical,
 } from "lucide-react";
 import { MediCard, MediCardTitle, MediCardContent } from "./ui/MediCard";
 
@@ -29,16 +33,33 @@ interface MedicineResultProps {
 
 const ConfidenceBadge = ({ confidence }: { confidence: number }) => {
   const isLow = confidence < 80;
-  const color = confidence >= 90 
-    ? "bg-green-100 text-green-800 border-green-300" 
-    : confidence >= 80 
-    ? "bg-yellow-100 text-yellow-800 border-yellow-300"
-    : "bg-red-100 text-red-800 border-red-300";
+  const tone =
+    confidence >= 90
+      ? "bg-success/15 text-success border-success/30"
+      : confidence >= 80
+      ? "bg-warning/20 text-warning-foreground border-warning/30"
+      : "bg-danger/15 text-danger border-danger/30";
 
   return (
-    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${color}`}>
+    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border backdrop-blur-md ${tone}`}>
       {isLow ? <AlertOctagon className="w-3.5 h-3.5" /> : <CheckCircle className="w-3.5 h-3.5" />}
       {confidence}% confidence
+    </div>
+  );
+};
+
+const StatusTag = ({ confidence }: { confidence: number }) => {
+  const status =
+    confidence >= 90
+      ? { label: "Verified", tone: "bg-success/15 text-success border-success/40", icon: CheckCircle }
+      : confidence >= 80
+      ? { label: "Caution", tone: "bg-warning/20 text-warning-foreground border-warning/40", icon: AlertTriangle }
+      : { label: "Uncertain", tone: "bg-danger/15 text-danger border-danger/40", icon: AlertOctagon };
+  const Icon = status.icon;
+  return (
+    <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${status.tone}`}>
+      <Icon className="w-3 h-3" />
+      {status.label}
     </div>
   );
 };
@@ -50,23 +71,31 @@ const MedicineResult = ({ medicine, confidence, onBack }: MedicineResultProps) =
     <div className="pb-8 animate-fade-in-up">
       {/* Medicine Header */}
       <div className="px-6 mt-4">
-        <MediCard className="bg-gradient-to-br from-primary-light to-card">
-          <div className="flex items-center gap-4">
+        <div className="glass-strong rounded-[28px] p-5 relative overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-primary-glow/25 blur-3xl pointer-events-none" />
+          <div className="relative flex items-center gap-4">
             <button
               onClick={onBack}
-              className="w-12 h-12 rounded-full bg-card/80 flex items-center justify-center shadow-card hover:shadow-card-hover transition-all"
+              className="w-12 h-12 rounded-full glass flex items-center justify-center hover:shadow-glass-lg active:scale-95 transition-all flex-shrink-0"
             >
               <ArrowLeft className="w-5 h-5 text-foreground" />
             </button>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-primary">{medicine.name}</h2>
-              <p className="text-muted-foreground text-sm">Generic: {medicine.generic}</p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <StatusTag confidence={confidence} />
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border bg-primary/10 text-primary border-primary/30">
+                  <FlaskConical className="w-3 h-3" />
+                  Medicine
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold text-gradient tracking-tight truncate">{medicine.name}</h2>
+              <p className="text-muted-foreground text-sm truncate">Generic: {medicine.generic}</p>
               <div className="mt-2">
                 <ConfidenceBadge confidence={confidence} />
               </div>
             </div>
           </div>
-        </MediCard>
+        </div>
       </div>
 
       {/* Low confidence warning */}
@@ -233,11 +262,32 @@ const MedicineResult = ({ medicine, confidence, onBack }: MedicineResultProps) =
         )}
       </div>
 
+      {/* Action buttons */}
+      <div className="px-6 mt-5 grid grid-cols-3 gap-3">
+        <button
+          onClick={onBack}
+          className="glass rounded-2xl py-3 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-glass-lg"
+        >
+          <RefreshCw className="w-5 h-5 text-primary" />
+          <span className="text-[11px] font-semibold text-foreground">Scan Again</span>
+        </button>
+        <button className="glass rounded-2xl py-3 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-glass-lg">
+          <Bookmark className="w-5 h-5 text-primary" />
+          <span className="text-[11px] font-semibold text-foreground">Save</span>
+        </button>
+        <button className="glass rounded-2xl py-3 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-glass-lg">
+          <Share2 className="w-5 h-5 text-primary" />
+          <span className="text-[11px] font-semibold text-foreground">Share</span>
+        </button>
+      </div>
+
       {/* Disclaimer */}
-      <div className="px-6 mt-6">
-        <p className="text-center text-xs text-muted-foreground leading-relaxed">
-          This information is for educational purposes only. Always consult a doctor or pharmacist.
-        </p>
+      <div className="px-6 mt-5">
+        <div className="glass-subtle rounded-2xl px-4 py-3">
+          <p className="text-center text-xs text-muted-foreground leading-relaxed">
+            This information is for educational purposes only. Always consult a doctor or pharmacist.
+          </p>
+        </div>
       </div>
     </div>
   );

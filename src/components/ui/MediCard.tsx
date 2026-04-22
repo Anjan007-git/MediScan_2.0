@@ -11,13 +11,13 @@ const MediCard = React.forwardRef<HTMLDivElement, MediCardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-2xl p-5 transition-all duration-300",
+          "rounded-3xl p-5 transition-all duration-300 relative overflow-hidden",
           {
-            "bg-card shadow-card": variant === "default",
-            "gradient-teal text-primary-foreground shadow-card": variant === "primary",
-            "bg-warning-light border border-warning/20": variant === "warning",
-            "bg-danger-light border border-danger/20": variant === "danger",
-            "bg-primary-light border border-primary/20": variant === "highlight",
+            "glass": variant === "default",
+            "glass-strong text-white": variant === "primary",
+            "glass border-l-4 border-l-warning": variant === "warning",
+            "glass border-l-4 border-l-danger": variant === "danger",
+            "glass border-l-4 border-l-primary": variant === "highlight",
           },
           className
         )}
@@ -35,7 +35,7 @@ const MediCardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center gap-3 pb-3 border-b border-border/50", className)}
+    className={cn("flex items-center gap-3 pb-3 border-b border-white/30", className)}
     {...props}
   />
 ));
@@ -47,7 +47,7 @@ const MediCardTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("text-lg font-semibold text-foreground flex items-center gap-2", className)}
+    className={cn("text-base font-bold text-foreground flex items-center gap-2 tracking-tight", className)}
     {...props}
   />
 ));
@@ -57,7 +57,7 @@ const MediCardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("pt-4", className)} {...props} />
+  <div ref={ref} className={cn("pt-3 text-sm leading-relaxed", className)} {...props} />
 ));
 MediCardContent.displayName = "MediCardContent";
 
