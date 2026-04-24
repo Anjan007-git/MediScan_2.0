@@ -83,6 +83,76 @@
     --shadow-glow: 0 8px 30px -4px hsla(173, 80%, 45%, 0.4), 0 0 0 1px hsla(168, 76%, 65%, 0.3) inset;
     --shadow-float: 0 30px 80px -20px hsla(173, 60%, 35%, 0.25);
   }
+
+  .dark {
+    --primary: 168 76% 55%;
+    --primary-foreground: 175 84% 10%;
+    --primary-light: 175 30% 18%;
+    --primary-muted: 168 50% 65%;
+    --primary-glow: 168 80% 65%;
+    --primary-deep: 175 84% 45%;
+
+    --background: 200 30% 7%;
+    --background-gradient-start: 200 30% 7%;
+    --background-gradient-mid: 195 40% 10%;
+    --background-gradient-end: 175 50% 12%;
+    --foreground: 170 20% 96%;
+
+    --glass: 200 30% 12%;
+    --glass-foreground: 170 20% 96%;
+
+    --card: 200 30% 10%;
+    --card-foreground: 170 20% 96%;
+
+    --popover: 200 30% 10%;
+    --popover-foreground: 170 20% 96%;
+
+    --secondary: 200 20% 15%;
+    --secondary-foreground: 170 20% 96%;
+
+    --muted: 200 20% 15%;
+    --muted-foreground: 170 15% 65%;
+
+    --accent: 168 76% 55%;
+    --accent-foreground: 175 84% 10%;
+
+    --warning: 38 92% 60%;
+    --warning-foreground: 38 92% 95%;
+
+    --danger: 0 75% 65%;
+    --danger-foreground: 0 0% 100%;
+
+    --success: 168 70% 55%;
+    --success-foreground: 175 84% 10%;
+
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 175 30% 22%;
+    --input: 175 30% 22%;
+    --ring: 168 76% 55%;
+
+    --gradient-bg: radial-gradient(ellipse at top, hsl(200 40% 12%) 0%, hsl(195 50% 10%) 40%, hsl(175 60% 8%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(170, 30%, 20%, 0.5) 0%, hsla(175, 50%, 15%, 0.3) 100%);
+
+    --shadow-glass: 0 8px 32px 0 hsla(0, 0%, 0%, 0.4), inset 0 1px 0 0 hsla(168, 76%, 60%, 0.1);
+    --shadow-glass-lg: 0 20px 60px -10px hsla(0, 0%, 0%, 0.5), inset 0 1px 0 0 hsla(168, 76%, 60%, 0.15);
+    --shadow-glow: 0 8px 30px -4px hsla(168, 80%, 50%, 0.45), 0 0 0 1px hsla(168, 76%, 55%, 0.4) inset;
+    --shadow-float: 0 30px 80px -20px hsla(0, 0%, 0%, 0.6);
+  }
+
+  .dark .glass {
+    background: linear-gradient(135deg, hsla(200, 30%, 18%, 0.55) 0%, hsla(175, 40%, 15%, 0.35) 100%);
+    border: 1px solid hsla(168, 76%, 50%, 0.18);
+  }
+  .dark .glass-strong {
+    background: linear-gradient(135deg, hsla(200, 30%, 20%, 0.75) 0%, hsla(175, 40%, 16%, 0.55) 100%);
+    border: 1px solid hsla(168, 76%, 50%, 0.22);
+  }
+  .dark .glass-subtle {
+    background: hsla(200, 30%, 18%, 0.4);
+    border: 1px solid hsla(168, 76%, 50%, 0.15);
+  }
 }
 
 @layer base {
