@@ -1,6 +1,17 @@
 import { useState, useCallback, useRef } from "react";
-import { MedicineInfo } from "@/components/MedicineResult";
 import { supabase } from "@/integrations/supabase/client";
+
+export interface MedicineInfo {
+  name: string;
+  generic: string;
+  uses: string[];
+  composition: string;
+  dosage: string;
+  precautions: string[];
+  warnings: string[];
+  sideEffects?: string[];
+  storage?: string;
+}
 
 export interface ScanResult {
   medicine: MedicineInfo | null;
