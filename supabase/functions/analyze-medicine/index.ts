@@ -6,12 +6,49 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// In-memory rate limiter (per edge function instance)
+// Limits: 10 requests per minute per IP
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 10;
+const ipHits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const hits = (ipHits.get(ip) || []).filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+  hits.push(now);
+  ipHits.set(ip, hits);
+  // Periodic cleanup to avoid unbounded growth
+  if (ipHits.size > 1000) {
+    for (const [k, v] of ipHits) {
+      const fresh = v.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+      if (fresh.length === 0) ipHits.delete(k);
+      else ipHits.set(k, fresh);
+    }
+  }
+  return hits.length > RATE_LIMIT_MAX;
+}
+
+// ~10 MB raw → ~13.4 MB base64. Allow some padding.
+const MAX_IMAGE_PAYLOAD = 14_000_000;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      req.headers.get("cf-connecting-ip") ||
+      "unknown";
+
+    if (isRateLimited(ip)) {
+      return new Response(
+        JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { imageData, scanId } = await req.json();
 
     if (!imageData || typeof imageData !== "string") {
@@ -21,10 +58,25 @@ serve(async (req) => {
       );
     }
 
+    if (!imageData.startsWith("data:image/")) {
+      return new Response(
+        JSON.stringify({ error: "Invalid image format", scanId }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (imageData.length > MAX_IMAGE_PAYLOAD) {
+      return new Response(
+        JSON.stringify({ error: "Image too large. Please upload an image under 10 MB.", scanId }),
+        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY is not configured");
       return new Response(
-        JSON.stringify({ error: "LOVABLE_API_KEY is not configured", scanId }),
+        JSON.stringify({ error: "Service is temporarily unavailable.", scanId }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -157,7 +209,7 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
   } catch (e) {
     console.error("analyze-medicine error:", e);
     return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
+      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
