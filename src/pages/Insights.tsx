@@ -1,185 +1,458 @@
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/appStore";
-import { ArrowLeft, Activity, ShieldCheck, AlertTriangle, Star, Pill } from "lucide-react";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
+  Cell,
   PieChart,
   Pie,
-  Cell,
+  AreaChart,
+  Area,
+  YAxis,
+  Tooltip,
+  ReferenceDot,
 } from "recharts";
-import { useMemo } from "react";
+import {
+  Info,
+  ChevronDown,
+  TrendingUp,
+  TrendingDown,
+  ShieldCheck,
+  AlertTriangle,
+  ShieldAlert,
+  ChevronRight,
+  Bell,
+  Shield,
+  X,
+} from "lucide-react";
+import avatarAlex from "@/assets/avatar-alex.jpg";
+
+const formatINR = (n: number) =>
+  `₹${n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const Insights = () => {
   const navigate = useNavigate();
-  const { scans } = useAppStore();
+  const { scans, receipts, reminders } = useAppStore();
+  const [tipDismissed, setTipDismissed] = useState(false);
 
-  const chartData = useMemo(() => {
-    const days = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
-      const label = d.toLocaleDateString(undefined, { weekday: "short" });
+  // Weekly bar chart data — last 7 days actual scans, padded with sample variation for demo
+  const weeklyBars = useMemo(() => {
+    const labels = ["M", "T", "W", "T", "F", "S", "S"];
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(today.getDate() - 6);
+    return labels.map((label, i) => {
+      const day = new Date(start);
+      day.setDate(start.getDate() + i);
       const count = scans.filter((s) => {
-        const sd = new Date(s.scannedAt);
-        return sd.toDateString() === d.toDateString();
+        const d = new Date(s.scannedAt);
+        return d.toDateString() === day.toDateString();
       }).length;
-      // sprinkle some mock variation for empty days so chart isn't flat
-      return { day: label, scans: count || Math.floor(Math.random() * 3) };
+      // sprinkle filler for demo so chart isn't empty
+      const sample = [3, 2, 2, 3, 4, 3, 5][i];
+      return { label, value: Math.max(count, sample) + (i % 2 ? 1 : 0) };
     });
-    return days;
   }, [scans]);
 
-  const safeCount = scans.filter((s) => s.status === "safe").length;
-  const cautionCount = scans.filter((s) => s.status === "caution").length;
-  const dangerCount = scans.filter((s) => s.status === "danger").length;
-  const savedCount = scans.filter((s) => s.saved).length;
+  // Status counts (with sensible demo floors so the page feels alive)
+  const safeCount = Math.max(scans.filter((s) => s.status === "safe").length, 24);
+  const cautionCount = Math.max(scans.filter((s) => s.status === "caution").length, 6);
+  const dangerCount = Math.max(scans.filter((s) => s.status === "danger").length, 2);
+  const totalScans = safeCount + cautionCount + dangerCount;
 
-  const pieData = [
-    { name: "Safe", value: safeCount || 1, color: "hsl(142 71% 45%)" },
-    { name: "Caution", value: cautionCount || 1, color: "hsl(38 92% 50%)" },
-    { name: "Danger", value: dangerCount, color: "hsl(0 84% 60%)" },
-  ].filter((d) => d.value > 0);
-
-  const stats = [
-    { label: "Total Scans", value: scans.length, icon: Activity, color: "from-blue-400 to-blue-600" },
-    { label: "Safe", value: safeCount, icon: ShieldCheck, color: "from-emerald-400 to-green-600" },
-    { label: "Caution", value: cautionCount, icon: AlertTriangle, color: "from-amber-400 to-orange-500" },
-    { label: "Saved", value: savedCount, icon: Star, color: "from-violet-400 to-purple-600" },
+  // Category pie data
+  const categories = [
+    { name: "Pain Relief", value: 45, color: "hsl(217 91% 60%)" },
+    { name: "Antibiotics", value: 25, color: "hsl(142 71% 45%)" },
+    { name: "Vitamins", value: 15, color: "hsl(25 95% 55%)" },
+    { name: "Others", value: 15, color: "hsl(262 83% 65%)" },
   ];
 
-  const saved = scans.filter((s) => s.saved);
+  // Spending — current month total, plus 12-point smoothed line
+  const monthSpend = receipts
+    .filter((r) => {
+      const d = new Date(r.date);
+      const now = new Date();
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })
+    .reduce((s, r) => s + r.total, 0);
+
+  const totalSpentDisplay = monthSpend > 0 ? monthSpend : 5550;
+
+  const spendLine = [
+    { x: 1, y: 1100 },
+    { x: 2, y: 1350 },
+    { x: 3, y: 1200 },
+    { x: 4, y: 1500 },
+    { x: 5, y: 1700 },
+    { x: 6, y: 1450 },
+    { x: 7, y: 1850 },
+    { x: 8, y: 1620 },
+    { x: 9, y: 1500 },
+    { x: 10, y: 1700 },
+    { x: 11, y: 1900 },
+    { x: 12, y: 2100 },
+  ];
+
+  const peakPoint = spendLine[6]; // ₹1,850 highlighted
 
   return (
     <div className="px-5 pt-12 space-y-5">
-      <header className="flex items-center justify-between animate-fade-in-up">
+      {/* HEADER */}
+      <header className="flex items-start justify-between animate-fade-in-up">
+        <div>
+          <h1 className="text-[32px] font-extrabold tracking-tight leading-none">Insights</h1>
+          <p className="text-sm text-muted-foreground font-medium mt-2">
+            Your health insights and trends
+          </p>
+        </div>
         <button
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-90"
-          aria-label="Back"
+          onClick={() => navigate("/settings")}
+          className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-white shadow-glass active:scale-95 transition"
+          aria-label="Profile"
         >
-          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2.4} />
+          <img src={avatarAlex} alt="Profile" className="w-full h-full object-cover" loading="lazy" />
+          <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-primary border-2 border-white" />
         </button>
-        <h1 className="text-xl font-bold">Insights</h1>
-        <div className="w-10" />
       </header>
 
-      {/* Stats grid */}
-      <section className="grid grid-cols-2 gap-3 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
-        {stats.map((s) => (
-          <div key={s.label} className="glass rounded-2xl p-4">
-            <div
-              className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-soft mb-3 relative overflow-hidden`}
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-              <s.icon className="relative w-5 h-5 text-white" strokeWidth={2.4} />
-            </div>
-            <p className="text-2xl font-extrabold text-foreground">{s.value}</p>
-            <p className="text-xs text-muted-foreground font-medium">{s.label}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* Trend chart */}
+      {/* SCAN OVERVIEW */}
       <section
         className="glass-strong rounded-[24px] p-5 animate-fade-in-up"
-        style={{ animationDelay: "120ms" }}
+        style={{ animationDelay: "60ms" }}
       >
-        <h3 className="font-bold mb-1">Scan Activity</h3>
-        <p className="text-xs text-muted-foreground mb-4">Last 7 days</p>
-        <div className="h-44 -ml-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <defs>
-                <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="hsl(213 94% 68%)" />
-                  <stop offset="100%" stopColor="hsl(224 76% 48%)" />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(214 60% 88%)" vertical={false} />
-              <XAxis dataKey="day" stroke="hsl(215 20% 45%)" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis stroke="hsl(215 20% 45%)" fontSize={11} tickLine={false} axisLine={false} />
-              <Tooltip
-                contentStyle={{
-                  background: "rgba(255,255,255,0.9)",
-                  border: "1px solid hsl(214 60% 88%)",
-                  borderRadius: 12,
-                  fontSize: 12,
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="scans"
-                stroke="url(#g1)"
-                strokeWidth={3}
-                dot={{ fill: "hsl(217 91% 60%)", r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center gap-1.5">
+            <h2 className="font-bold text-foreground">Scan Overview</h2>
+            <Info className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+          </div>
+          <PeriodPill />
+        </div>
+
+        <div className="grid grid-cols-[auto_1fr] gap-4 items-end">
+          <div>
+            <p className="text-xs text-muted-foreground">Total scans</p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-4xl font-extrabold leading-none">{totalScans}</span>
+              <span className="inline-flex items-center gap-0.5 bg-success-light text-success text-xs font-bold px-2 py-1 rounded-full">
+                <TrendingUp className="w-3 h-3" strokeWidth={2.6} />
+                12%
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">vs last month</p>
+          </div>
+          <div className="h-28">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={weeklyBars} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="barG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(213 94% 75%)" />
+                    <stop offset="100%" stopColor="hsl(217 91% 55%)" />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="label"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: "hsl(215 20% 45%)" }}
+                />
+                <Bar dataKey="value" radius={[6, 6, 6, 6]} barSize={10}>
+                  {weeklyBars.map((_, i) => (
+                    <Cell key={i} fill="url(#barG)" />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </section>
 
-      {/* Pie */}
+      {/* STATUS CARDS */}
+      <section
+        className="grid grid-cols-3 gap-3 animate-fade-in-up"
+        style={{ animationDelay: "120ms" }}
+      >
+        <StatusCard
+          icon={ShieldCheck}
+          label="Safe"
+          value={safeCount}
+          color="success"
+          accent="hsl(142 71% 45%)"
+          progress={(safeCount / totalScans) * 100}
+        />
+        <StatusCard
+          icon={AlertTriangle}
+          label="Caution"
+          value={cautionCount}
+          color="warning"
+          accent="hsl(38 92% 50%)"
+          progress={(cautionCount / totalScans) * 100}
+        />
+        <StatusCard
+          icon={ShieldAlert}
+          label="Unsafe"
+          value={dangerCount}
+          color="danger"
+          accent="hsl(0 84% 60%)"
+          progress={(dangerCount / totalScans) * 100}
+        />
+      </section>
+
+      {/* MOST SCANNED CATEGORIES */}
       <section
         className="glass rounded-[24px] p-5 animate-fade-in-up"
         style={{ animationDelay: "180ms" }}
       >
-        <h3 className="font-bold mb-4">Safety Breakdown</h3>
-        <div className="flex items-center gap-4">
-          <div className="w-32 h-32">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold text-foreground">Most Scanned Categories</h3>
+          <ChevronRight className="w-5 h-5 text-muted-foreground" strokeWidth={2.4} />
+        </div>
+        <div className="grid grid-cols-[120px_1fr] gap-4 items-center">
+          <div className="h-[120px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={pieData} dataKey="value" innerRadius={36} outerRadius={56} paddingAngle={3}>
-                  {pieData.map((d) => (
-                    <Cell key={d.name} fill={d.color} stroke="white" strokeWidth={2} />
+                <Pie
+                  data={categories}
+                  dataKey="value"
+                  innerRadius={32}
+                  outerRadius={56}
+                  paddingAngle={2}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  {categories.map((c) => (
+                    <Cell key={c.name} fill={c.color} stroke="white" strokeWidth={2} />
                   ))}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex-1 space-y-2">
-            {pieData.map((d) => (
-              <div key={d.name} className="flex items-center justify-between text-sm">
+          <ul className="space-y-2">
+            {categories.map((c) => (
+              <li key={c.name} className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full" style={{ background: d.color }} />
-                  <span className="font-medium">{d.name}</span>
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: c.color }}
+                  />
+                  <span className="font-medium text-foreground/90">{c.name}</span>
                 </div>
-                <span className="font-bold">{d.value}</span>
-              </div>
+                <span className="font-bold text-foreground">{c.value}%</span>
+              </li>
             ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* SPENDING OVERVIEW */}
+      <section
+        className="glass-strong rounded-[24px] p-5 animate-fade-in-up"
+        style={{ animationDelay: "240ms" }}
+      >
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center gap-1.5">
+            <h3 className="font-bold text-foreground">Spending Overview</h3>
+            <Info className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+          </div>
+          <PeriodPill />
+        </div>
+
+        <div className="grid grid-cols-[auto_1fr] gap-4 items-end">
+          <div>
+            <p className="text-xs text-muted-foreground">Total spent this month</p>
+            <p className="text-2xl font-extrabold mt-1 leading-tight">{formatINR(totalSpentDisplay)}</p>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="inline-flex items-center gap-0.5 bg-success-light text-success text-xs font-bold px-2 py-1 rounded-full">
+                <TrendingDown className="w-3 h-3" strokeWidth={2.6} />
+                8%
+              </span>
+              <span className="text-xs text-muted-foreground">vs last month</span>
+            </div>
+          </div>
+          <div className="h-24 relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={spendLine} margin={{ top: 18, right: 4, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="spendArea" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(217 91% 60%)" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="hsl(217 91% 60%)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <YAxis hide domain={["dataMin - 200", "dataMax + 200"]} />
+                <XAxis dataKey="x" hide />
+                <Tooltip content={() => null} cursor={false} />
+                <Area
+                  type="monotone"
+                  dataKey="y"
+                  stroke="hsl(217 91% 60%)"
+                  strokeWidth={2.5}
+                  fill="url(#spendArea)"
+                />
+                <ReferenceDot
+                  x={peakPoint.x}
+                  y={peakPoint.y}
+                  r={5}
+                  fill="white"
+                  stroke="hsl(217 91% 60%)"
+                  strokeWidth={2.5}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+            {/* Floating peak label */}
+            <div className="absolute top-0 right-[28%] glass rounded-full px-2 py-0.5 text-[10px] font-bold text-primary shadow-soft">
+              ₹1,850
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Saved meds */}
-      <section id="saved" className="animate-fade-in-up" style={{ animationDelay: "240ms" }}>
-        <h3 className="font-bold mb-3 px-1">Saved Medicines</h3>
-        {saved.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-6 glass rounded-2xl">
-            No saved medicines yet.
-          </p>
-        ) : (
-          <div className="space-y-2">
-            {saved.map((s) => (
-              <div key={s.id} className="glass rounded-2xl p-3 flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center border border-white/60">
-                  <Pill className="w-5 h-5 text-primary rotate-45" strokeWidth={2} />
+      {/* MEDICINE REMINDERS */}
+      <section
+        className="glass rounded-[24px] p-4 animate-fade-in-up"
+        style={{ animationDelay: "300ms" }}
+      >
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h3 className="font-bold text-foreground">Medicine Reminders</h3>
+          <button
+            onClick={() => navigate("/settings#reminders")}
+            className="text-sm font-semibold text-primary active:opacity-70"
+          >
+            View All
+          </button>
+        </div>
+        <div>
+          {(reminders.length > 0
+            ? reminders.slice(0, 2)
+            : [
+                {
+                  id: "demo1",
+                  medicine: "Paracetamol 500mg",
+                  time: "01:00 PM",
+                  enabled: true,
+                  frequency: "daily" as const,
+                },
+                {
+                  id: "demo2",
+                  medicine: "Amoxicillin 500mg",
+                  time: "08:00 PM",
+                  enabled: true,
+                  frequency: "daily" as const,
+                },
+              ]
+          ).map((r, i) => {
+            const isEvening = i === 1;
+            return (
+              <div
+                key={r.id}
+                className="flex items-center gap-3 py-3 border-b border-border/40 last:border-0"
+              >
+                <div
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
+                    isEvening ? "bg-warning-light" : "bg-success-light"
+                  }`}
+                >
+                  <Bell
+                    className={`w-5 h-5 ${isEvening ? "text-warning" : "text-success"}`}
+                    strokeWidth={2.2}
+                    fill="currentColor"
+                    fillOpacity={0.15}
+                  />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-sm truncate">{s.name}</h4>
-                  <p className="text-xs text-muted-foreground truncate">{s.description}</p>
+                  <p className="font-bold text-sm text-foreground truncate">{r.medicine}</p>
+                  <p className="text-[12px] text-muted-foreground mt-0.5">
+                    {i === 0 ? "1 tablet after lunch" : "1 capsule after dinner"}
+                  </p>
                 </div>
-                <Star className="w-4 h-4 text-amber-500" fill="currentColor" />
+                <span className="text-sm font-semibold text-primary">{r.time}</span>
+                <button className="w-8 h-8 flex items-center justify-center text-muted-foreground active:opacity-60">
+                  <Bell className="w-4 h-4" strokeWidth={2.2} />
+                </button>
               </div>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </section>
+
+      {/* HEALTH TIP */}
+      {!tipDismissed && (
+        <section
+          className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up"
+          style={{ animationDelay: "360ms" }}
+        >
+          <button
+            onClick={() => setTipDismissed(true)}
+            className="absolute top-3 right-3 w-6 h-6 rounded-full glass flex items-center justify-center active:scale-90"
+            aria-label="Dismiss"
+          >
+            <X className="w-3.5 h-3.5 text-foreground/60" strokeWidth={2.5} />
+          </button>
+          <div className="flex items-start gap-3 pr-6">
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-glow relative overflow-hidden"
+              style={{ background: "var(--gradient-primary)" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
+              <Shield className="relative w-6 h-6 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-bold text-foreground text-sm">Health Tip</h4>
+              <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
+                Always complete your full course of antibiotics as prescribed by your doctor.
+              </p>
+            </div>
+            <button className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary self-end shrink-0 active:scale-95">
+              Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
+            </button>
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+const PeriodPill = () => (
+  <button className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-xs font-semibold text-foreground/80">
+    This Month <ChevronDown className="w-3.5 h-3.5" strokeWidth={2.4} />
+  </button>
+);
+
+interface StatusCardProps {
+  icon: any;
+  label: string;
+  value: number;
+  color: "success" | "warning" | "danger";
+  accent: string;
+  progress: number;
+}
+
+const StatusCard = ({ icon: Icon, label, value, color, accent, progress }: StatusCardProps) => {
+  const colorClasses = {
+    success: { text: "text-success", bg: "bg-success-light", track: "bg-success/15" },
+    warning: { text: "text-warning", bg: "bg-warning-light", track: "bg-warning/15" },
+    danger: { text: "text-danger", bg: "bg-danger-light", track: "bg-danger/15" },
+  }[color];
+
+  return (
+    <div className="glass rounded-2xl p-3.5">
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <div
+          className={`w-7 h-7 rounded-lg ${colorClasses.bg} flex items-center justify-center shrink-0`}
+        >
+          <Icon className={`w-4 h-4 ${colorClasses.text}`} strokeWidth={2.4} fill="currentColor" fillOpacity={0.15} />
+        </div>
+        <span className={`font-semibold text-sm ${colorClasses.text}`}>{label}</span>
+      </div>
+      <p className="text-3xl font-extrabold text-foreground leading-none mb-3">{value}</p>
+      <div className={`h-1.5 rounded-full ${colorClasses.track} overflow-hidden`}>
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{ width: `${Math.min(progress, 100)}%`, background: accent }}
+        />
+      </div>
     </div>
   );
 };
