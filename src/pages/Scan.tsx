@@ -9,6 +9,8 @@ import {
   Image as ImageIcon,
   Camera,
   RotateCw,
+  ShieldAlert,
+  Loader2,
 } from "lucide-react";
 import { useMedicineScanner } from "@/hooks/useMedicineScanner";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +19,8 @@ import ScanningOverlay from "@/components/ScanningOverlay";
 
 type PackType = "Box" | "Blister" | "Bottle";
 const PACK_TYPES: PackType[] = ["Box", "Blister", "Bottle"];
+
+type CamState = "idle" | "loading" | "ready" | "denied" | "notfound" | "unsupported" | "error";
 
 const Scan = () => {
   const navigate = useNavigate();
@@ -27,13 +31,15 @@ const Scan = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [camState, setCamState] = useState<CamState>("idle");
+  const [camMessage, setCamMessage] = useState<string>("");
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
   const [flashOn, setFlashOn] = useState(false);
   const [packType, setPackType] = useState<PackType>("Box");
   const [showHelp, setShowHelp] = useState(false);
+  const [uploadedPreview, setUploadedPreview] = useState<string | null>(null);
 
   // Apply dark-mode body styling for this immersive screen
   useEffect(() => {
@@ -41,28 +47,66 @@ const Scan = () => {
     return () => document.body.classList.remove("scan-dark-mode");
   }, []);
 
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, []);
+
   const startCamera = useCallback(async () => {
+    // Reset prior stream
+    stopCamera();
+    setUploadedPreview(null);
+    setCamState("loading");
+    setCamMessage("");
+
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setCamState("unsupported");
+      setCamMessage("Camera API is not supported in this browser.");
+      return;
+    }
+
     try {
-      setCameraError(null);
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false,
       });
-      if (videoRef.current) videoRef.current.srcObject = mediaStream;
-      setStream(mediaStream);
-    } catch (err) {
+      streamRef.current = mediaStream;
+      const v = videoRef.current;
+      if (v) {
+        v.srcObject = mediaStream;
+        // Some browsers need explicit play after srcObject
+        try {
+          await v.play();
+        } catch {
+          /* autoplay blocked – will play when visible */
+        }
+      }
+      setCamState("ready");
+    } catch (err: any) {
       console.error("Camera error:", err);
-      setCameraError("Camera unavailable. Use the gallery upload instead.");
+      const name = err?.name || "";
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setCamState("denied");
+        setCamMessage("Camera access denied. Please allow camera permissions in your browser settings.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError" || name === "OverconstrainedError") {
+        setCamState("notfound");
+        setCamMessage("No camera device found on this device.");
+      } else if (name === "NotReadableError" || name === "TrackStartError") {
+        setCamState("error");
+        setCamMessage("Camera is in use by another application.");
+      } else {
+        setCamState("error");
+        setCamMessage(err?.message || "Unable to start the camera.");
+      }
     }
-  }, [facingMode]);
+  }, [facingMode, stopCamera]);
 
-  const stopCamera = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach((t) => t.stop());
-      setStream(null);
-    }
-  }, [stream]);
-
+  // Start camera on mount + when facing mode changes
   useEffect(() => {
     startCamera();
     return () => stopCamera();
@@ -71,13 +115,14 @@ const Scan = () => {
 
   // Toggle torch (works on supported devices)
   useEffect(() => {
-    if (!stream) return;
+    const stream = streamRef.current;
+    if (!stream || camState !== "ready") return;
     const track = stream.getVideoTracks()[0];
-    const caps = track.getCapabilities?.() as any;
+    const caps = track?.getCapabilities?.() as any;
     if (caps?.torch) {
       track.applyConstraints({ advanced: [{ torch: flashOn }] } as any).catch(() => {});
     }
-  }, [flashOn, stream]);
+  }, [flashOn, camState]);
 
   // Auto-trigger upload from query param
   useEffect(() => {
@@ -91,7 +136,19 @@ const Scan = () => {
   }, [error, toast]);
 
   const handleCapture = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return;
+    // Capture from video OR from uploaded preview
+    if (uploadedPreview) {
+      scanMedicine(uploadedPreview);
+      return;
+    }
+    if (camState !== "ready" || !videoRef.current || !canvasRef.current) {
+      toast({
+        title: "Camera not ready",
+        description: "Please allow camera access or upload an image instead.",
+        variant: "destructive",
+      });
+      return;
+    }
     const video = videoRef.current;
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth || 1280;
@@ -101,7 +158,7 @@ const Scan = () => {
     ctx.drawImage(video, 0, 0);
     const imageData = canvas.toDataURL("image/jpeg", 0.85);
     scanMedicine(imageData);
-  }, [scanMedicine]);
+  }, [scanMedicine, camState, uploadedPreview, toast]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,9 +172,22 @@ const Scan = () => {
       return;
     }
     const reader = new FileReader();
-    reader.onload = (ev) => scanMedicine(ev.target?.result as string);
+    reader.onload = (ev) => {
+      const data = ev.target?.result as string;
+      setUploadedPreview(data);
+      // Stop camera while preview shown
+      stopCamera();
+      setCamState("idle");
+      // Auto-scan
+      scanMedicine(data);
+    };
     reader.readAsDataURL(file);
     e.target.value = "";
+  };
+
+  const clearUploadAndRestart = () => {
+    setUploadedPreview(null);
+    startCamera();
   };
 
   // If we have a result, render result on light bg
@@ -133,20 +203,35 @@ const Scan = () => {
     );
   }
 
+  const showVideo = camState === "ready" && !uploadedPreview;
+  const showUploaded = !!uploadedPreview;
+  const showFallback = !showVideo && !showUploaded;
+
   return (
     <div className="fixed inset-0 z-30 bg-[#0a0e1a] text-white overflow-hidden">
-      {/* Live camera feed (or fallback dark bg) */}
-      {stream && !cameraError ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
+      {/* Always-mounted video so srcObject can attach */}
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+          showVideo ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      />
+
+      {/* Uploaded preview */}
+      {showUploaded && (
+        <img
+          src={uploadedPreview!}
+          alt="Uploaded medicine"
           className="absolute inset-0 w-full h-full object-cover"
         />
-      ) : (
+      )}
+
+      {/* Fallback dark background */}
+      {showFallback && (
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0e1a] via-[#0f1729] to-[#0a0e1a]">
-          {/* Subtle ambient blue glow */}
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px]" />
         </div>
       )}
@@ -214,7 +299,49 @@ const Scan = () => {
             <CornerBracket className="bottom-0 right-0 border-b-[3px] border-r-[3px] rounded-br-[28px]" />
 
             {/* Animated scanning line */}
-            <div className="absolute left-2 right-2 h-[2px] bg-primary-glow rounded-full animate-scan-sweep shadow-[0_0_20px_rgba(96,165,250,0.9),0_0_40px_rgba(59,130,246,0.6)]" />
+            {(showVideo || showUploaded) && (
+              <div className="absolute left-2 right-2 h-[2px] bg-primary-glow rounded-full animate-scan-sweep shadow-[0_0_20px_rgba(96,165,250,0.9),0_0_40px_rgba(59,130,246,0.6)]" />
+            )}
+
+            {/* Camera state inside frame */}
+            {camState === "loading" && !uploadedPreview && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+                <Loader2 className="w-7 h-7 text-primary-glow animate-spin mb-2" />
+                <p className="text-sm text-white/85">Camera loading...</p>
+              </div>
+            )}
+
+            {(camState === "denied" ||
+              camState === "notfound" ||
+              camState === "unsupported" ||
+              camState === "error") &&
+              !uploadedPreview && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-5">
+                  <div className="w-12 h-12 rounded-full bg-warning/20 border border-warning/40 flex items-center justify-center mb-3">
+                    <ShieldAlert className="w-6 h-6 text-warning" />
+                  </div>
+                  <p className="text-[13px] text-white/90 leading-snug max-w-[260px]">
+                    {camMessage}
+                  </p>
+                  <div className="flex gap-2 mt-4">
+                    {(camState === "denied" || camState === "error") && (
+                      <button
+                        onClick={startCamera}
+                        className="px-4 py-2 rounded-full text-[12px] font-semibold text-white shadow-glow"
+                        style={{ background: "var(--gradient-primary)" }}
+                      >
+                        Retry
+                      </button>
+                    )}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-4 py-2 rounded-full text-[12px] font-semibold glass-dark text-white"
+                    >
+                      Upload from Gallery
+                    </button>
+                  </div>
+                </div>
+              )}
           </div>
         </div>
 
@@ -225,7 +352,9 @@ const Scan = () => {
               <Calendar className="w-4 h-4 text-primary-glow" strokeWidth={2.4} />
             </div>
             <p className="text-[12px] leading-snug text-white/90">
-              Make sure the text on the medicine box is clear and not blurred.
+              {uploadedPreview
+                ? "Using uploaded image. Tap capture to re-scan or flip to retake."
+                : "Make sure the text on the medicine box is clear and not blurred."}
             </p>
           </div>
         </div>
@@ -261,13 +390,21 @@ const Scan = () => {
             </button>
 
             <button
-              onClick={() => setFacingMode((m) => (m === "environment" ? "user" : "environment"))}
+              onClick={() => {
+                if (uploadedPreview) {
+                  clearUploadAndRestart();
+                } else {
+                  setFacingMode((m) => (m === "environment" ? "user" : "environment"));
+                }
+              }}
               className="flex flex-col items-center gap-1.5 active:scale-95 transition"
             >
               <div className="w-12 h-12 rounded-full glass-dark flex items-center justify-center">
                 <RotateCw className="w-5 h-5 text-white" strokeWidth={2.2} />
               </div>
-              <span className="text-[11px] text-white/80 font-medium">Flip</span>
+              <span className="text-[11px] text-white/80 font-medium">
+                {uploadedPreview ? "Retake" : "Flip"}
+              </span>
             </button>
           </div>
         </div>
@@ -320,13 +457,6 @@ const Scan = () => {
               Got it
             </button>
           </div>
-        </div>
-      )}
-
-      {/* CAMERA ERROR BANNER */}
-      {cameraError && (
-        <div className="absolute top-32 left-5 right-5 z-30 glass-dark rounded-2xl p-4 border border-warning/30">
-          <p className="text-sm text-white/90">{cameraError}</p>
         </div>
       )}
 
