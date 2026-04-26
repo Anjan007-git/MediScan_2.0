@@ -85,6 +85,49 @@
     --shadow-float: 0 30px 80px -20px hsla(217, 91%, 50%, 0.3);
     --shadow-soft: 0 4px 16px -2px hsla(217, 50%, 50%, 0.08);
   }
+
+  .dark {
+    --background: 222 47% 6%;
+    --background-gradient-start: 222 47% 8%;
+    --background-gradient-mid: 222 47% 6%;
+    --background-gradient-end: 222 47% 4%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 213 94% 68%;
+    --accent-foreground: 210 40% 98%;
+
+    --border: 217 32% 22%;
+    --input: 217 32% 22%;
+
+    --gradient-bg: linear-gradient(180deg, hsl(222 47% 8%) 0%, hsl(222 47% 5%) 60%, hsl(222 47% 7%) 100%);
+  }
+
+  .dark .glass {
+    background: linear-gradient(135deg, hsla(217, 32%, 25%, 0.55) 0%, hsla(222, 47%, 15%, 0.35) 100%);
+    border: 1px solid hsla(255, 255%, 255%, 0.08);
+  }
+
+  .dark .glass-strong {
+    background: linear-gradient(135deg, hsla(217, 32%, 25%, 0.7) 0%, hsla(222, 47%, 15%, 0.5) 100%);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+  }
+
+  .dark .glass-subtle {
+    background: hsla(217, 32%, 22%, 0.45);
+    border: 1px solid hsla(0, 0%, 100%, 0.06);
+  }
 }
 
 @layer base {

@@ -37,6 +37,8 @@ interface AppState {
   reminders: Reminder[];
   settings: {
     notifications: boolean;
+    remindersEnabled: boolean;
+    safetyAlerts: boolean;
     biometric: boolean;
     darkMode: boolean;
     language: string;
@@ -172,6 +174,8 @@ export const useAppStore = create<AppState>()(
       reminders: seedReminders,
       settings: {
         notifications: true,
+        remindersEnabled: true,
+        safetyAlerts: true,
         biometric: false,
         darkMode: false,
         language: "English",
