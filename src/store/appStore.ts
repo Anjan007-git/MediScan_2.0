@@ -174,6 +174,8 @@ export const useAppStore = create<AppState>()(
       reminders: seedReminders,
       settings: {
         notifications: true,
+        remindersEnabled: true,
+        safetyAlerts: true,
         biometric: false,
         darkMode: false,
         language: "English",
