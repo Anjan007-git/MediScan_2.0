@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ResultView from "@/components/result/ResultView";
+import ResultView from '@/components/result/ResultView';
 import { getHistoryItem } from "@/lib/storage";
 import { getMedicineDetails, Medicine } from "@/lib/medicineApi";
 import { Loader2 } from "lucide-react";
