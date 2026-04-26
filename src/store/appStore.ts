@@ -42,6 +42,7 @@ interface AppState {
     language: string;
   };
   addScan: (s: ScanRecord) => void;
+  addReceipt: (r: Receipt) => void;
   toggleSaved: (id: string) => void;
   toggleReminder: (id: string) => void;
   updateSetting: <K extends keyof AppState["settings"]>(
