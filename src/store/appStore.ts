@@ -25,9 +25,21 @@ export interface Receipt {
 export interface Reminder {
   id: string;
   medicine: string;
-  time: string; // "08:00"
+  time: string; // "08:00" (24h)
   enabled: boolean;
-  frequency: "daily" | "weekly";
+  frequency: "daily" | "weekly" | "once";
+  lastFiredKey?: string; // YYYY-MM-DD-HH:MM dedupe
+}
+
+export interface SavedMedicine {
+  id: string;
+  name: string;
+  generic?: string;
+  status: ScanStatus;
+  description: string;
+  composition?: string;
+  uses?: string[];
+  savedAt: number;
 }
 
 interface AppState {
@@ -35,6 +47,7 @@ interface AppState {
   scans: ScanRecord[];
   receipts: Receipt[];
   reminders: Reminder[];
+  saved: SavedMedicine[];
   settings: {
     notifications: boolean;
     remindersEnabled: boolean;
@@ -47,6 +60,12 @@ interface AppState {
   addReceipt: (r: Receipt) => void;
   toggleSaved: (id: string) => void;
   toggleReminder: (id: string) => void;
+  addReminder: (r: Omit<Reminder, "id">) => void;
+  deleteReminder: (id: string) => void;
+  markReminderFired: (id: string, key: string) => void;
+  addSavedMedicine: (m: Omit<SavedMedicine, "id" | "savedAt">) => void;
+  removeSavedMedicine: (id: string) => void;
+  isMedicineSaved: (name: string) => boolean;
   updateSetting: <K extends keyof AppState["settings"]>(
     key: K,
     value: AppState["settings"][K]
