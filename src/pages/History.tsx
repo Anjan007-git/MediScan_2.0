@@ -53,7 +53,7 @@ const History = () => {
       ) : (
         <div className="space-y-3 animate-fade-in-up">
           {scans.map((s) => (
-            <ScanItem key={s.id} scan={s} onClick={() => navigate(`/receipts#${s.id}`)} />
+            <ScanItem key={s.id} scan={s} onClick={() => navigate(`/medicine/${s.id}`)} />
           ))}
         </div>
       )}
