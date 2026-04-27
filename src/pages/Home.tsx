@@ -152,26 +152,55 @@ const Home = () => {
         ))}
       </section>
 
-      {/* RECENT SCANS */}
-      <section className="animate-fade-in-up" style={{ animationDelay: "200ms" }}>
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h3 className="text-lg font-bold text-foreground">Recent Scans</h3>
-          <button
-            onClick={() => navigate("/receipts")}
-            className="flex items-center gap-1 text-sm font-semibold text-primary active:opacity-70"
-          >
-            See All <ChevronRight className="w-4 h-4" strokeWidth={2.6} />
-          </button>
-        </div>
-        <div className="space-y-3">
-          {recent.map((s) => (
-            <RecentScanCard key={s.id} scan={s} onClick={() => navigate(`/receipts#${s.id}`)} />
-          ))}
-        </div>
-      </section>
+      {/* RECENT SCANS or empty state */}
+      {recent.length > 0 ? (
+        <section className="animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h3 className="text-lg font-bold text-foreground">Recent Scans</h3>
+            <button
+              onClick={() => navigate("/history")}
+              className="flex items-center gap-1 text-sm font-semibold text-primary active:opacity-70"
+            >
+              See All <ChevronRight className="w-4 h-4" strokeWidth={2.6} />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {recent.map((s) => (
+              <RecentScanCard key={s.id} scan={s} onClick={() => navigate(`/receipts#${s.id}`)} />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section
+          className="glass-tinted rounded-[24px] p-5 relative overflow-hidden animate-fade-in-up"
+          style={{ animationDelay: "200ms" }}
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-glow relative overflow-hidden"
+              style={{ background: "var(--gradient-primary)" }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
+              <Shield className="relative w-6 h-6 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-bold text-foreground text-sm">Health Tip</h4>
+              <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
+                Scan your first medicine to start building your personal health log. Always check expiry dates and consult a pharmacist when in doubt.
+              </p>
+              <button
+                onClick={() => navigate("/insights")}
+                className="mt-3 glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary active:scale-95"
+              >
+                Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
-      {/* HEALTH TIP */}
-      {!tipDismissed && (
+      {/* HEALTH TIP (only when there are scans) */}
+      {recent.length > 0 && !tipDismissed && (
         <section
           className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up"
           style={{ animationDelay: "260ms" }}
@@ -206,6 +235,8 @@ const Home = () => {
           </div>
         </section>
       )}
+
+      <ReminderModal open={reminderOpen} onClose={() => setReminderOpen(false)} />
     </div>
   );
 };
