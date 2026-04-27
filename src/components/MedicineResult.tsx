@@ -297,9 +297,20 @@ const MedicineResult = ({ medicine, confidence, onBack }: MedicineResultProps) =
           <RefreshCw className="w-5 h-5 text-primary" />
           <span className="text-[11px] font-semibold text-foreground">Scan Again</span>
         </button>
-        <button className="glass rounded-2xl py-3 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-glass-lg">
-          <Bookmark className="w-5 h-5 text-primary" />
-          <span className="text-[11px] font-semibold text-foreground">Save</span>
+        <button
+          onClick={handleSave}
+          className={`glass rounded-2xl py-3 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-glass-lg ${
+            alreadySaved ? "ring-2 ring-primary/40" : ""
+          }`}
+        >
+          {alreadySaved ? (
+            <BookmarkCheck className="w-5 h-5 text-primary" fill="currentColor" fillOpacity={0.25} />
+          ) : (
+            <Bookmark className="w-5 h-5 text-primary" />
+          )}
+          <span className="text-[11px] font-semibold text-foreground">
+            {alreadySaved ? "Saved" : "Save"}
+          </span>
         </button>
         <button className="glass rounded-2xl py-3 flex flex-col items-center gap-1 active:scale-95 transition-transform hover:shadow-glass-lg">
           <Share2 className="w-5 h-5 text-primary" />
