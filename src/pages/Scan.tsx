@@ -25,11 +25,15 @@ const Scan = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const addReceipt = useAppStoreScan((s) => s.addReceipt);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  const initialMode = searchParams.get("mode") === "receipt" ? "receipt" : "scan";
+  const [mode, setMode] = useState<"scan" | "receipt">(initialMode);
 
   const [camState, setCamState] = useState<CamState>("idle");
   const [camMessage, setCamMessage] = useState<string>("");
