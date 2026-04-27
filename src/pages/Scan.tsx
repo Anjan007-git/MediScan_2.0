@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useMedicineScanner } from "@/hooks/useMedicineScanner";
 import { useToast } from "@/hooks/use-toast";
+import { useAppStore as useAppStoreScan } from "@/store/appStore";
 import MedicineResult from "@/components/MedicineResult";
 import ScanningOverlay from "@/components/ScanningOverlay";
 
