@@ -11,6 +11,8 @@ import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
 import Saved from "./pages/Saved";
+import MedicineDetail from "./pages/MedicineDetail";
+import ReceiptDetail from "./pages/ReceiptDetail";
 import NotFound from "./pages/NotFound";
 import ReminderEngine from "./components/ReminderEngine";
 
