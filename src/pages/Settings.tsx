@@ -24,7 +24,16 @@ import avatarAlex from "@/assets/avatar-alex.jpg";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { settings, updateSetting } = useAppStore();
+  const { settings, updateSetting, user } = useAppStore();
+  const [sheet, setSheet] = useState<SheetKey>(null);
+  const [plan, setPlan] = useState<"basic" | "premium">("premium");
+  const userEmail = `${user.name.toLowerCase()}@gmail.com`;
+  const handleLogout = () => {
+    if (!confirm("Sign out from your account?")) return;
+    try { localStorage.removeItem("mediscan-store"); } catch {}
+    navigate("/", { replace: true });
+    setTimeout(() => window.location.reload(), 50);
+  };
 
   return (
     <div className="px-5 pt-12 space-y-5">
