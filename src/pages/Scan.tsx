@@ -17,8 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import MedicineResult from "@/components/MedicineResult";
 import ScanningOverlay from "@/components/ScanningOverlay";
 
-type PackType = "Box" | "Blister" | "Bottle";
-const PACK_TYPES: PackType[] = ["Box", "Blister", "Bottle"];
 
 type CamState = "idle" | "loading" | "ready" | "denied" | "notfound" | "unsupported" | "error";
 
