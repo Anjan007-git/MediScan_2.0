@@ -69,12 +69,33 @@ const Settings = () => {
           <Shield className="relative w-8 h-8 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.25} />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-foreground text-lg leading-tight">Alex Johnson</h2>
-          <p className="text-[13px] text-muted-foreground truncate">alex.johnson@email.com</p>
-          <span className="inline-flex items-center gap-1 mt-1.5 bg-primary/10 text-primary text-[11px] font-bold px-2.5 py-1 rounded-full">
-            <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
-            Premium User
-          </span>
+          <h2 className="font-bold text-foreground text-lg leading-tight">{user.name} Johnson</h2>
+          <p className="text-[13px] text-muted-foreground truncate inline-flex items-center gap-1">
+            <Mail className="w-3 h-3" strokeWidth={2.4} /> {userEmail}
+          </p>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setPlan((p) => (p === "premium" ? "basic" : "premium"));
+              }}
+              className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full transition ${
+                plan === "premium" ? "bg-primary/10 text-primary" : "bg-muted text-foreground/70"
+              }`}
+            >
+              {plan === "premium" ? (
+                <>
+                  <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
+                  Premium • ₹199/mo
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3" strokeWidth={2.6} />
+                  Basic • Free
+                </>
+              )}
+            </button>
+          </div>
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" strokeWidth={2.4} />
       </button>
