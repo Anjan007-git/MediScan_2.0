@@ -9,7 +9,10 @@ import Scan from "./pages/Scan";
 import Receipts from "./pages/Receipts";
 import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
+import History from "./pages/History";
+import Saved from "./pages/Saved";
 import NotFound from "./pages/NotFound";
+import ReminderEngine from "./components/ReminderEngine";
 
 const queryClient = new QueryClient();
 
@@ -19,11 +22,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ReminderEngine />
         <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/scan" element={<Scan />} />
             <Route path="/receipts" element={<Receipts />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/saved" element={<Saved />} />
             <Route path="/insights" element={<Insights />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
