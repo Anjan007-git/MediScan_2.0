@@ -20,6 +20,8 @@ export interface Receipt {
   date: number;
   total: number;
   items: { name: string; qty: number; price: number }[];
+  imageUrl?: string;
+  hidden?: boolean;
 }
 
 export interface Reminder {
@@ -58,6 +60,8 @@ interface AppState {
   };
   addScan: (s: ScanRecord) => void;
   addReceipt: (r: Receipt) => void;
+  hideReceipt: (id: string) => void;
+  deleteReceipt: (id: string) => void;
   toggleSaved: (id: string) => void;
   toggleReminder: (id: string) => void;
   addReminder: (r: Omit<Reminder, "id">) => void;
@@ -202,6 +206,12 @@ export const useAppStore = create<AppState>()(
       },
       addScan: (s) => set((state) => ({ scans: [s, ...state.scans] })),
       addReceipt: (r) => set((state) => ({ receipts: [r, ...state.receipts] })),
+      hideReceipt: (id) =>
+        set((state) => ({
+          receipts: state.receipts.map((r) => (r.id === id ? { ...r, hidden: true } : r)),
+        })),
+      deleteReceipt: (id) =>
+        set((state) => ({ receipts: state.receipts.filter((r) => r.id !== id) })),
       toggleSaved: (id) =>
         set((state) => ({
           scans: state.scans.map((sc) => (sc.id === id ? { ...sc, saved: !sc.saved } : sc)),

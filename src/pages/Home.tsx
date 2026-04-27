@@ -166,7 +166,7 @@ const Home = () => {
           </div>
           <div className="space-y-3">
             {recent.map((s) => (
-              <RecentScanCard key={s.id} scan={s} onClick={() => navigate(`/receipts#${s.id}`)} />
+              <RecentScanCard key={s.id} scan={s} onClick={() => navigate(`/medicine/${s.id}`)} />
             ))}
           </div>
         </section>

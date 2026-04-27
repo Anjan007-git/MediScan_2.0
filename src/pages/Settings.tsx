@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/appStore";
 import {
@@ -15,12 +16,26 @@ import {
   LogOut,
   Crown,
   Shield,
+  X,
+  Sparkles,
+  Mail,
 } from "lucide-react";
 import avatarAlex from "@/assets/avatar-alex.jpg";
 
+type SheetKey = "about" | "privacy" | "security" | "help" | null;
+
 const Settings = () => {
   const navigate = useNavigate();
-  const { settings, updateSetting } = useAppStore();
+  const { settings, updateSetting, user } = useAppStore();
+  const [sheet, setSheet] = useState<SheetKey>(null);
+  const [plan, setPlan] = useState<"basic" | "premium">("premium");
+  const userEmail = `${user.name.toLowerCase()}@gmail.com`;
+  const handleLogout = () => {
+    if (!confirm("Sign out from your account?")) return;
+    try { localStorage.removeItem("mediscan-store"); } catch {}
+    navigate("/", { replace: true });
+    setTimeout(() => window.location.reload(), 50);
+  };
 
   return (
     <div className="px-5 pt-12 space-y-5">
@@ -54,12 +69,33 @@ const Settings = () => {
           <Shield className="relative w-8 h-8 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.25} />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-foreground text-lg leading-tight">Alex Johnson</h2>
-          <p className="text-[13px] text-muted-foreground truncate">alex.johnson@email.com</p>
-          <span className="inline-flex items-center gap-1 mt-1.5 bg-primary/10 text-primary text-[11px] font-bold px-2.5 py-1 rounded-full">
-            <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
-            Premium User
-          </span>
+          <h2 className="font-bold text-foreground text-lg leading-tight">{user.name} Johnson</h2>
+          <p className="text-[13px] text-muted-foreground truncate inline-flex items-center gap-1">
+            <Mail className="w-3 h-3" strokeWidth={2.4} /> {userEmail}
+          </p>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setPlan((p) => (p === "premium" ? "basic" : "premium"));
+              }}
+              className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full transition ${
+                plan === "premium" ? "bg-primary/10 text-primary" : "bg-muted text-foreground/70"
+              }`}
+            >
+              {plan === "premium" ? (
+                <>
+                  <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
+                  Premium • ₹199/mo
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-3 h-3" strokeWidth={2.6} />
+                  Basic • Free
+                </>
+              )}
+            </button>
+          </div>
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" strokeWidth={2.4} />
       </button>
@@ -128,6 +164,7 @@ const Settings = () => {
           tile="primary"
           title="About MediScan"
           subtitle="Learn more about the app"
+          onClick={() => setSheet("about")}
         />
         <Divider />
         <LinkRow
@@ -135,6 +172,7 @@ const Settings = () => {
           tile="success"
           title="Privacy Policy"
           subtitle="Read our privacy policy"
+          onClick={() => setSheet("privacy")}
         />
         <Divider />
         <LinkRow
@@ -142,6 +180,7 @@ const Settings = () => {
           tile="violet"
           title="Security"
           subtitle="Manage your data and security"
+          onClick={() => setSheet("security")}
         />
         <Divider />
         <LinkRow
@@ -149,6 +188,7 @@ const Settings = () => {
           tile="warning"
           title="Help & Support"
           subtitle="Get help and contact support"
+          onClick={() => setSheet("help")}
         />
       </section>
 
@@ -187,16 +227,124 @@ const Settings = () => {
           tile="danger"
           title="Log Out"
           subtitle="Sign out from your account"
-          onClick={() => {
-            if (confirm("Sign out from your account?")) {
-              // mock sign out
-            }
-          }}
+          onClick={handleLogout}
         />
       </section>
+
+      {sheet && <ContentSheet kind={sheet} onClose={() => setSheet(null)} />}
     </div>
   );
 };
+
+const SHEET_CONTENT: Record<Exclude<SheetKey, null>, { title: string; body: React.ReactNode }> = {
+  about: {
+    title: "About MediScan",
+    body: (
+      <>
+        <p>
+          MediScan is your personal AI-powered medicine companion. Scan any
+          medicine packaging to instantly get accurate information about its
+          uses, dosage, side effects, and safety.
+        </p>
+        <p>
+          Track your purchases with smart receipts, set reminders so you never
+          miss a dose, and keep a personal log of every medicine you scan.
+        </p>
+        <p className="text-muted-foreground text-xs">
+          MediScan does not replace professional medical advice. Always consult
+          a qualified pharmacist or doctor.
+        </p>
+      </>
+    ),
+  },
+  privacy: {
+    title: "Privacy Policy",
+    body: (
+      <>
+        <p>
+          We respect your privacy. Scans, receipts, and reminders are stored
+          locally on your device and synced only to your authenticated account.
+        </p>
+        <p>
+          Camera access is used only when you actively scan. We do not record,
+          stream, or share your camera feed.
+        </p>
+        <p>You can delete your data at any time from Settings → Security.</p>
+      </>
+    ),
+  },
+  security: {
+    title: "Security",
+    body: (
+      <>
+        <p>
+          Your account is protected with industry-standard encryption. Sessions
+          are signed and refreshed automatically.
+        </p>
+        <p>
+          Data is encrypted in transit (HTTPS) and at rest. You can enable
+          biometric unlock and two-factor authentication anytime.
+        </p>
+        <p>For account-related concerns reach out via Help &amp; Support.</p>
+      </>
+    ),
+  },
+  help: {
+    title: "Help & Support",
+    body: (
+      <>
+        <p>Need help? We're here for you.</p>
+        <p>
+          📧{" "}
+          <a className="text-primary font-semibold" href="mailto:support@mediscan.app">
+            support@mediscan.app
+          </a>
+        </p>
+        <p>
+          🌐 Visit our help center at{" "}
+          <span className="text-primary font-semibold">help.mediscan.app</span>
+        </p>
+        <p className="text-muted-foreground text-xs">
+          Response time: typically under 24 hours.
+        </p>
+      </>
+    ),
+  },
+};
+
+const ContentSheet = ({
+  kind,
+  onClose,
+}: {
+  kind: Exclude<SheetKey, null>;
+  onClose: () => void;
+}) => {
+  const c = SHEET_CONTENT[kind];
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm animate-fade-in-up"
+      onClick={onClose}
+    >
+      <div
+        className="glass-strong rounded-[28px] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-float"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">{c.title}</h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full glass flex items-center justify-center active:scale-90"
+            aria-label="Close"
+          >
+            <X className="w-4 h-4" strokeWidth={2.4} />
+          </button>
+        </div>
+        <div className="space-y-3 text-sm text-foreground/90 leading-relaxed">{c.body}</div>
+      </div>
+    </div>
+  );
+};
+
 
 /* -------------------- Subcomponents -------------------- */
 
@@ -273,15 +421,14 @@ const Toggle = ({ value, onToggle }: { value: boolean; onToggle: () => void }) =
       e.stopPropagation();
       onToggle();
     }}
-    className={`relative w-12 h-7 rounded-full transition-all duration-300 shrink-0 ${
+    className={`relative w-12 h-7 rounded-full transition-colors duration-300 shrink-0 ${
       value ? "bg-primary shadow-glow" : "bg-muted"
     }`}
     aria-pressed={value}
   >
     <span
-      className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300 ${
-        value ? "translate-x-[22px]" : "translate-x-0.5"
-      }`}
+      className="absolute top-1/2 left-1 -translate-y-1/2 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300"
+      style={{ transform: `translate(${value ? "20px" : "0"}, -50%)` }}
     />
   </button>
 );

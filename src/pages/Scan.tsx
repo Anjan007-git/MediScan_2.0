@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useMedicineScanner } from "@/hooks/useMedicineScanner";
 import { useToast } from "@/hooks/use-toast";
+import { useAppStore as useAppStoreScan } from "@/store/appStore";
 import MedicineResult from "@/components/MedicineResult";
 import ScanningOverlay from "@/components/ScanningOverlay";
 
@@ -25,11 +26,15 @@ const Scan = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const addReceipt = useAppStoreScan((s) => s.addReceipt);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  const initialMode = searchParams.get("mode") === "receipt" ? "receipt" : "scan";
+  const [mode, setMode] = useState<"scan" | "receipt">(initialMode);
 
   const [camState, setCamState] = useState<CamState>("idle");
   const [camMessage, setCamMessage] = useState<string>("");
@@ -133,10 +138,44 @@ const Scan = () => {
     if (error) toast({ title: "Scan Failed", description: error, variant: "destructive" });
   }, [error, toast]);
 
+  const generateMockReceipt = useCallback(
+    (imageData: string) => {
+      const sampleItems = [
+        { name: "Paracetamol 500mg", qty: 2, price: 45 },
+        { name: "Vitamin C", qty: 1, price: 350 },
+        { name: "Cough Syrup", qty: 1, price: 250 },
+        { name: "Multivitamin", qty: 1, price: 480 },
+        { name: "Antiseptic Cream", qty: 1, price: 120 },
+      ];
+      const count = 2 + Math.floor(Math.random() * 3);
+      const items = sampleItems.slice(0, count);
+      const total = items.reduce((s, it) => s + it.qty * it.price, 0);
+      const pharmacies = ["Apollo Pharmacy", "MedPlus", "Netmeds", "Wellness Forever"];
+      addReceipt({
+        id: `r${Date.now()}`,
+        pharmacy: pharmacies[Math.floor(Math.random() * pharmacies.length)],
+        date: Date.now(),
+        total,
+        items,
+        imageUrl: imageData,
+      });
+      toast({
+        title: "Receipt added",
+        description: `Total ₹${total.toFixed(2)} • ${items.length} items`,
+      });
+      navigate("/receipts");
+    },
+    [addReceipt, navigate, toast]
+  );
+
   const handleCapture = useCallback(() => {
     // Capture from video OR from uploaded preview
     if (uploadedPreview) {
-      scanMedicine(uploadedPreview);
+      if (mode === "receipt") {
+        generateMockReceipt(uploadedPreview);
+      } else {
+        scanMedicine(uploadedPreview);
+      }
       return;
     }
     if (camState !== "ready" || !videoRef.current || !canvasRef.current) {
@@ -155,8 +194,12 @@ const Scan = () => {
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
     const imageData = canvas.toDataURL("image/jpeg", 0.85);
-    scanMedicine(imageData);
-  }, [scanMedicine, camState, uploadedPreview, toast]);
+    if (mode === "receipt") {
+      generateMockReceipt(imageData);
+    } else {
+      scanMedicine(imageData);
+    }
+  }, [scanMedicine, camState, uploadedPreview, toast, mode, generateMockReceipt]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -176,8 +219,11 @@ const Scan = () => {
       // Stop camera while preview shown
       stopCamera();
       setCamState("idle");
-      // Auto-scan
-      scanMedicine(data);
+      if (mode === "receipt") {
+        generateMockReceipt(data);
+      } else {
+        scanMedicine(data);
+      }
     };
     reader.readAsDataURL(file);
     e.target.value = "";
@@ -261,8 +307,14 @@ const Scan = () => {
           </button>
 
           <div className="text-center pt-1">
-            <h1 className="text-xl font-bold tracking-tight">Scan Medicine</h1>
-            <p className="text-[13px] text-white/70 mt-0.5">Position the medicine in the frame</p>
+            <h1 className="text-xl font-bold tracking-tight">
+              {mode === "receipt" ? "Capture Receipt" : "Scan Medicine"}
+            </h1>
+            <p className="text-[13px] text-white/70 mt-0.5">
+              {mode === "receipt"
+                ? "Center the receipt in the frame"
+                : "Position the medicine in the frame"}
+            </p>
           </div>
 
           <button
@@ -403,6 +455,37 @@ const Scan = () => {
               <span className="text-[11px] text-white/80 font-medium">
                 {uploadedPreview ? "Retake" : "Flip"}
               </span>
+            </button>
+          </div>
+        </div>
+
+        {/* MODE SWITCH */}
+        <div className="px-8 pb-2 flex justify-center">
+          <div className="relative glass-dark rounded-full p-1 inline-flex w-[220px]">
+            <span
+              className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full shadow-glow transition-transform duration-300"
+              style={{
+                transform: mode === "receipt" ? "translateX(calc(100% + 4px))" : "translateX(0)",
+                background: "var(--gradient-primary)",
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setMode("scan")}
+              className={`relative flex-1 py-2 text-xs font-bold rounded-full transition-colors z-10 ${
+                mode === "scan" ? "text-white" : "text-white/70"
+              }`}
+            >
+              Scan
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("receipt")}
+              className={`relative flex-1 py-2 text-xs font-bold rounded-full transition-colors z-10 ${
+                mode === "receipt" ? "text-white" : "text-white/70"
+              }`}
+            >
+              Receipt
             </button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore, Receipt } from "@/store/appStore";
 import {
@@ -7,13 +7,15 @@ import {
   ChevronRight,
   MoreHorizontal,
   FileText,
+  FileSpreadsheet,
+  EyeOff,
+  Trash2,
   Plus,
   X,
-  FileSpreadsheet,
 } from "lucide-react";
 import avatarAlex from "@/assets/avatar-alex.jpg";
 
-type FilterKey = "all" | "month" | "3months" | "older";
+type FilterKey = "all" | "month" | "3months" | "older" | "custom";
 
 const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "all", label: "All" },
@@ -37,25 +39,33 @@ const monthKey = (ts: number) =>
 
 const Receipts = () => {
   const navigate = useNavigate();
-  const { receipts, addReceipt } = useAppStore();
+  const { receipts, hideReceipt, deleteReceipt } = useAppStore();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterKey>("all");
-  const [showAdd, setShowAdd] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
     return receipts
+      .filter((r) => !r.hidden)
       .filter((r) => {
         if (query && !r.pharmacy.toLowerCase().includes(query.toLowerCase())) return false;
         const age = now - r.date;
         if (filter === "month") return age <= 30 * day;
         if (filter === "3months") return age <= 90 * day;
         if (filter === "older") return age > 90 * day;
+        if (filter === "custom") {
+          if (customFrom && r.date < new Date(customFrom).getTime()) return false;
+          if (customTo && r.date > new Date(customTo).getTime() + day) return false;
+        }
         return true;
       })
       .sort((a, b) => b.date - a.date);
-  }, [receipts, query, filter]);
+  }, [receipts, query, filter, customFrom, customTo]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, Receipt[]>();
@@ -67,10 +77,14 @@ const Receipts = () => {
     return Array.from(map.entries());
   }, [filtered]);
 
-  const totalSpent = receipts.reduce((s, r) => s + r.total, 0);
+  const totalSpent = receipts
+    .filter((r) => !r.hidden)
+    .reduce((s, r) => s + r.total, 0);
+
+  const visibleCount = receipts.filter((r) => !r.hidden).length;
 
   return (
-    <div className="px-5 pt-12 space-y-5">
+    <div className="px-5 pt-12 pb-24 space-y-5">
       {/* HEADER */}
       <header className="flex items-start justify-between animate-fade-in-up">
         <div>
@@ -90,15 +104,9 @@ const Receipts = () => {
       </header>
 
       {/* SEARCH */}
-      <div
-        className="flex items-center gap-3 animate-fade-in-up"
-        style={{ animationDelay: "60ms" }}
-      >
+      <div className="flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
         <div className="relative flex-1">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
-            strokeWidth={2.4}
-          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={2.4} />
           <input
             type="text"
             placeholder="Search receipts..."
@@ -108,18 +116,64 @@ const Receipts = () => {
           />
         </div>
         <button
-          className="w-12 h-12 glass rounded-full flex items-center justify-center active:scale-95 transition"
+          onClick={() => setShowFilter((v) => !v)}
+          className={`w-12 h-12 rounded-full flex items-center justify-center active:scale-95 transition ${
+            showFilter || filter === "custom" ? "shadow-glow text-white" : "glass"
+          }`}
+          style={showFilter || filter === "custom" ? { background: "var(--gradient-primary)" } : undefined}
           aria-label="Filter"
         >
-          <SlidersHorizontal className="w-4 h-4 text-foreground" strokeWidth={2.4} />
+          <SlidersHorizontal className="w-4 h-4" strokeWidth={2.4} />
         </button>
       </div>
 
+      {/* DATE RANGE PANEL */}
+      {showFilter && (
+        <div className="glass rounded-2xl p-4 space-y-3 animate-fade-in-up">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-bold">Custom date range</p>
+            <button
+              onClick={() => {
+                setCustomFrom("");
+                setCustomTo("");
+                setFilter("all");
+              }}
+              className="text-xs font-semibold text-primary"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="text-[11px] font-semibold text-muted-foreground">From</span>
+              <input
+                type="date"
+                value={customFrom}
+                onChange={(e) => {
+                  setCustomFrom(e.target.value);
+                  setFilter("custom");
+                }}
+                className="mt-1 w-full glass-subtle rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold text-muted-foreground">To</span>
+              <input
+                type="date"
+                value={customTo}
+                onChange={(e) => {
+                  setCustomTo(e.target.value);
+                  setFilter("custom");
+                }}
+                className="mt-1 w-full glass-subtle rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            </label>
+          </div>
+        </div>
+      )}
+
       {/* FILTER TABS */}
-      <div
-        className="flex gap-2.5 overflow-x-auto -mx-5 px-5 scrollbar-none animate-fade-in-up"
-        style={{ animationDelay: "120ms" }}
-      >
+      <div className="flex gap-2.5 overflow-x-auto -mx-5 px-5 scrollbar-none animate-fade-in-up" style={{ animationDelay: "120ms" }}>
         {FILTERS.map((f) => {
           const active = filter === f.key;
           return (
@@ -127,9 +181,7 @@ const Receipts = () => {
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={`shrink-0 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                active
-                  ? "text-white shadow-glow"
-                  : "glass text-foreground/70 hover:text-foreground"
+                active ? "text-white shadow-glow" : "glass text-foreground/70 hover:text-foreground"
               }`}
               style={active ? { background: "var(--gradient-primary)" } : undefined}
             >
@@ -152,7 +204,24 @@ const Receipts = () => {
                 </span>
               </div>
               {list.map((r) => (
-                <ReceiptCard key={r.id} r={r} />
+                <ReceiptCard
+                  key={r.id}
+                  r={r}
+                  menuOpen={openMenu === r.id}
+                  onMenu={() => setOpenMenu((v) => (v === r.id ? null : r.id))}
+                  onMenuClose={() => setOpenMenu(null)}
+                  onOpen={() => navigate(`/receipts/${r.id}`)}
+                  onHide={() => {
+                    hideReceipt(r.id);
+                    setOpenMenu(null);
+                  }}
+                  onDelete={() => {
+                    if (confirm("Delete this receipt permanently?")) {
+                      deleteReceipt(r.id);
+                    }
+                    setOpenMenu(null);
+                  }}
+                />
               ))}
             </section>
           );
@@ -167,10 +236,7 @@ const Receipts = () => {
       </div>
 
       {/* SUMMARY CARD */}
-      <section
-        className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up"
-        style={{ animationDelay: "240ms" }}
-      >
+      <section className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: "240ms" }}>
         <div className="flex items-center gap-4">
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-glow relative overflow-hidden"
@@ -182,171 +248,118 @@ const Receipts = () => {
           <div className="flex-1 grid grid-cols-2 gap-2">
             <div>
               <p className="text-xs text-muted-foreground font-medium">Total Spent</p>
-              <p className="text-lg font-extrabold text-foreground leading-tight">
-                {formatINR(totalSpent)}
-              </p>
+              <p className="text-lg font-extrabold text-foreground leading-tight">{formatINR(totalSpent)}</p>
             </div>
             <div className="border-l border-border/60 pl-3">
-              <p className="text-xs text-muted-foreground font-medium">Total Receipts</p>
-              <p className="text-lg font-extrabold text-foreground leading-tight">
-                {receipts.length}
-              </p>
+              <p className="text-xs text-muted-foreground font-medium">Receipts</p>
+              <p className="text-lg font-extrabold text-foreground leading-tight">{visibleCount}</p>
             </div>
           </div>
-          <button
-            onClick={() => setShowAdd(true)}
-            className="relative w-14 h-14 rounded-full flex flex-col items-center justify-center shrink-0 shadow-glow active:scale-95 transition overflow-hidden"
-            style={{ background: "var(--gradient-primary)" }}
-            aria-label="Add receipt"
-          >
-            <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-            <FileSpreadsheet className="relative w-4 h-4 text-white" strokeWidth={2.4} />
-            <span className="relative text-[8px] font-bold text-white leading-none mt-0.5">
-              Add Receipt
-            </span>
-          </button>
         </div>
       </section>
 
-      {showAdd && <AddReceiptModal onClose={() => setShowAdd(false)} onAdd={addReceipt} />}
+      {/* FLOATING ADD BUTTON */}
+      <button
+        onClick={() => navigate("/scan?mode=receipt")}
+        className="fixed bottom-28 right-5 z-30 h-14 pl-4 pr-5 rounded-full flex items-center gap-2 text-white font-bold text-sm shadow-glow active:scale-95 transition glossy"
+        style={{ background: "var(--gradient-primary)" }}
+        aria-label="Add Receipt"
+      >
+        <Plus className="w-5 h-5" strokeWidth={2.6} />
+        Add Receipt
+      </button>
     </div>
   );
 };
 
-const ReceiptCard = ({ r }: { r: Receipt }) => {
-  return (
-    <article className="glass rounded-2xl p-3 flex items-center gap-3 active:scale-[0.99] hover:shadow-glass-lg transition-all">
-      {/* Thumbnail */}
-      <div className="w-[70px] h-[70px] rounded-xl bg-white/80 shadow-soft border border-white/70 shrink-0 p-1.5 flex flex-col gap-0.5 overflow-hidden">
-        <p className="text-[7px] font-bold text-foreground/80 leading-none truncate">{r.pharmacy}</p>
-        <div className="flex-1 space-y-[1.5px] mt-0.5">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-[2px] bg-foreground/15 rounded-full"
-              style={{ width: `${60 + ((i * 13) % 35)}%` }}
-            />
-          ))}
-        </div>
-      </div>
+const ReceiptCard = ({
+  r,
+  menuOpen,
+  onMenu,
+  onMenuClose,
+  onOpen,
+  onHide,
+  onDelete,
+}: {
+  r: Receipt;
+  menuOpen: boolean;
+  onMenu: () => void;
+  onMenuClose: () => void;
+  onOpen: () => void;
+  onHide: () => void;
+  onDelete: () => void;
+}) => {
+  const menuRef = useRef<HTMLDivElement>(null);
 
-      <div className="flex-1 min-w-0">
-        <h3 className="font-bold text-foreground text-[15px] truncate">{r.pharmacy}</h3>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{formatDateTime(r.date)}</p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{r.items.length} items</p>
-      </div>
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) onMenuClose();
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [menuOpen, onMenuClose]);
+
+  return (
+    <article className="relative glass rounded-2xl p-3 flex items-center gap-3 hover:shadow-glass-lg transition-all">
+      <button onClick={onOpen} className="flex items-center gap-3 flex-1 min-w-0 text-left active:scale-[0.99]">
+        <div className="w-[70px] h-[70px] rounded-xl bg-white/80 shadow-soft border border-white/70 shrink-0 p-1.5 flex flex-col gap-0.5 overflow-hidden">
+          {r.imageUrl ? (
+            <img src={r.imageUrl} alt="" className="w-full h-full object-cover rounded-lg" />
+          ) : (
+            <>
+              <p className="text-[7px] font-bold text-foreground/80 leading-none truncate">{r.pharmacy}</p>
+              <div className="flex-1 space-y-[1.5px] mt-0.5">
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div key={i} className="h-[2px] bg-foreground/15 rounded-full" style={{ width: `${60 + ((i * 13) % 35)}%` }} />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-foreground text-[15px] truncate">{r.pharmacy}</h3>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{formatDateTime(r.date)}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{r.items.length} items</p>
+        </div>
+      </button>
 
       <div className="flex flex-col items-end justify-between self-stretch py-0.5 shrink-0">
         <button
-          className="w-6 h-6 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10"
-          aria-label="More"
+          onClick={onMenu}
+          className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10"
+          aria-label="More options"
         >
           <MoreHorizontal className="w-4 h-4" strokeWidth={2.4} />
         </button>
-        <div className="flex items-center gap-1">
+        <button onClick={onOpen} className="flex items-center gap-1 active:scale-95">
           <span className="font-extrabold text-foreground text-[15px]">{formatINR(r.total)}</span>
           <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.4} />
-        </div>
+        </button>
       </div>
+
+      {menuOpen && (
+        <div
+          ref={menuRef}
+          className="absolute top-10 right-3 z-20 glass-strong rounded-2xl py-1.5 w-36 shadow-float animate-fade-in-up"
+        >
+          <button
+            onClick={onHide}
+            className="w-full px-4 py-2.5 flex items-center gap-2 text-sm font-medium text-foreground hover:bg-primary/5 active:bg-primary/10"
+          >
+            <EyeOff className="w-4 h-4" strokeWidth={2.4} />
+            Hide
+          </button>
+          <button
+            onClick={onDelete}
+            className="w-full px-4 py-2.5 flex items-center gap-2 text-sm font-medium text-danger hover:bg-danger/5 active:bg-danger/10"
+          >
+            <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+            Delete
+          </button>
+        </div>
+      )}
     </article>
-  );
-};
-
-const AddReceiptModal = ({
-  onClose,
-  onAdd,
-}: {
-  onClose: () => void;
-  onAdd: (r: Receipt) => void;
-}) => {
-  const [pharmacy, setPharmacy] = useState("");
-  const [total, setTotal] = useState("");
-  const [items, setItems] = useState("1");
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pharmacy || !total) return;
-    const itemCount = Math.max(1, parseInt(items, 10) || 1);
-    onAdd({
-      id: `r${Date.now()}`,
-      pharmacy: pharmacy.trim(),
-      date: Date.now(),
-      total: parseFloat(total) || 0,
-      items: Array.from({ length: itemCount }, (_, i) => ({
-        name: `Item ${i + 1}`,
-        qty: 1,
-        price: (parseFloat(total) || 0) / itemCount,
-      })),
-    });
-    onClose();
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm animate-fade-in-up"
-      onClick={onClose}
-    >
-      <div
-        className="glass-strong rounded-[28px] p-6 w-full max-w-md shadow-float"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">Add Receipt</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full glass flex items-center justify-center active:scale-90"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" strokeWidth={2.4} />
-          </button>
-        </div>
-        <form onSubmit={submit} className="space-y-3">
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground">Pharmacy</label>
-            <input
-              type="text"
-              value={pharmacy}
-              onChange={(e) => setPharmacy(e.target.value)}
-              placeholder="e.g. Apollo Pharmacy"
-              className="mt-1 w-full glass rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground">Total (₹)</label>
-              <input
-                type="number"
-                step="0.01"
-                value={total}
-                onChange={(e) => setTotal(e.target.value)}
-                placeholder="0.00"
-                className="mt-1 w-full glass rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-muted-foreground">Items</label>
-              <input
-                type="number"
-                min="1"
-                value={items}
-                onChange={(e) => setItems(e.target.value)}
-                className="mt-1 w-full glass rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-              />
-            </div>
-          </div>
-          <button
-            type="submit"
-            className="glossy relative w-full rounded-full py-3.5 mt-2 font-semibold text-white shadow-glow active:scale-[0.97] transition"
-            style={{ background: "var(--gradient-primary)" }}
-          >
-            <Plus className="inline w-4 h-4 mr-1 -mt-0.5" strokeWidth={2.6} />
-            Add Receipt
-          </button>
-        </form>
-      </div>
-    </div>
   );
 };
 
