@@ -8,10 +8,13 @@ import {
   AlertOctagon,
   Share2,
   Bookmark,
+  BookmarkCheck,
   RefreshCw,
   FlaskConical,
 } from "lucide-react";
 import { MediCard, MediCardTitle, MediCardContent } from "./ui/MediCard";
+import { useAppStore } from "@/store/appStore";
+import { useToast } from "@/hooks/use-toast";
 
 export interface MedicineInfo {
   name: string;
