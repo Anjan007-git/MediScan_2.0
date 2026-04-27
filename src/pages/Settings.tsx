@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/appStore";
 import {
@@ -15,6 +16,9 @@ import {
   LogOut,
   Crown,
   Shield,
+  X,
+  Sparkles,
+  Mail,
 } from "lucide-react";
 import avatarAlex from "@/assets/avatar-alex.jpg";
 
