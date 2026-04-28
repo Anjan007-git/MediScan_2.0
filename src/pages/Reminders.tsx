@@ -1,0 +1,105 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppStore } from "@/store/appStore";
+import { ArrowLeft, Bell, Plus, Pill, Clock, Trash2, BellOff } from "lucide-react";
+import ReminderModal from "@/components/ReminderModal";
+
+const Reminders = () => {
+  const navigate = useNavigate();
+  const { reminders, toggleReminder, deleteReminder } = useAppStore();
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const active = reminders.filter((r) => r.enabled).length;
+
+  return (
+    <div className="px-5 pt-12 pb-24 space-y-5">
+      <header className="flex items-center justify-between animate-fade-in-up">
+        <button
+          onClick={() => navigate("/")}
+          className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
+          aria-label="Back"
+        >
+          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+        </button>
+        <h1 className="text-xl font-extrabold tracking-tight">Reminders</h1>
+        <button
+          onClick={() => setModalOpen(true)}
+          className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-glow active:scale-95"
+          style={{ background: "var(--gradient-primary)" }}
+          aria-label="Add reminder"
+        >
+          <Plus className="w-5 h-5" strokeWidth={2.6} />
+        </button>
+      </header>
+
+      <section className="glass-tinted rounded-[24px] p-4 flex items-center gap-4 animate-fade-in-up">
+        <div
+          className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-glow shrink-0 relative overflow-hidden"
+          style={{ background: "var(--gradient-primary)" }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
+          <Bell className="relative w-5 h-5 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-muted-foreground font-medium">Active reminders</p>
+          <p className="text-2xl font-extrabold leading-tight">
+            {active} <span className="text-sm font-semibold text-muted-foreground">/ {reminders.length}</span>
+          </p>
+        </div>
+      </section>
+
+      <div className="space-y-3 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
+        {reminders.length === 0 && (
+          <div className="glass rounded-2xl py-12 text-center">
+            <BellOff className="w-10 h-10 text-muted-foreground mx-auto mb-2" strokeWidth={1.8} />
+            <p className="text-sm text-muted-foreground">No reminders yet</p>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-3 text-sm font-semibold text-primary"
+            >
+              Add your first reminder
+            </button>
+          </div>
+        )}
+
+        {reminders.map((r) => (
+          <article key={r.id} className="glass rounded-2xl p-3.5 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Pill className="w-5 h-5 text-primary rotate-45" strokeWidth={2.2} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-foreground text-[15px] truncate">{r.medicine}</p>
+              <p className="text-[12px] text-muted-foreground inline-flex items-center gap-1 mt-0.5">
+                <Clock className="w-3 h-3" strokeWidth={2.4} />
+                {r.time} · {r.frequency}
+              </p>
+            </div>
+            <button
+              onClick={() => toggleReminder(r.id)}
+              className={`relative w-12 h-7 rounded-full transition-colors duration-300 shrink-0 ${
+                r.enabled ? "bg-primary shadow-glow" : "bg-muted"
+              }`}
+              aria-pressed={r.enabled}
+            >
+              <span
+                className="absolute top-1/2 left-1 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300"
+                style={{ transform: `translate(${r.enabled ? "20px" : "0"}, -50%)` }}
+              />
+            </button>
+            <button
+              onClick={() => deleteReminder(r.id)}
+              className="w-9 h-9 rounded-full flex items-center justify-center text-danger active:bg-danger/10 shrink-0"
+              aria-label="Delete reminder"
+            >
+              <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+            </button>
+          </article>
+        ))}
+      </div>
+
+      <ReminderModal open={modalOpen} onClose={() => setModalOpen(false)} />
+    </div>
+  );
+};
+
+export default Reminders;
