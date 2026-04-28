@@ -21,20 +21,27 @@ import {
   Mail,
 } from "lucide-react";
 import avatarAlex from "@/assets/avatar-alex.jpg";
-
-type SheetKey = "about" | "privacy" | "security" | "help" | null;
+import { useAuth } from "@/contexts/AuthContext";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { settings, updateSetting, user } = useAppStore();
-  const [sheet, setSheet] = useState<SheetKey>(null);
-  const [plan, setPlan] = useState<"basic" | "premium">("premium");
-  const userEmail = `${user.name.toLowerCase()}@gmail.com`;
-  const handleLogout = () => {
+  const { settings, updateSetting, user: storeUser } = useAppStore();
+  const { user: authUser, profile, signOut } = useAuth();
+  const [plan, setPlan] = useState<"basic" | "premium">("basic");
+  const displayName =
+    profile?.display_name ||
+    (authUser?.user_metadata as any)?.full_name ||
+    (authUser?.user_metadata as any)?.name ||
+    storeUser.name ||
+    "there";
+  const userEmail = profile?.email || authUser?.email || "";
+  const avatarUrl =
+    profile?.avatar_url ||
+    (authUser?.user_metadata as any)?.avatar_url ||
+    avatarAlex;
+  const handleLogout = async () => {
     if (!confirm("Sign out from your account?")) return;
-    try { localStorage.removeItem("mediscan-store"); } catch {}
-    navigate("/", { replace: true });
-    setTimeout(() => window.location.reload(), 50);
+    await signOut();
   };
 
   return (
