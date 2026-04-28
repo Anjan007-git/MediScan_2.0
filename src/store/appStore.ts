@@ -223,10 +223,10 @@ const seedReminders: Reminder[] = [
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      user: { name: "Alex", greeting: "Your health, our priority" },
-      scans: seedScans,
-      receipts: seedReceipts,
-      reminders: seedReminders,
+      user: { name: "there", greeting: "Your health, our priority" },
+      scans: [],
+      receipts: [],
+      reminders: [],
       saved: [],
       settings: {
         notifications: true,
@@ -287,7 +287,11 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ settings: { ...state.settings, [key]: value } })),
       clearHistory: () => set({ scans: [] }),
     }),
-    { name: "mediscan-store" }
+    {
+      name: STORAGE_KEY_BASE,
+      storage: createJSONStorage(() => dynamicStorage),
+      skipHydration: true, // we hydrate via bindStoreToUser
+    }
   )
 );
 
