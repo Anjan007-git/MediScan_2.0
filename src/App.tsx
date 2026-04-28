@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./components/AppLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./contexts/AuthContext";
+import StoreBinder from "./components/StoreBinder";
 import Home from "./pages/Home";
 import Scan from "./pages/Scan";
 import Receipts from "./pages/Receipts";
@@ -13,6 +16,11 @@ import History from "./pages/History";
 import Saved from "./pages/Saved";
 import MedicineDetail from "./pages/MedicineDetail";
 import ReceiptDetail from "./pages/ReceiptDetail";
+import Reminders from "./pages/Reminders";
+import SettingsContent from "./pages/SettingsContent";
+import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import ReminderEngine from "./components/ReminderEngine";
 
@@ -24,21 +32,35 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ReminderEngine />
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/scan" element={<Scan />} />
-            <Route path="/receipts" element={<Receipts />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/saved" element={<Saved />} />
-            <Route path="/insights" element={<Insights />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/medicine/:id" element={<MedicineDetail />} />
-            <Route path="/receipts/:id" element={<ReceiptDetail />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <StoreBinder />
+          <ReminderEngine />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/" element={<Home />} />
+              <Route path="/scan" element={<Scan />} />
+              <Route path="/receipts" element={<Receipts />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/saved" element={<Saved />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/settings/:kind" element={<SettingsContent />} />
+              <Route path="/home/reminders" element={<Reminders />} />
+              <Route path="/medicine/:id" element={<MedicineDetail />} />
+              <Route path="/receipts/:id" element={<ReceiptDetail />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

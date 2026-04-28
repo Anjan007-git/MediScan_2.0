@@ -15,12 +15,35 @@ const ReminderEngine = () => {
   useEffect(() => {
     if (!safetyAlerts) return;
 
+    const playBeep = () => {
+      try {
+        const Ctx = (window as any).AudioContext || (window as any).webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "sine";
+        o.frequency.setValueAtTime(880, ctx.currentTime);
+        o.frequency.setValueAtTime(660, ctx.currentTime + 0.18);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
+        o.connect(g).connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.75);
+        setTimeout(() => ctx.close().catch(() => {}), 900);
+      } catch {
+        /* ignore */
+      }
+    };
+
     const fire = (medicine: string) => {
       // In-app toast
       toast({
         title: "💊 Medicine reminder",
         description: `Time to take ${medicine}`,
       });
+      playBeep();
       // Browser notification (if granted)
       if (typeof Notification !== "undefined" && Notification.permission === "granted") {
         try {

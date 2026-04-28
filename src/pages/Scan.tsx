@@ -109,12 +109,19 @@ const Scan = () => {
     }
   }, [facingMode, stopCamera]);
 
-  // Start camera on mount + when facing mode changes
+  // Detect "open upload picker only" mode (from Home → Upload Image button)
+  const uploadOnly = searchParams.get("upload") === "1";
+
+  // Start camera on mount + when facing mode changes (skip when uploadOnly)
   useEffect(() => {
+    if (uploadOnly) {
+      setCamState("idle");
+      return;
+    }
     startCamera();
     return () => stopCamera();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [facingMode]);
+  }, [facingMode, uploadOnly]);
 
   // Toggle torch (works on supported devices)
   useEffect(() => {
@@ -127,12 +134,12 @@ const Scan = () => {
     }
   }, [flashOn, camState]);
 
-  // Auto-trigger upload from query param
+  // Auto-trigger upload from query param — DO NOT start camera in this mode
   useEffect(() => {
-    if (searchParams.get("upload") === "1") {
+    if (uploadOnly) {
       setTimeout(() => fileInputRef.current?.click(), 150);
     }
-  }, [searchParams]);
+  }, [uploadOnly]);
 
   useEffect(() => {
     if (error) toast({ title: "Scan Failed", description: error, variant: "destructive" });

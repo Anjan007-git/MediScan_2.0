@@ -18,13 +18,24 @@ import {
 import { useState } from "react";
 import medicineBottle from "@/assets/medicine-bottle-3d.png";
 import avatarAlex from "@/assets/avatar-alex.jpg";
-import ReminderModal from "@/components/ReminderModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { user, scans } = useAppStore();
+  const { scans, user: storeUser } = useAppStore();
+  const { user: authUser, profile } = useAuth();
   const [tipDismissed, setTipDismissed] = useState(false);
-  const [reminderOpen, setReminderOpen] = useState(false);
+
+  const displayName =
+    profile?.display_name ||
+    (authUser?.user_metadata as any)?.full_name ||
+    (authUser?.user_metadata as any)?.name ||
+    storeUser.name ||
+    "there";
+  const avatarUrl =
+    profile?.avatar_url ||
+    (authUser?.user_metadata as any)?.avatar_url ||
+    avatarAlex;
 
   const recent = scans.slice(0, 3);
 
@@ -48,7 +59,7 @@ const Home = () => {
       sub: "Medicine alerts",
       icon: Bell,
       bg: "from-emerald-400 to-green-600",
-      onClick: () => setReminderOpen(true),
+      onClick: () => navigate("/home/reminders"),
     },
     {
       label: "Saved",
@@ -65,11 +76,11 @@ const Home = () => {
       <header className="flex items-start justify-between animate-fade-in-up">
         <div>
           <h1 className="text-[28px] font-extrabold tracking-tight text-foreground flex items-center gap-2">
-            Hello, {user.name} <span className="text-2xl">👋</span>
+            Hello, {displayName} <span className="text-2xl">👋</span>
           </h1>
           <div className="flex items-center gap-1.5 mt-1.5">
             <ShieldCheck className="w-4 h-4 text-primary" strokeWidth={2.4} />
-            <p className="text-sm text-muted-foreground font-medium">{user.greeting}</p>
+            <p className="text-sm text-muted-foreground font-medium">{storeUser.greeting}</p>
           </div>
         </div>
         <button
@@ -78,12 +89,13 @@ const Home = () => {
           aria-label="Open profile"
         >
           <img
-            src={avatarAlex}
+            src={avatarUrl}
             alt="User profile"
             className="w-full h-full object-cover"
             width={56}
             height={56}
             loading="lazy"
+            referrerPolicy="no-referrer"
           />
           <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-primary border-2 border-white" />
         </button>
@@ -236,7 +248,7 @@ const Home = () => {
         </section>
       )}
 
-      <ReminderModal open={reminderOpen} onClose={() => setReminderOpen(false)} />
+      
     </div>
   );
 };
