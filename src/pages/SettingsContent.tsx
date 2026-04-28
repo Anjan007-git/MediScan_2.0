@@ -79,10 +79,20 @@ const CONTENT: Record<Kind, { title: string; body: React.ReactNode }> = {
   },
 };
 
+const ALIAS: Record<string, Kind> = {
+  about: "about",
+  aboutmediscan: "about",
+  privacy: "privacy",
+  privacypolicy: "privacy",
+  security: "security",
+  help: "help",
+  "help-support": "help",
+};
+
 const SettingsContent = () => {
   const navigate = useNavigate();
   const { kind } = useParams<{ kind: string }>();
-  const k = (kind as Kind) in CONTENT ? (kind as Kind) : "about";
+  const k: Kind = (kind && ALIAS[kind]) || "about";
   const c = CONTENT[k];
 
   return (
