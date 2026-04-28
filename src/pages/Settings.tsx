@@ -58,7 +58,7 @@ const Settings = () => {
           className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-white shadow-glass active:scale-95 transition"
           aria-label="Profile"
         >
-          <img src={avatarAlex} alt="Profile" className="w-full h-full object-cover" loading="lazy" />
+          <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" loading="lazy" referrerPolicy="no-referrer" />
           <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-primary border-2 border-white" />
         </button>
       </header>
@@ -76,7 +76,7 @@ const Settings = () => {
           <Shield className="relative w-8 h-8 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.25} />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-foreground text-lg leading-tight">{user.name} Johnson</h2>
+          <h2 className="font-bold text-foreground text-lg leading-tight">{displayName}</h2>
           <p className="text-[13px] text-muted-foreground truncate inline-flex items-center gap-1">
             <Mail className="w-3 h-3" strokeWidth={2.4} /> {userEmail}
           </p>
@@ -171,7 +171,7 @@ const Settings = () => {
           tile="primary"
           title="About MediScan"
           subtitle="Learn more about the app"
-          onClick={() => setSheet("about")}
+          onClick={() => navigate("/settings/aboutmediscan")}
         />
         <Divider />
         <LinkRow
@@ -179,7 +179,7 @@ const Settings = () => {
           tile="success"
           title="Privacy Policy"
           subtitle="Read our privacy policy"
-          onClick={() => setSheet("privacy")}
+          onClick={() => navigate("/settings/privacypolicy")}
         />
         <Divider />
         <LinkRow
@@ -187,7 +187,7 @@ const Settings = () => {
           tile="violet"
           title="Security"
           subtitle="Manage your data and security"
-          onClick={() => setSheet("security")}
+          onClick={() => navigate("/settings/security")}
         />
         <Divider />
         <LinkRow
@@ -195,7 +195,7 @@ const Settings = () => {
           tile="warning"
           title="Help & Support"
           subtitle="Get help and contact support"
-          onClick={() => setSheet("help")}
+          onClick={() => navigate("/settings/help-support")}
         />
       </section>
 
@@ -238,116 +238,6 @@ const Settings = () => {
         />
       </section>
 
-      {sheet && <ContentSheet kind={sheet} onClose={() => setSheet(null)} />}
-    </div>
-  );
-};
-
-const SHEET_CONTENT: Record<Exclude<SheetKey, null>, { title: string; body: React.ReactNode }> = {
-  about: {
-    title: "About MediScan",
-    body: (
-      <>
-        <p>
-          MediScan is your personal AI-powered medicine companion. Scan any
-          medicine packaging to instantly get accurate information about its
-          uses, dosage, side effects, and safety.
-        </p>
-        <p>
-          Track your purchases with smart receipts, set reminders so you never
-          miss a dose, and keep a personal log of every medicine you scan.
-        </p>
-        <p className="text-muted-foreground text-xs">
-          MediScan does not replace professional medical advice. Always consult
-          a qualified pharmacist or doctor.
-        </p>
-      </>
-    ),
-  },
-  privacy: {
-    title: "Privacy Policy",
-    body: (
-      <>
-        <p>
-          We respect your privacy. Scans, receipts, and reminders are stored
-          locally on your device and synced only to your authenticated account.
-        </p>
-        <p>
-          Camera access is used only when you actively scan. We do not record,
-          stream, or share your camera feed.
-        </p>
-        <p>You can delete your data at any time from Settings → Security.</p>
-      </>
-    ),
-  },
-  security: {
-    title: "Security",
-    body: (
-      <>
-        <p>
-          Your account is protected with industry-standard encryption. Sessions
-          are signed and refreshed automatically.
-        </p>
-        <p>
-          Data is encrypted in transit (HTTPS) and at rest. You can enable
-          biometric unlock and two-factor authentication anytime.
-        </p>
-        <p>For account-related concerns reach out via Help &amp; Support.</p>
-      </>
-    ),
-  },
-  help: {
-    title: "Help & Support",
-    body: (
-      <>
-        <p>Need help? We're here for you.</p>
-        <p>
-          📧{" "}
-          <a className="text-primary font-semibold" href="mailto:support@mediscan.app">
-            support@mediscan.app
-          </a>
-        </p>
-        <p>
-          🌐 Visit our help center at{" "}
-          <span className="text-primary font-semibold">help.mediscan.app</span>
-        </p>
-        <p className="text-muted-foreground text-xs">
-          Response time: typically under 24 hours.
-        </p>
-      </>
-    ),
-  },
-};
-
-const ContentSheet = ({
-  kind,
-  onClose,
-}: {
-  kind: Exclude<SheetKey, null>;
-  onClose: () => void;
-}) => {
-  const c = SHEET_CONTENT[kind];
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm animate-fade-in-up"
-      onClick={onClose}
-    >
-      <div
-        className="glass-strong rounded-[28px] p-6 w-full max-w-md max-h-[80vh] overflow-y-auto shadow-float"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">{c.title}</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full glass flex items-center justify-center active:scale-90"
-            aria-label="Close"
-          >
-            <X className="w-4 h-4" strokeWidth={2.4} />
-          </button>
-        </div>
-        <div className="space-y-3 text-sm text-foreground/90 leading-relaxed">{c.body}</div>
-      </div>
     </div>
   );
 };
