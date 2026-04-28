@@ -248,7 +248,7 @@ const Home = () => {
         </section>
       )}
 
-      <ReminderModal open={reminderOpen} onClose={() => setReminderOpen(false)} />
+      
     </div>
   );
 };
