@@ -301,9 +301,21 @@ const ReceiptCard = ({
   }, [menuOpen, onMenuClose]);
 
   return (
-    <article className="relative glass rounded-2xl p-3 flex items-center gap-3 hover:shadow-glass-lg transition-all">
-      <button onClick={onOpen} className="flex items-center gap-3 flex-1 min-w-0 text-left active:scale-[0.99]">
-        <div className="w-[70px] h-[70px] rounded-xl bg-white/80 shadow-soft border border-white/70 shrink-0 p-1.5 flex flex-col gap-0.5 overflow-hidden">
+    <article className="relative glass rounded-2xl p-3 pr-4 hover:shadow-glass-lg transition-all">
+      {/* Menu button — absolutely positioned, won't collide with content */}
+      <button
+        onClick={onMenu}
+        className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10 z-10"
+        aria-label="More options"
+      >
+        <MoreHorizontal className="w-4 h-4" strokeWidth={2.4} />
+      </button>
+
+      <button
+        onClick={onOpen}
+        className="w-full flex items-center gap-3 text-left active:scale-[0.99] pr-6"
+      >
+        <div className="w-[64px] h-[64px] rounded-xl bg-white/80 shadow-soft border border-white/70 shrink-0 p-1.5 flex flex-col gap-0.5 overflow-hidden">
           {r.imageUrl ? (
             <img src={r.imageUrl} alt="" className="w-full h-full object-cover rounded-lg" />
           ) : (
@@ -322,21 +334,11 @@ const ReceiptCard = ({
           <p className="text-[11px] text-muted-foreground mt-0.5">{formatDateTime(r.date)}</p>
           <p className="text-[11px] text-muted-foreground mt-0.5">{r.items.length} items</p>
         </div>
-      </button>
-
-      <div className="flex flex-col items-end justify-between self-stretch py-0.5 shrink-0">
-        <button
-          onClick={onMenu}
-          className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10"
-          aria-label="More options"
-        >
-          <MoreHorizontal className="w-4 h-4" strokeWidth={2.4} />
-        </button>
-        <button onClick={onOpen} className="flex items-center gap-1 active:scale-95">
+        <div className="flex flex-col items-end shrink-0 mt-4">
           <span className="font-extrabold text-foreground text-[15px]">{formatINR(r.total)}</span>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.4} />
-        </button>
-      </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground mt-1" strokeWidth={2.4} />
+        </div>
+      </button>
 
       {menuOpen && (
         <div
