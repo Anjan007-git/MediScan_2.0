@@ -214,7 +214,13 @@ const Insights = () => {
       >
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-bold text-foreground">Most Scanned Categories</h3>
-          <ChevronRight className="w-5 h-5 text-muted-foreground" strokeWidth={2.4} />
+          <button
+            onClick={() => navigate("/insights/categories")}
+            className="w-8 h-8 rounded-full glass-subtle flex items-center justify-center active:scale-90"
+            aria-label="View all categories"
+          >
+            <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.6} />
+          </button>
         </div>
         <div className="grid grid-cols-[120px_1fr] gap-4 items-center">
           <div className="h-[120px]">
