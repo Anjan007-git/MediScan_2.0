@@ -39,6 +39,11 @@ const monthKey = (ts: number) =>
 const Receipts = () => {
   const navigate = useNavigate();
   const { receipts, hideReceipt, deleteReceipt } = useAppStore();
+  const { user: authUser, profile } = useAuth();
+  const avatarUrl =
+    profile?.avatar_url ||
+    (authUser?.user_metadata as any)?.avatar_url ||
+    avatarAlex;
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<FilterKey>("all");
   const [showFilter, setShowFilter] = useState(false);
