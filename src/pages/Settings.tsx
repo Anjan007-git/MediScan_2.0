@@ -65,47 +65,80 @@ const Settings = () => {
 
       {/* PROFILE CARD */}
       <button
+        onClick={() => navigate("/settings/profile")}
         className="glass-strong w-full rounded-[24px] p-4 flex items-center gap-4 active:scale-[0.99] hover:shadow-glass-lg transition-all animate-fade-in-up"
         style={{ animationDelay: "60ms" }}
       >
-        <div
-          className="relative w-16 h-16 rounded-full flex items-center justify-center shrink-0 shadow-glow overflow-hidden"
-          style={{ background: "var(--gradient-primary)" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-white/35 to-transparent" />
-          <Shield className="relative w-8 h-8 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.25} />
+        <div className="relative w-16 h-16 rounded-full overflow-hidden shrink-0 ring-2 ring-white shadow-glow">
+          <img
+            src={avatarUrl}
+            alt="Profile"
+            className="w-full h-full object-cover"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+          />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-foreground text-lg leading-tight">{displayName}</h2>
+          <h2 className="font-bold text-foreground text-lg leading-tight truncate">{displayName}</h2>
           <p className="text-[13px] text-muted-foreground truncate inline-flex items-center gap-1">
             <Mail className="w-3 h-3" strokeWidth={2.4} /> {userEmail}
           </p>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setPlan((p) => (p === "premium" ? "basic" : "premium"));
-              }}
-              className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full transition ${
-                plan === "premium" ? "bg-primary/10 text-primary" : "bg-muted text-foreground/70"
-              }`}
-            >
-              {plan === "premium" ? (
-                <>
-                  <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
-                  Premium • ₹199/mo
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-3 h-3" strokeWidth={2.6} />
-                  Basic • Free
-                </>
-              )}
-            </button>
-          </div>
+          <span
+            className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full mt-1.5 ${
+              plan === "premium" ? "bg-primary/10 text-primary" : "bg-muted text-foreground/70"
+            }`}
+          >
+            {plan === "premium" ? (
+              <>
+                <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
+                Premium • ₹199/mo
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3 h-3" strokeWidth={2.6} />
+                Basic • Free
+              </>
+            )}
+          </span>
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" strokeWidth={2.4} />
       </button>
+
+      {/* SUBSCRIPTION PLANS */}
+      <SectionLabel>Subscription</SectionLabel>
+      <section
+        className="grid grid-cols-2 gap-3 animate-fade-in-up"
+        style={{ animationDelay: "80ms" }}
+      >
+        <button
+          onClick={() => setPlan("basic")}
+          className={`glass rounded-[20px] p-4 text-left transition-all active:scale-[0.97] ${
+            plan === "basic" ? "ring-2 ring-primary shadow-glow" : ""
+          }`}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <Sparkles className="w-4 h-4 text-foreground/70" strokeWidth={2.4} />
+            <span className="text-sm font-bold text-foreground">Basic</span>
+          </div>
+          <p className="text-2xl font-extrabold text-foreground">₹0</p>
+          <p className="text-[11px] text-muted-foreground mt-1">10 scans / week</p>
+        </button>
+        <button
+          onClick={() => setPlan("premium")}
+          className={`relative rounded-[20px] p-4 text-left text-white shadow-glow transition-all active:scale-[0.97] overflow-hidden ${
+            plan === "premium" ? "ring-2 ring-white/70" : ""
+          }`}
+          style={{ background: "var(--gradient-primary)" }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+          <div className="relative flex items-center gap-2 mb-1.5">
+            <Crown className="w-4 h-4" strokeWidth={2.6} fill="currentColor" />
+            <span className="text-sm font-bold">Premium</span>
+          </div>
+          <p className="relative text-2xl font-extrabold">₹199<span className="text-xs font-semibold">/mo</span></p>
+          <p className="relative text-[11px] opacity-90 mt-1">Unlimited scans + insights</p>
+        </button>
+      </section>
 
       {/* APPEARANCE */}
       <SectionLabel>Appearance</SectionLabel>
