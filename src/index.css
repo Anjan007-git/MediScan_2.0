@@ -352,14 +352,14 @@ body.scan-dark-mode { background: #0a0e1a; }
 body.scan-dark-mode::before,
 body.scan-dark-mode::after { display: none; }
 
-/* ---------------- Page transitions ---------------- */
+/* ---------------- Page transitions (fade only — no flicker) ---------------- */
 @keyframes page-in {
-  0%   { opacity: 0; transform: translateY(8px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
 }
 .page-transition {
-  animation: page-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  will-change: opacity, transform;
+  animation: page-in 220ms ease-out both;
+  will-change: opacity;
 }
 
 /* ---------------- Liquid-glass scan frame (single rounded rectangle) ---------------- */
