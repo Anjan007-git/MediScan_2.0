@@ -26,12 +26,14 @@ const Home = () => {
   const { user: authUser, profile } = useAuth();
   const [tipDismissed, setTipDismissed] = useState(false);
 
-  const displayName =
+  const fullName =
     profile?.display_name ||
     (authUser?.user_metadata as any)?.full_name ||
     (authUser?.user_metadata as any)?.name ||
     storeUser.name ||
     "there";
+  // First name only — split by space OR by "@" for email-style names
+  const displayName = String(fullName).split(/[\s@]/)[0] || "there";
   const avatarUrl =
     profile?.avatar_url ||
     (authUser?.user_metadata as any)?.avatar_url ||
