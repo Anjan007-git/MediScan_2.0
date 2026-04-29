@@ -18,6 +18,8 @@ import MedicineDetail from "./pages/MedicineDetail";
 import ReceiptDetail from "./pages/ReceiptDetail";
 import Reminders from "./pages/Reminders";
 import SettingsContent from "./pages/SettingsContent";
+import ProfileEdit from "./pages/ProfileEdit";
+import InsightsCategories from "./pages/InsightsCategories";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
