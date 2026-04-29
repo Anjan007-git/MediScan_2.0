@@ -47,7 +47,7 @@ const Home = () => {
       sub: "From gallery",
       icon: Upload,
       bg: "from-blue-400 to-blue-600",
-      onClick: () => navigate("/scan?upload=1"),
+      onClick: () => navigate("/home/uploadimage"),
     },
     {
       label: "Scan History",
