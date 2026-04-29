@@ -178,6 +178,7 @@ export const useAppStore = create<AppState>()(
       updateSetting: (key, value) =>
         set((state) => ({ settings: { ...state.settings, [key]: value } })),
       clearHistory: () => set({ scans: [] }),
+      setUserName: (name) => set((state) => ({ user: { ...state.user, name } })),
     }),
     {
       name: STORAGE_KEY_BASE,
