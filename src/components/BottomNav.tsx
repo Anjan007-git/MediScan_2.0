@@ -10,13 +10,15 @@ const items = [
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
-const ICON_HALO_SIZE = 44; // perfect circle behind the icon
+const NAV_HEIGHT = 64;
+const PILL_HEIGHT = 44;
+const PILL_WIDTH = 56;
 
 const BottomNav = () => {
   const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const iconRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const [indicator, setIndicator] = useState({ x: 0, y: 0, ready: false });
+  const itemRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const [indicator, setIndicator] = useState({ x: 0, ready: false });
 
   const activeIndex = (() => {
     const path = location.pathname;
@@ -27,18 +29,13 @@ const BottomNav = () => {
   })();
 
   const measure = () => {
-    const el = iconRefs.current[activeIndex];
+    const el = itemRefs.current[activeIndex];
     const container = containerRef.current;
     if (!el || !container) return;
     const elRect = el.getBoundingClientRect();
     const cRect = container.getBoundingClientRect();
     const cx = elRect.left + elRect.width / 2 - cRect.left;
-    const cy = elRect.top + elRect.height / 2 - cRect.top;
-    setIndicator({
-      x: cx - ICON_HALO_SIZE / 2,
-      y: cy - ICON_HALO_SIZE / 2,
-      ready: true,
-    });
+    setIndicator({ x: cx - PILL_WIDTH / 2, ready: true });
   };
 
   useLayoutEffect(measure, [activeIndex]);
@@ -58,31 +55,35 @@ const BottomNav = () => {
     >
       <div
         ref={containerRef}
-        className="relative rounded-full px-2 pt-2 pb-1.5 flex items-stretch"
+        className="relative rounded-full flex items-center justify-around overflow-hidden"
         style={{
+          height: NAV_HEIGHT,
           background: "rgba(255,255,255,0.55)",
           backdropFilter: "blur(30px) saturate(180%)",
           WebkitBackdropFilter: "blur(30px) saturate(180%)",
-          border: "1px solid rgba(255,255,255,0.65)",
+          border: "1px solid rgba(255,255,255,0.5)",
           boxShadow:
-            "0 14px 44px -12px rgba(15,23,42,0.22), 0 0 0 1px rgba(96,165,250,0.08), inset 0 1px 0 rgba(255,255,255,0.7)",
+            "0 14px 44px -12px rgba(15,23,42,0.22), inset 0 1px 0 rgba(255,255,255,0.7)",
         }}
       >
-        {/* Perfect circle active highlight (behind the ICON only) */}
+        {/* Contained capsule highlight */}
         <span
           aria-hidden
-          className="absolute pointer-events-none rounded-full"
+          className="absolute pointer-events-none"
           style={{
-            width: ICON_HALO_SIZE,
-            height: ICON_HALO_SIZE,
-            transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+            width: PILL_WIDTH,
+            height: PILL_HEIGHT,
+            top: (NAV_HEIGHT - PILL_HEIGHT) / 2,
+            left: 0,
+            transform: `translateX(${indicator.x}px)`,
             transition: indicator.ready
-              ? "transform 380ms cubic-bezier(0.34, 1.4, 0.64, 1)"
+              ? "transform 280ms cubic-bezier(0.4, 0, 0.2, 1)"
               : "none",
             background:
               "linear-gradient(135deg, #60A5FA 0%, #3B82F6 60%, #1D4ED8 100%)",
+            borderRadius: 16,
             boxShadow:
-              "0 8px 22px rgba(59,130,246,0.45), 0 0 0 1px rgba(255,255,255,0.45) inset, 0 0 18px rgba(96,165,250,0.55)",
+              "0 6px 16px rgba(59,130,246,0.4), inset 0 1px 0 rgba(255,255,255,0.4)",
             opacity: indicator.ready ? 1 : 0,
           }}
         />
@@ -94,32 +95,20 @@ const BottomNav = () => {
               key={to}
               to={to}
               end={to === "/"}
-              className="relative z-10 flex-1 flex flex-col items-center justify-end gap-1 py-1.5 px-1 transition-transform duration-200 active:scale-95"
+              ref={(el) => (itemRefs.current[i] = el)}
+              className="relative z-10 flex-1 h-full flex items-center justify-center transition-transform duration-200 active:scale-95"
+              aria-label={label}
             >
-              <span
-                ref={(el) => (iconRefs.current[i] = el)}
-                className="relative flex items-center justify-center"
-                style={{ width: ICON_HALO_SIZE, height: ICON_HALO_SIZE }}
-              >
-                <Icon
-                  className="transition-all duration-300"
-                  style={{
-                    width: isActive ? 23 : 21,
-                    height: isActive ? 23 : 21,
-                    color: isActive ? "#ffffff" : "#374151",
-                  }}
-                  strokeWidth={isActive ? 2.5 : 2.2}
-                />
-              </span>
-              <span
-                className="text-[10.5px] leading-none transition-colors duration-300"
+              <Icon
+                className="transition-all duration-300"
                 style={{
-                  color: isActive ? "#1D4ED8" : "#6B7280",
-                  fontWeight: isActive ? 700 : 500,
+                  width: 22,
+                  height: 22,
+                  color: isActive ? "#ffffff" : "#6B7280",
+                  transform: isActive ? "scale(1.1)" : "scale(1)",
                 }}
-              >
-                {label}
-              </span>
+                strokeWidth={isActive ? 2.5 : 2.2}
+              />
             </NavLink>
           );
         })}
