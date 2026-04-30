@@ -94,7 +94,8 @@ export interface SavedMedicine {
 export type Plan = "basic" | "premium";
 
 interface AppState {
-  user: { name: string; greeting: string };
+  user: { name: string; greeting: string; email?: string };
+  plan: Plan;
   scans: ScanRecord[];
   receipts: Receipt[];
   reminders: Reminder[];
@@ -125,6 +126,8 @@ interface AppState {
   ) => void;
   clearHistory: () => void;
   setUserName: (name: string) => void;
+  setUserEmail: (email: string) => void;
+  setPlan: (plan: Plan) => void;
 }
 
 // Seed data removed — new users start with an empty state.
