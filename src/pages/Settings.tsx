@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store/appStore";
 import {
@@ -25,16 +24,15 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { settings, updateSetting, user: storeUser } = useAppStore();
+  const { settings, updateSetting, user: storeUser, plan, setPlan } = useAppStore();
   const { user: authUser, profile, signOut } = useAuth();
-  const [plan, setPlan] = useState<"basic" | "premium">("basic");
   const displayName =
     profile?.display_name ||
     (authUser?.user_metadata as any)?.full_name ||
     (authUser?.user_metadata as any)?.name ||
     storeUser.name ||
     "there";
-  const userEmail = profile?.email || authUser?.email || "";
+  const userEmail = storeUser.email || profile?.email || authUser?.email || "";
   const avatarUrl =
     profile?.avatar_url ||
     (authUser?.user_metadata as any)?.avatar_url ||

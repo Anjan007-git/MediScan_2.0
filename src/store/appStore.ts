@@ -44,6 +44,16 @@ export interface ScanRecord {
   expiry: string; // e.g. "Apr 2026"
   imageUrl?: string;
   saved?: boolean;
+  // Full medicine details captured at scan time
+  generic?: string;
+  composition?: string;
+  uses?: string[];
+  dosage?: string;
+  precautions?: string[];
+  warnings?: string[];
+  sideEffects?: string[];
+  storage?: string;
+  confidence?: number;
 }
 
 export interface Receipt {
@@ -73,11 +83,19 @@ export interface SavedMedicine {
   description: string;
   composition?: string;
   uses?: string[];
+  dosage?: string;
+  precautions?: string[];
+  warnings?: string[];
+  sideEffects?: string[];
+  storage?: string;
   savedAt: number;
 }
 
+export type Plan = "basic" | "premium";
+
 interface AppState {
-  user: { name: string; greeting: string };
+  user: { name: string; greeting: string; email?: string };
+  plan: Plan;
   scans: ScanRecord[];
   receipts: Receipt[];
   reminders: Reminder[];
@@ -108,6 +126,8 @@ interface AppState {
   ) => void;
   clearHistory: () => void;
   setUserName: (name: string) => void;
+  setUserEmail: (email: string) => void;
+  setPlan: (plan: Plan) => void;
 }
 
 // Seed data removed — new users start with an empty state.
@@ -115,7 +135,8 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      user: { name: "there", greeting: "Your health, our priority" },
+      user: { name: "there", greeting: "Your health, our priority", email: "" },
+      plan: "basic" as Plan,
       scans: [],
       receipts: [],
       reminders: [],
@@ -179,6 +200,8 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ settings: { ...state.settings, [key]: value } })),
       clearHistory: () => set({ scans: [] }),
       setUserName: (name) => set((state) => ({ user: { ...state.user, name } })),
+      setUserEmail: (email) => set((state) => ({ user: { ...state.user, email } })),
+      setPlan: (plan) => set({ plan }),
     }),
     {
       name: STORAGE_KEY_BASE,

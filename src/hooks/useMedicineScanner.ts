@@ -75,18 +75,27 @@ export const useMedicineScanner = () => {
           isMedicine: true,
         });
 
-        // Persist to scan history
+        // Persist to scan history with full details
         try {
           const status: "safe" | "caution" | "danger" =
             data.confidence >= 90 ? "safe" : data.confidence >= 80 ? "caution" : "danger";
+          const med = data.medicine;
           useAppStore.getState().addScan({
             id: scanId,
-            name: data.medicine.name,
-            description:
-              data.medicine.uses?.[0] || data.medicine.composition || data.medicine.generic || "",
+            name: med.name,
+            description: med.uses?.[0] || med.composition || med.generic || "",
             status,
             scannedAt: Date.now(),
             expiry: "—",
+            generic: med.generic,
+            composition: med.composition,
+            uses: med.uses,
+            dosage: med.dosage,
+            precautions: med.precautions,
+            warnings: med.warnings,
+            sideEffects: med.sideEffects,
+            storage: med.storage,
+            confidence: data.confidence,
           });
         } catch (e) {
           console.warn("[MediScan] Failed to persist scan:", e);

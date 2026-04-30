@@ -9,7 +9,7 @@ import avatarAlex from "@/assets/avatar-alex.jpg";
 const ProfileEdit = () => {
   const navigate = useNavigate();
   const { user: authUser, profile } = useAuth();
-  const { user: storeUser, setUserName } = useAppStore();
+  const { user: storeUser, setUserName, setUserEmail } = useAppStore();
   const { toast } = useToast();
 
   const initialName =
@@ -17,7 +17,7 @@ const ProfileEdit = () => {
     (authUser?.user_metadata as any)?.full_name ||
     storeUser.name ||
     "";
-  const initialEmail = profile?.email || authUser?.email || "";
+  const initialEmail = storeUser.email || profile?.email || authUser?.email || "";
 
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
@@ -39,7 +39,8 @@ const ProfileEdit = () => {
       return;
     }
     setUserName(name.trim());
-    toast({ title: "Profile updated", description: "Your changes have been saved locally." });
+    setUserEmail(email.trim());
+    toast({ title: "Profile updated", description: "Your changes have been saved." });
     navigate("/settings");
   };
 
@@ -95,7 +96,7 @@ const ProfileEdit = () => {
             className="w-full bg-transparent outline-none text-foreground placeholder:text-muted-foreground/60 text-sm font-medium"
           />
           <p className="text-[10.5px] text-muted-foreground mt-1">
-            Email changes are UI-only for now.
+            Used for display in the app.
           </p>
         </div>
       </section>

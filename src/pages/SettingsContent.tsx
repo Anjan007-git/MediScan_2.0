@@ -1,81 +1,88 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 
 type Kind = "about" | "privacy" | "security" | "help";
 
-const CONTENT: Record<Kind, { title: string; body: React.ReactNode }> = {
+interface Section {
+  heading?: string;
+  intro?: string;
+  bullets?: string[];
+  footer?: string;
+}
+
+const CONTENT: Record<Kind, { title: string; sections: Section[] }> = {
   about: {
     title: "About MediScan",
-    body: (
-      <>
-        <p>
-          MediScan is your personal AI-powered medicine companion. Scan any
-          medicine packaging to instantly get accurate information about its
-          uses, dosage, side effects, and safety.
-        </p>
-        <p>
-          Track your purchases with smart receipts, set reminders so you never
-          miss a dose, and keep a personal log of every medicine you scan.
-        </p>
-        <p className="text-muted-foreground text-xs">
-          MediScan does not replace professional medical advice. Always consult
-          a qualified pharmacist or doctor.
-        </p>
-      </>
-    ),
+    sections: [
+      {
+        intro:
+          "MediScan is your smart medicine companion — a modern, AI-powered platform that helps you understand your medication safely and confidently.",
+        bullets: [
+          "Smart medicine scanning platform powered by AI",
+          "AI-based information extraction from packaging and labels",
+          "Helps users understand medicine usage, dosage and safety",
+          "Tracks usage history, reminders and personal preferences",
+          "Designed for clarity, speed and a premium mobile experience",
+        ],
+        footer:
+          "MediScan is for informational purposes only and does not replace professional medical advice.",
+      },
+    ],
   },
   privacy: {
     title: "Privacy Policy",
-    body: (
-      <>
-        <p>
-          We respect your privacy. Scans, receipts, and reminders are stored
-          locally on your device and synced only to your authenticated account.
-        </p>
-        <p>
-          Camera access is used only when you actively scan. We do not record,
-          stream, or share your camera feed.
-        </p>
-        <p>You can delete your data at any time from Settings → Security.</p>
-      </>
-    ),
+    sections: [
+      {
+        intro: "Your privacy is at the core of everything we build.",
+        bullets: [
+          "User data is fully protected and stored securely",
+          "We never share or sell your personal information",
+          "Secure authentication system protects your account",
+          "Data is used only to power features inside the app",
+          "Camera access is used only when you actively scan",
+          "You can delete your data at any time from Settings",
+        ],
+      },
+    ],
   },
   security: {
     title: "Security",
-    body: (
-      <>
-        <p>
-          Your account is protected with industry-standard encryption. Sessions
-          are signed and refreshed automatically.
-        </p>
-        <p>
-          Data is encrypted in transit (HTTPS) and at rest. You can enable
-          biometric unlock and two-factor authentication anytime.
-        </p>
-        <p>For account-related concerns reach out via Help &amp; Support.</p>
-      </>
-    ),
+    sections: [
+      {
+        intro: "We take security seriously and follow industry-standard practices.",
+        bullets: [
+          "Encrypted login sessions with automatic refresh",
+          "Safe data handling — encrypted in transit and at rest",
+          "No unauthorized access to your scans or history",
+          "Privacy-first design across the entire experience",
+          "Optional biometric unlock and session protection",
+        ],
+      },
+    ],
   },
   help: {
     title: "Help & Support",
-    body: (
-      <>
-        <p>Need help? We're here for you.</p>
-        <p>
-          📧{" "}
-          <a className="text-primary font-semibold" href="mailto:support@mediscan.app">
-            support@mediscan.app
-          </a>
-        </p>
-        <p>
-          🌐 Visit our help center at{" "}
-          <span className="text-primary font-semibold">help.mediscan.app</span>
-        </p>
-        <p className="text-muted-foreground text-xs">
-          Response time: typically under 24 hours.
-        </p>
-      </>
-    ),
+    sections: [
+      {
+        heading: "Get Support",
+        bullets: [
+          "Contact our support team via email anytime",
+          "Browse our help center for common questions",
+          "Step-by-step troubleshooting guidance",
+          "Personalized user assistance for account issues",
+        ],
+      },
+      {
+        heading: "Frequently Asked Questions",
+        bullets: [
+          "How does scanning work? — Point the camera at the medicine label.",
+          "Is my data private? — Yes, fully encrypted and account-bound.",
+          "Can I use MediScan offline? — Browsing is offline; scanning needs internet.",
+          "How do reminders work? — They trigger locally with sound + glass alerts.",
+        ],
+        footer: "📧 support@mediscan.app  •  🌐 help.mediscan.app  •  Reply within 24 hours.",
+      },
+    ],
   },
 };
 
@@ -108,9 +115,37 @@ const SettingsContent = () => {
         <h1 className="text-2xl font-extrabold tracking-tight">{c.title}</h1>
       </header>
 
-      <section className="glass-strong rounded-[24px] p-5 space-y-3 text-sm text-foreground/90 leading-relaxed animate-fade-in-up">
-        {c.body}
-      </section>
+      {c.sections.map((s, i) => (
+        <section
+          key={i}
+          className="glass-strong rounded-[24px] p-5 space-y-3 animate-fade-in-up"
+          style={{ animationDelay: `${i * 60}ms` }}
+        >
+          {s.heading && (
+            <h2 className="text-base font-bold text-foreground">{s.heading}</h2>
+          )}
+          {s.intro && (
+            <p className="text-sm leading-relaxed text-foreground/90">{s.intro}</p>
+          )}
+          {s.bullets && (
+            <ul className="space-y-2.5">
+              {s.bullets.map((b, j) => (
+                <li key={j} className="flex items-start gap-2.5 text-sm text-foreground/90">
+                  <span className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3 h-3 text-primary" strokeWidth={3} />
+                  </span>
+                  <span className="leading-relaxed">{b}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {s.footer && (
+            <p className="text-xs text-muted-foreground pt-2 leading-relaxed border-t border-border/40 mt-3">
+              {s.footer}
+            </p>
+          )}
+        </section>
+      ))}
     </div>
   );
 };

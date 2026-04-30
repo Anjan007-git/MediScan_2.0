@@ -269,11 +269,10 @@ const CornerBrackets = () => (
 );
 
 const RecentScanCard = ({ scan, onClick }: { scan: ScanRecord; onClick: () => void }) => {
-  const isSafe = scan.status === "safe";
   return (
     <button
       onClick={onClick}
-      className="glass w-full rounded-2xl p-3 flex items-center gap-3 text-left active:scale-[0.99] hover:shadow-glass-lg transition-all"
+      className="glass w-full rounded-2xl p-3 flex items-start gap-3 text-left active:scale-[0.99] hover:shadow-glass-lg transition-all"
     >
       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shrink-0 shadow-inner overflow-hidden border border-white/60">
         <Pill className="w-7 h-7 text-primary rotate-45" strokeWidth={2} />
@@ -283,16 +282,24 @@ const RecentScanCard = ({ scan, onClick }: { scan: ScanRecord; onClick: () => vo
           <h4 className="font-bold text-foreground text-[15px] truncate">{scan.name}</h4>
           <StatusBadge status={scan.status} />
         </div>
-        <p className="text-[12px] text-muted-foreground mt-0.5 truncate">{scan.description}</p>
+        {scan.generic && (
+          <p className="text-[11px] text-muted-foreground mt-0.5 truncate">Generic: {scan.generic}</p>
+        )}
+        {scan.composition && (
+          <p className="text-[11px] text-foreground/70 mt-0.5 truncate">{scan.composition}</p>
+        )}
+        <p className="text-[12px] text-muted-foreground mt-0.5 line-clamp-2">
+          {scan.uses?.[0] || scan.description}
+        </p>
         <div className="flex items-center gap-2 mt-1.5 text-[11px] text-muted-foreground">
-          <span>Scanned {timeAgo(scan.scannedAt)}</span>
+          <span>{timeAgo(scan.scannedAt)}</span>
           <span className="opacity-40">|</span>
           <span className="inline-flex items-center gap-1">
             <Calendar className="w-3 h-3" strokeWidth={2.4} /> Exp. {scan.expiry}
           </span>
         </div>
       </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={2.4} />
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" strokeWidth={2.4} />
     </button>
   );
 };

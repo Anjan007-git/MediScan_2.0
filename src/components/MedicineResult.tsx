@@ -88,6 +88,11 @@ const MedicineResult = ({ medicine, confidence, onBack }: MedicineResultProps) =
         description: medicine.uses?.[0] || medicine.composition || "Saved medicine",
         composition: medicine.composition,
         uses: medicine.uses,
+        dosage: medicine.dosage,
+        precautions: medicine.precautions,
+        warnings: medicine.warnings,
+        sideEffects: medicine.sideEffects,
+        storage: medicine.storage,
       });
       toast({ title: "Saved", description: `${medicine.name} added to Saved.` });
     }

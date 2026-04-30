@@ -57,6 +57,7 @@ const Saved = () => {
             <SavedItem
               key={s.id}
               item={s}
+              onOpen={() => navigate(`/medicine/${s.id}`)}
               onRemove={() => {
                 removeSavedMedicine(s.id);
                 toast({ title: "Removed from saved" });
@@ -69,7 +70,15 @@ const Saved = () => {
   );
 };
 
-const SavedItem = ({ item, onRemove }: { item: SavedMedicine; onRemove: () => void }) => {
+const SavedItem = ({
+  item,
+  onRemove,
+  onOpen,
+}: {
+  item: SavedMedicine;
+  onRemove: () => void;
+  onOpen: () => void;
+}) => {
   const map = {
     safe: { bg: "bg-success-light", text: "text-success", icon: ShieldCheck, label: "Safe" },
     caution: { bg: "bg-warning-light", text: "text-warning", icon: AlertTriangle, label: "Caution" },
@@ -78,27 +87,35 @@ const SavedItem = ({ item, onRemove }: { item: SavedMedicine; onRemove: () => vo
   const cfg = map[item.status];
   return (
     <div className="glass rounded-2xl p-3 flex items-center gap-3">
-      <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shrink-0 border border-white/60">
-        <Pill className="w-6 h-6 text-primary rotate-45" strokeWidth={2} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h4 className="font-bold text-foreground text-sm truncate">{item.name}</h4>
-          <span
-            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${cfg.bg} ${cfg.text}`}
-          >
-            <cfg.icon className="w-2.5 h-2.5" strokeWidth={2.6} />
-            {cfg.label}
-          </span>
+      <button
+        onClick={onOpen}
+        className="flex-1 flex items-center gap-3 text-left min-w-0 active:scale-[0.99]"
+      >
+        <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shrink-0 border border-white/60">
+          <Pill className="w-6 h-6 text-primary rotate-45" strokeWidth={2} />
         </div>
-        {item.generic && (
-          <p className="text-[11px] text-muted-foreground mt-0.5 truncate">Generic: {item.generic}</p>
-        )}
-        <p className="text-[12px] text-muted-foreground mt-0.5 truncate">{item.description}</p>
-      </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4 className="font-bold text-foreground text-sm truncate">{item.name}</h4>
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${cfg.bg} ${cfg.text}`}
+            >
+              <cfg.icon className="w-2.5 h-2.5" strokeWidth={2.6} />
+              {cfg.label}
+            </span>
+          </div>
+          {item.generic && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">Generic: {item.generic}</p>
+          )}
+          {item.composition && (
+            <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{item.composition}</p>
+          )}
+          <p className="text-[12px] text-muted-foreground mt-0.5 truncate">{item.uses?.[0] || item.description}</p>
+        </div>
+      </button>
       <button
         onClick={onRemove}
-        className="w-9 h-9 rounded-full glass flex items-center justify-center text-danger active:scale-90"
+        className="w-9 h-9 rounded-full glass flex items-center justify-center text-danger active:scale-90 shrink-0"
         aria-label="Remove"
       >
         <Trash2 className="w-4 h-4" strokeWidth={2.2} />

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Lock, ShieldCheck, Sparkles } from "lucide-react";
+import { Loader2, Mail, Lock, ShieldCheck, Sparkles, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (!authLoading && session) navigate("/", { replace: true });
@@ -135,7 +136,7 @@ const Login = () => {
           <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2">
             <Lock className="w-4 h-4 text-primary" strokeWidth={2.4} />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               minLength={6}
               autoComplete={mode === "signin" ? "current-password" : "new-password"}
@@ -144,6 +145,18 @@ const Login = () => {
               placeholder="Password"
               className="flex-1 bg-transparent outline-none text-sm font-medium"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="w-7 h-7 rounded-full flex items-center justify-center text-muted-foreground hover:text-primary active:scale-90 transition-all duration-200"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4 transition-opacity duration-200" strokeWidth={2.2} />
+              ) : (
+                <Eye className="w-4 h-4 transition-opacity duration-200" strokeWidth={2.2} />
+              )}
+            </button>
           </div>
 
           {mode === "signin" && (

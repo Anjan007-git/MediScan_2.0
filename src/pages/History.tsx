@@ -65,7 +65,7 @@ const ScanItem = ({ scan, onClick }: { scan: ScanRecord; onClick: () => void }) 
   return (
     <button
       onClick={onClick}
-      className="glass w-full rounded-2xl p-3 flex items-center gap-3 text-left active:scale-[0.99] hover:shadow-glass-lg transition-all"
+      className="glass w-full rounded-2xl p-3 flex items-start gap-3 text-left active:scale-[0.99] hover:shadow-glass-lg transition-all"
     >
       <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shrink-0 border border-white/60">
         <Pill className="w-6 h-6 text-primary rotate-45" strokeWidth={2} />
@@ -75,7 +75,15 @@ const ScanItem = ({ scan, onClick }: { scan: ScanRecord; onClick: () => void }) 
           <h4 className="font-bold text-foreground text-sm truncate">{scan.name}</h4>
           <StatusBadge status={scan.status} />
         </div>
-        <p className="text-[12px] text-muted-foreground mt-0.5 truncate">{scan.description}</p>
+        {scan.generic && (
+          <p className="text-[11px] text-muted-foreground mt-0.5 truncate">Generic: {scan.generic}</p>
+        )}
+        {scan.composition && (
+          <p className="text-[11px] text-foreground/70 mt-0.5 truncate">{scan.composition}</p>
+        )}
+        <p className="text-[12px] text-muted-foreground mt-0.5 line-clamp-2">
+          {scan.uses?.[0] || scan.description}
+        </p>
         <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground">
           <span>{timeAgo(scan.scannedAt)}</span>
           <span className="opacity-40">|</span>
@@ -84,7 +92,7 @@ const ScanItem = ({ scan, onClick }: { scan: ScanRecord; onClick: () => void }) 
           </span>
         </div>
       </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={2.4} />
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" strokeWidth={2.4} />
     </button>
   );
 };
