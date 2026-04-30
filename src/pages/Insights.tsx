@@ -111,6 +111,34 @@ const Insights = () => {
 
   const peakPoint = spendLine.reduce((m, p) => (p.y > m.y ? p : m), spendLine[0]);
 
+  // Categories computed from real scans by simple keyword grouping
+  const categories = useMemo(() => {
+    if (filteredScans.length === 0) return [] as { name: string; value: number; color: string }[];
+    const buckets: Record<string, number> = {
+      "Pain Relief": 0,
+      Antibiotics: 0,
+      Vitamins: 0,
+      Others: 0,
+    };
+    filteredScans.forEach((s) => {
+      const t = `${s.name} ${s.description || ""}`.toLowerCase();
+      if (/pain|paracetamol|ibuprofen|aspirin|relief|fever/.test(t)) buckets["Pain Relief"]++;
+      else if (/antibiotic|amoxi|cillin|cycline|mycin/.test(t)) buckets["Antibiotics"]++;
+      else if (/vitamin|multivit|supplement|biotin|iron|calcium/.test(t)) buckets["Vitamins"]++;
+      else buckets["Others"]++;
+    });
+    const total = Object.values(buckets).reduce((a, b) => a + b, 0) || 1;
+    const colors: Record<string, string> = {
+      "Pain Relief": "hsl(217 91% 60%)",
+      Antibiotics: "hsl(142 71% 45%)",
+      Vitamins: "hsl(25 95% 55%)",
+      Others: "hsl(262 83% 65%)",
+    };
+    return Object.entries(buckets)
+      .filter(([, v]) => v > 0)
+      .map(([name, v]) => ({ name, value: Math.round((v / total) * 100), color: colors[name] }));
+  }, [filteredScans]);
+
   return (
     <div className="px-5 pt-12 space-y-5">
       {/* HEADER */}
@@ -280,8 +308,11 @@ const Insights = () => {
 
         <div className="grid grid-cols-[auto_1fr] gap-4 items-end">
           <div>
-            <p className="text-xs text-muted-foreground">Total spent this month</p>
-            <p className="text-2xl font-extrabold mt-1 leading-tight">{formatINR(totalSpentDisplay)}</p>
+            <p className="text-xs text-muted-foreground">Total spent ({PERIOD_LABEL[period].toLowerCase()})</p>
+            <p className="text-2xl font-extrabold mt-1 leading-tight">{formatINR(totalSpent)}</p>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-xs text-muted-foreground">{filteredReceipts.length} receipts</span>
+            </div>
             <div className="flex items-center gap-2 mt-2">
               <span className="inline-flex items-center gap-0.5 bg-success-light text-success text-xs font-bold px-2 py-1 rounded-full">
                 <TrendingDown className="w-3 h-3" strokeWidth={2.6} />
