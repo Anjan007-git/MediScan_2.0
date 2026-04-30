@@ -135,7 +135,8 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      user: { name: "there", greeting: "Your health, our priority" },
+      user: { name: "there", greeting: "Your health, our priority", email: "" },
+      plan: "basic" as Plan,
       scans: [],
       receipts: [],
       reminders: [],
@@ -199,6 +200,8 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ settings: { ...state.settings, [key]: value } })),
       clearHistory: () => set({ scans: [] }),
       setUserName: (name) => set((state) => ({ user: { ...state.user, name } })),
+      setUserEmail: (email) => set((state) => ({ user: { ...state.user, email } })),
+      setPlan: (plan) => set({ plan }),
     }),
     {
       name: STORAGE_KEY_BASE,
