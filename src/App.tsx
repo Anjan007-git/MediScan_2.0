@@ -10,6 +10,7 @@ import StoreBinder from "./components/StoreBinder";
 import Home from "./pages/Home";
 import Scan from "./pages/Scan";
 import Receipts from "./pages/Receipts";
+import ReceiptScan from "./pages/ReceiptScan";
 import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
