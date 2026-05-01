@@ -39,7 +39,8 @@ const ProfileEdit = () => {
       return;
     }
     setUserName(name.trim());
-    setUserEmail(email.trim());
+    // Email is read-only — keep store email synced from auth
+    if (email && email !== storeUser.email) setUserEmail(email.trim());
     toast({ title: "Profile updated", description: "Your changes have been saved." });
     navigate("/settings");
   };
@@ -83,20 +84,25 @@ const ProfileEdit = () => {
           />
         </div>
 
-        <div className="glass rounded-2xl px-4 py-3">
+        <div className="glass rounded-2xl px-4 py-3 opacity-80">
           <div className="flex items-center gap-2 mb-1">
             <Mail className="w-3.5 h-3.5 text-primary" strokeWidth={2.4} />
-            <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">Email</span>
+            <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">
+              Email
+            </span>
+            <span className="ml-auto text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              Locked
+            </span>
           </div>
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full bg-transparent outline-none text-foreground placeholder:text-muted-foreground/60 text-sm font-medium"
+            readOnly
+            disabled
+            className="w-full bg-transparent outline-none text-foreground/80 text-sm font-medium cursor-not-allowed select-text"
           />
           <p className="text-[10.5px] text-muted-foreground mt-1">
-            Used for display in the app.
+            Email is tied to your account and cannot be changed here.
           </p>
         </div>
       </section>

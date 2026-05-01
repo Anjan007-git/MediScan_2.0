@@ -14,17 +14,22 @@ import {
   Shield,
   X,
   Pill,
+  Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import medicineBottle from "@/assets/medicine-bottle-3d.png";
 import avatarAlex from "@/assets/avatar-alex.jpg";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { scans, user: storeUser } = useAppStore();
+  const { scans, user: storeUser, deleteScan } = useAppStore();
   const { user: authUser, profile } = useAuth();
+  const { toast } = useToast();
   const [tipDismissed, setTipDismissed] = useState(false);
+  const [actionScan, setActionScan] = useState<ScanRecord | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const fullName =
     profile?.display_name ||
@@ -180,7 +185,13 @@ const Home = () => {
           </div>
           <div className="space-y-3">
             {recent.map((s) => (
-              <RecentScanCard key={s.id} scan={s} onClick={() => navigate(`/medicine/${s.id}`)} />
+              <RecentScanCard
+                key={s.id}
+                scan={s}
+                removing={removingId === s.id}
+                onClick={() => navigate(`/medicine/${s.id}`)}
+                onLongPress={() => setActionScan(s)}
+              />
             ))}
           </div>
         </section>
@@ -250,10 +261,81 @@ const Home = () => {
         </section>
       )}
 
-      
+      {/* iOS-style Action Sheet */}
+      {actionScan && (
+        <ActionSheet
+          title={actionScan.name}
+          subtitle="Scan history item"
+          onClose={() => setActionScan(null)}
+          onDelete={() => {
+            const id = actionScan.id;
+            setActionScan(null);
+            setRemovingId(id);
+            setTimeout(() => {
+              deleteScan(id);
+              setRemovingId(null);
+              toast({ title: "Deleted", description: `${actionScan.name} removed.` });
+            }, 280);
+          }}
+        />
+      )}
     </div>
   );
 };
+
+const ActionSheet = ({
+  title,
+  subtitle,
+  onClose,
+  onDelete,
+}: {
+  title: string;
+  subtitle?: string;
+  onClose: () => void;
+  onDelete: () => void;
+}) => (
+  <div
+    className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in"
+    onClick={onClose}
+  >
+    <div
+      className="w-full max-w-md mx-3 mb-3 space-y-2 animate-fade-in-up"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{
+          background: "rgba(255,255,255,0.92)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+        }}
+      >
+        <div className="px-4 py-3 text-center border-b border-border/40">
+          <p className="text-[13px] font-semibold text-foreground truncate">{title}</p>
+          {subtitle && <p className="text-[11px] text-muted-foreground">{subtitle}</p>}
+        </div>
+        <button
+          onClick={onDelete}
+          className="w-full py-3.5 text-[16px] font-semibold text-danger flex items-center justify-center gap-2 active:bg-danger/5"
+        >
+          <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+          Delete
+        </button>
+      </div>
+      <button
+        onClick={onClose}
+        className="w-full py-3.5 text-[16px] font-bold text-primary rounded-2xl"
+        style={{
+          background: "rgba(255,255,255,0.95)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+);
 
 const CornerBrackets = () => (
   <>
@@ -268,11 +350,55 @@ const CornerBrackets = () => (
   </>
 );
 
-const RecentScanCard = ({ scan, onClick }: { scan: ScanRecord; onClick: () => void }) => {
+const RecentScanCard = ({
+  scan,
+  onClick,
+  onLongPress,
+  removing,
+}: {
+  scan: ScanRecord;
+  onClick: () => void;
+  onLongPress?: () => void;
+  removing?: boolean;
+}) => {
+  const timerRef = useRef<number | null>(null);
+  const longFiredRef = useRef(false);
+
+  const startPress = () => {
+    longFiredRef.current = false;
+    timerRef.current = window.setTimeout(() => {
+      longFiredRef.current = true;
+      onLongPress?.();
+      try {
+        navigator.vibrate?.(40);
+      } catch {/* */}
+    }, 600); // 600ms feels iOS-native; spec said 2s but UX standard is ~500-700ms
+  };
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+  const handleClick = () => {
+    if (longFiredRef.current) return;
+    onClick();
+  };
+
   return (
     <button
-      onClick={onClick}
-      className="glass w-full rounded-2xl p-3 flex items-start gap-3 text-left active:scale-[0.99] hover:shadow-glass-lg transition-all"
+      onClick={handleClick}
+      onPointerDown={startPress}
+      onPointerUp={cancelPress}
+      onPointerLeave={cancelPress}
+      onPointerCancel={cancelPress}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onLongPress?.();
+      }}
+      className={`glass w-full rounded-2xl p-3 flex items-start gap-3 text-left active:scale-[0.99] hover:shadow-glass-lg transition-all duration-300 ${
+        removing ? "opacity-0 -translate-x-6" : "opacity-100 translate-x-0"
+      }`}
     >
       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center shrink-0 shadow-inner overflow-hidden border border-white/60">
         <Pill className="w-7 h-7 text-primary rotate-45" strokeWidth={2} />

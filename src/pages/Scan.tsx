@@ -243,8 +243,12 @@ const Scan = () => {
 
   // If we have a result, render result on light bg
   if (result?.medicine) {
+    // Remove dark immersive bg so the result card sits on light background
+    if (typeof document !== "undefined") {
+      document.body.classList.remove("scan-dark-mode");
+    }
     return (
-      <div className="px-2 pt-4">
+      <div className="px-2 pt-4 min-h-screen bg-background">
         <MedicineResult
           medicine={result.medicine}
           confidence={result.confidence}

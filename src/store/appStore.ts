@@ -64,6 +64,10 @@ export interface Receipt {
   items: { name: string; qty: number; price: number }[];
   imageUrl?: string;
   hidden?: boolean;
+  // OCR-extracted fields (optional)
+  medicines?: string[];
+  rawText?: string;
+  dateText?: string;
 }
 
 export interface Reminder {
@@ -113,6 +117,7 @@ interface AppState {
   hideReceipt: (id: string) => void;
   deleteReceipt: (id: string) => void;
   toggleSaved: (id: string) => void;
+  deleteScan: (id: string) => void;
   toggleReminder: (id: string) => void;
   addReminder: (r: Omit<Reminder, "id">) => void;
   deleteReminder: (id: string) => void;
@@ -161,6 +166,8 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           scans: state.scans.map((sc) => (sc.id === id ? { ...sc, saved: !sc.saved } : sc)),
         })),
+      deleteScan: (id) =>
+        set((state) => ({ scans: state.scans.filter((sc) => sc.id !== id) })),
       toggleReminder: (id) =>
         set((state) => ({
           reminders: state.reminders.map((r) =>

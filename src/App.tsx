@@ -10,6 +10,7 @@ import StoreBinder from "./components/StoreBinder";
 import Home from "./pages/Home";
 import Scan from "./pages/Scan";
 import Receipts from "./pages/Receipts";
+import ReceiptScan from "./pages/ReceiptScan";
 import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
 import History from "./pages/History";
@@ -17,6 +18,7 @@ import Saved from "./pages/Saved";
 import MedicineDetail from "./pages/MedicineDetail";
 import ReceiptDetail from "./pages/ReceiptDetail";
 import Reminders from "./pages/Reminders";
+import ReminderAdd from "./pages/ReminderAdd";
 import SettingsContent from "./pages/SettingsContent";
 import ProfileEdit from "./pages/ProfileEdit";
 import InsightsCategories from "./pages/InsightsCategories";
@@ -53,6 +55,7 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/scan" element={<Scan />} />
               <Route path="/receipts" element={<Receipts />} />
+              <Route path="/receipts/scan" element={<ReceiptScan />} />
               <Route path="/history" element={<History />} />
               <Route path="/saved" element={<Saved />} />
               <Route path="/insights" element={<Insights />} />
@@ -61,6 +64,7 @@ const App = () => (
               <Route path="/settings/profile" element={<ProfileEdit />} />
               <Route path="/settings/:kind" element={<SettingsContent />} />
               <Route path="/home/reminders" element={<Reminders />} />
+              <Route path="/home/reminders/new" element={<ReminderAdd />} />
               <Route path="/home/uploadimage" element={<UploadImage />} />
               <Route path="/insights/categories" element={<InsightsCategories />} />
               <Route path="/medicine/:id" element={<MedicineDetail />} />

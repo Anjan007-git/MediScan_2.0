@@ -264,7 +264,7 @@ const Receipts = () => {
 
       {/* FLOATING ADD BUTTON */}
       <button
-        onClick={() => navigate("/scan?mode=receipt")}
+        onClick={() => navigate("/receipts/scan")}
         className="fixed bottom-28 right-5 z-30 h-14 pl-4 pr-5 rounded-full flex items-center gap-2 text-white font-bold text-sm shadow-glow active:scale-95 transition glossy"
         style={{ background: "var(--gradient-primary)" }}
         aria-label="Add Receipt"
