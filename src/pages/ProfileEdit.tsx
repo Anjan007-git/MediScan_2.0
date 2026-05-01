@@ -39,7 +39,8 @@ const ProfileEdit = () => {
       return;
     }
     setUserName(name.trim());
-    setUserEmail(email.trim());
+    // Email is read-only — keep store email synced from auth
+    if (email && email !== storeUser.email) setUserEmail(email.trim());
     toast({ title: "Profile updated", description: "Your changes have been saved." });
     navigate("/settings");
   };
