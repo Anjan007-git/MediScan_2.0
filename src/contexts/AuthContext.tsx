@@ -66,10 +66,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const signOut = async () => {
+    // IMPORTANT: do NOT remove the per-user mediscan-store-<uid> slot.
+    // That data must persist so the same account restores its history on next login.
+    // Only clear legacy unscoped key (if it ever existed).
     try {
-      // Clear per-user local store first
-      const uid = user?.id;
-      if (uid) localStorage.removeItem(`mediscan-store-${uid}`);
       localStorage.removeItem("mediscan-store");
     } catch {
       /* ignore */
