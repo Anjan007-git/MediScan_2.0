@@ -21,6 +21,7 @@ import SettingsContent from "./pages/SettingsContent";
 import ProfileEdit from "./pages/ProfileEdit";
 import InsightsCategories from "./pages/InsightsCategories";
 import UploadImage from "./pages/UploadImage";
+import PremiumPayment from "./pages/PremiumPayment";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/saved" element={<Saved />} />
               <Route path="/insights" element={<Insights />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/settings/premium-payment" element={<PremiumPayment />} />
               <Route path="/settings/profile" element={<ProfileEdit />} />
               <Route path="/settings/:kind" element={<SettingsContent />} />
               <Route path="/home/reminders" element={<Reminders />} />

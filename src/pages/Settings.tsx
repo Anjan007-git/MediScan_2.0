@@ -110,31 +110,39 @@ const Settings = () => {
       >
         <button
           onClick={() => setPlan("basic")}
-          className={`glass rounded-[20px] p-4 text-left transition-all active:scale-[0.97] ${
-            plan === "basic" ? "ring-2 ring-primary shadow-glow" : ""
+          className={`rounded-[20px] p-4 text-left transition-all active:scale-[0.97] overflow-hidden relative ${
+            plan === "basic"
+              ? "text-white shadow-glow ring-2 ring-white/70"
+              : "glass text-foreground"
           }`}
+          style={plan === "basic" ? { background: "var(--gradient-primary)" } : undefined}
         >
-          <div className="flex items-center gap-2 mb-1.5">
-            <Sparkles className="w-4 h-4 text-foreground/70" strokeWidth={2.4} />
-            <span className="text-sm font-bold text-foreground">Basic</span>
+          {plan === "basic" && (
+            <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+          )}
+          <div className="relative flex items-center gap-2 mb-1.5">
+            <Sparkles className={`w-4 h-4 ${plan === "basic" ? "" : "text-foreground/70"}`} strokeWidth={2.4} />
+            <span className="text-sm font-bold">Basic</span>
           </div>
-          <p className="text-2xl font-extrabold text-foreground">₹0</p>
-          <p className="text-[11px] text-muted-foreground mt-1">10 scans / week</p>
+          <p className="relative text-2xl font-extrabold">₹0</p>
+          <p className={`relative text-[11px] mt-1 ${plan === "basic" ? "opacity-90" : "text-muted-foreground"}`}>
+            10 scans / week
+          </p>
         </button>
         <button
-          onClick={() => setPlan("premium")}
-          className={`relative rounded-[20px] p-4 text-left text-white shadow-glow transition-all active:scale-[0.97] overflow-hidden ${
-            plan === "premium" ? "ring-2 ring-white/70" : ""
+          onClick={() => navigate("/settings/premium-payment")}
+          className={`relative glass rounded-[20px] p-4 text-left transition-all active:scale-[0.97] overflow-hidden ${
+            plan === "premium" ? "ring-2 ring-primary shadow-glow" : ""
           }`}
-          style={{ background: "var(--gradient-primary)" }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
           <div className="relative flex items-center gap-2 mb-1.5">
-            <Crown className="w-4 h-4" strokeWidth={2.6} fill="currentColor" />
-            <span className="text-sm font-bold">Premium</span>
+            <Crown className="w-4 h-4 text-primary" strokeWidth={2.6} fill="currentColor" />
+            <span className="text-sm font-bold text-foreground">Premium</span>
           </div>
-          <p className="relative text-2xl font-extrabold">₹199<span className="text-xs font-semibold">/mo</span></p>
-          <p className="relative text-[11px] opacity-90 mt-1">Unlimited scans + insights</p>
+          <p className="relative text-2xl font-extrabold text-foreground">
+            ₹199<span className="text-xs font-semibold text-muted-foreground">/mo</span>
+          </p>
+          <p className="relative text-[11px] text-muted-foreground mt-1">Unlimited scans + insights</p>
         </button>
       </section>
 
