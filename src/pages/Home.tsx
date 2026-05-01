@@ -14,17 +14,22 @@ import {
   Shield,
   X,
   Pill,
+  Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import medicineBottle from "@/assets/medicine-bottle-3d.png";
 import avatarAlex from "@/assets/avatar-alex.jpg";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { scans, user: storeUser } = useAppStore();
+  const { scans, user: storeUser, deleteScan } = useAppStore();
   const { user: authUser, profile } = useAuth();
+  const { toast } = useToast();
   const [tipDismissed, setTipDismissed] = useState(false);
+  const [actionScan, setActionScan] = useState<ScanRecord | null>(null);
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const fullName =
     profile?.display_name ||
