@@ -430,7 +430,7 @@ const ReceiptScan = () => {
           </div>
         </div>
 
-        <div className="px-8 pb-10">
+        <div className="px-8" style={{ paddingBottom: `calc(120px + env(safe-area-inset-bottom, 0px))` }}>
           <div className="flex items-center justify-between max-w-sm mx-auto">
             <button
               onClick={() => fileInputRef.current?.click()}
