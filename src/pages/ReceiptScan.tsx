@@ -116,6 +116,7 @@ const ReceiptScan = () => {
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [parsed, setParsed] = useState<ParsedReceipt | null>(null);
+  const [flashOn, setFlashOn] = useState(false);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
