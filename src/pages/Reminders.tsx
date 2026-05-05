@@ -97,48 +97,43 @@ const Reminders = () => {
 
       {actionItem && (
         <div
-          className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in p-5"
           onClick={() => setActionItem(null)}
         >
           <div
-            className="w-full max-w-md mx-3 mb-3 space-y-2 animate-fade-in-up"
+            className="w-full max-w-[340px] rounded-3xl overflow-hidden animate-fade-in-up shadow-2xl"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "rgba(255,255,255,0.96)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+            }}
           >
-            <div
-              className="rounded-2xl overflow-hidden"
-              style={{
-                background: "rgba(255,255,255,0.92)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-              }}
-            >
-              <div className="px-4 py-3 text-center border-b border-border/40">
-                <p className="text-[13px] font-semibold text-foreground truncate">
-                  {actionItem.medicine}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  {actionItem.time} · {actionItem.frequency}
-                </p>
+            <div className="px-5 pt-6 pb-4 text-center">
+              <div className="w-14 h-14 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-3">
+                <Trash2 className="w-6 h-6 text-danger" strokeWidth={2.2} />
               </div>
+              <h3 className="text-[17px] font-bold text-foreground">Delete this reminder?</h3>
+              <p className="text-[13px] text-muted-foreground mt-1.5 truncate">{actionItem.medicine}</p>
+              <p className="text-[12px] text-muted-foreground/80 mt-0.5">
+                {actionItem.time} · {actionItem.frequency}
+              </p>
+            </div>
+            <div className="px-4 pb-4 flex flex-col gap-2.5">
               <button
                 onClick={() => handleDelete(actionItem)}
-                className="w-full py-3.5 text-[16px] font-semibold text-danger flex items-center justify-center gap-2 active:bg-danger/5"
+                className="w-full min-h-[48px] rounded-2xl text-[15px] font-bold text-white bg-danger active:scale-[0.98] flex items-center justify-center gap-2 shadow-md"
               >
                 <Trash2 className="w-4 h-4" strokeWidth={2.4} />
                 Delete
               </button>
+              <button
+                onClick={() => setActionItem(null)}
+                className="w-full min-h-[48px] rounded-2xl text-[15px] font-semibold text-foreground bg-muted/60 active:scale-[0.98]"
+              >
+                Cancel
+              </button>
             </div>
-            <button
-              onClick={() => setActionItem(null)}
-              className="w-full py-3.5 text-[16px] font-bold text-primary rounded-2xl"
-              style={{
-                background: "rgba(255,255,255,0.95)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-              }}
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}
