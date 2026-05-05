@@ -32,10 +32,10 @@ const Home = () => {
   const [removingId, setRemovingId] = useState<string | null>(null);
 
   const fullName =
+    storeUser.name ||
     profile?.display_name ||
     (authUser?.user_metadata as any)?.full_name ||
     (authUser?.user_metadata as any)?.name ||
-    storeUser.name ||
     "there";
   // First name only — split by space OR by "@" for email-style names
   const displayName = String(fullName).split(/[\s@]/)[0] || "there";
