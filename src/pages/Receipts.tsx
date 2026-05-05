@@ -305,11 +305,11 @@ const ReceiptCard = ({
   }, [menuOpen, onMenuClose]);
 
   return (
-    <article className="relative glass rounded-2xl p-3 pr-4 hover:shadow-glass-lg transition-all">
+    <article className="relative glass rounded-2xl p-3 pr-4 hover:shadow-glass-lg transition-all" style={{ overflow: "visible" }}>
       {/* Menu button — absolutely positioned, won't collide with content */}
       <button
         onClick={onMenu}
-        className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10 z-10"
+        className="absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10 z-20"
         aria-label="More options"
       >
         <MoreHorizontal className="w-4 h-4" strokeWidth={2.4} />
