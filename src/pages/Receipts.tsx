@@ -8,6 +8,7 @@ import {
   MoreHorizontal,
   FileText,
   EyeOff,
+  Eye,
   Trash2,
   Plus,
 } from "lucide-react";
