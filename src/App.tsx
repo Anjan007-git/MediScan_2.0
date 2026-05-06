@@ -66,6 +66,7 @@ const App = () => (
               <Route path="/settings/:kind" element={<SettingsContent />} />
               <Route path="/home/reminders" element={<Reminders />} />
               <Route path="/home/reminders/new" element={<ReminderAdd />} />
+              <Route path="/home/healthtip" element={<HealthTip />} />
               <Route path="/home/uploadimage" element={<UploadImage />} />
               <Route path="/insights/categories" element={<InsightsCategories />} />
               <Route path="/medicine/:id" element={<MedicineDetail />} />
