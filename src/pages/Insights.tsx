@@ -403,11 +403,11 @@ const Insights = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-foreground truncate">{r.medicine}</p>
-                    <p className="text-[12px] text-muted-foreground mt-0.5 capitalize">
-                      {r.frequency}
+                    <p className="text-[12px] text-muted-foreground mt-0.5">
+                      Medicine time at — {r.time}
                     </p>
                   </div>
-                  <span className="text-sm font-semibold text-primary">{r.time}</span>
+                  <span className="text-sm font-semibold text-primary capitalize">{r.frequency}</span>
                 </div>
               );
             })
