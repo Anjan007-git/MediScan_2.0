@@ -57,7 +57,7 @@ const Receipts = () => {
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
     return receipts
-      .filter((r) => !r.hidden)
+      .filter((r) => (showHidden ? r.hidden : !r.hidden))
       .filter((r) => {
         if (query && !r.pharmacy.toLowerCase().includes(query.toLowerCase())) return false;
         const age = now - r.date;
