@@ -142,7 +142,7 @@ const Settings = () => {
           <p className="relative text-2xl font-extrabold text-foreground">
             ₹199<span className="text-xs font-semibold text-muted-foreground">/mo</span>
           </p>
-          <p className="relative text-[11px] text-muted-foreground mt-1">Unlimited scans + insights</p>
+          <p className="relative text-[11px] text-muted-foreground mt-1">Unlimited scans + Insights</p>
         </button>
       </section>
 
