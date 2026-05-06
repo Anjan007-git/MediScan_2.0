@@ -39,7 +39,7 @@ const monthKey = (ts: number) =>
 
 const Receipts = () => {
   const navigate = useNavigate();
-  const { receipts, hideReceipt, deleteReceipt } = useAppStore();
+  const { receipts, hideReceipt, unhideReceipt, deleteReceipt } = useAppStore();
   const { user: authUser, profile } = useAuth();
   const avatarUrl =
     profile?.avatar_url ||
@@ -51,6 +51,7 @@ const Receipts = () => {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
 
   const filtered = useMemo(() => {
     const now = Date.now();
