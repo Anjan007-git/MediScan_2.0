@@ -389,11 +389,11 @@ const ReceiptCard = ({
           }}
         >
           <button
-            onClick={onHide}
+            onClick={isHidden ? onUnhide : onHide}
             className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-foreground hover:bg-primary/5 active:bg-primary/10"
           >
-            <EyeOff className="w-4 h-4" strokeWidth={2.4} />
-            Hide
+            {isHidden ? <Eye className="w-4 h-4" strokeWidth={2.4} /> : <EyeOff className="w-4 h-4" strokeWidth={2.4} />}
+            {isHidden ? "Unhide" : "Hide"}
           </button>
           <button
             onClick={onDelete}
