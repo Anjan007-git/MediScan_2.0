@@ -312,7 +312,9 @@ const ReceiptCard = ({
   onMenu,
   onMenuClose,
   onOpen,
+  isHidden,
   onHide,
+  onUnhide,
   onDelete,
 }: {
   r: Receipt;
@@ -320,7 +322,9 @@ const ReceiptCard = ({
   onMenu: () => void;
   onMenuClose: () => void;
   onOpen: () => void;
+  isHidden: boolean;
   onHide: () => void;
+  onUnhide: () => void;
   onDelete: () => void;
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
