@@ -197,7 +197,8 @@ const Home = () => {
         </section>
       ) : (
         <section
-          className="glass-tinted rounded-[24px] p-5 relative overflow-hidden animate-fade-in-up"
+          onClick={() => navigate("/home/healthtip")}
+          className="glass-tinted rounded-[24px] p-5 relative overflow-hidden animate-fade-in-up cursor-pointer active:scale-[0.99] transition"
           style={{ animationDelay: "200ms" }}
         >
           <div className="flex items-start gap-3">
@@ -214,7 +215,7 @@ const Home = () => {
                 Scan your first medicine to start building your personal health log. Always check expiry dates and consult a pharmacist when in doubt.
               </p>
               <button
-                onClick={() => navigate("/insights")}
+                onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
                 className="mt-3 glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary active:scale-95"
               >
                 Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
@@ -227,11 +228,12 @@ const Home = () => {
       {/* HEALTH TIP (only when there are scans) */}
       {recent.length > 0 && !tipDismissed && (
         <section
-          className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up"
+          onClick={() => navigate("/home/healthtip")}
+          className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up cursor-pointer active:scale-[0.99] transition"
           style={{ animationDelay: "260ms" }}
         >
           <button
-            onClick={() => setTipDismissed(true)}
+            onClick={(e) => { e.stopPropagation(); setTipDismissed(true); }}
             className="absolute top-3 right-3 w-6 h-6 rounded-full glass flex items-center justify-center active:scale-90"
             aria-label="Dismiss tip"
           >
@@ -253,7 +255,7 @@ const Home = () => {
             </div>
             <button
               className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary self-end shrink-0 active:scale-95"
-              onClick={() => navigate("/insights")}
+              onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
             >
               Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
             </button>

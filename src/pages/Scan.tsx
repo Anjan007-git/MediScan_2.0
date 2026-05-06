@@ -36,6 +36,13 @@ const Scan = () => {
   const initialMode = searchParams.get("mode") === "receipt" ? "receipt" : "scan";
   const [mode, setMode] = useState<"scan" | "receipt">(initialMode);
 
+  // Receipt mode → redirect to dedicated receipt scanner with full OCR flow
+  useEffect(() => {
+    if (initialMode === "receipt") {
+      navigate("/receipts/scan", { replace: true });
+    }
+  }, [initialMode, navigate]);
+
   const [camState, setCamState] = useState<CamState>("idle");
   const [camMessage, setCamMessage] = useState<string>("");
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");

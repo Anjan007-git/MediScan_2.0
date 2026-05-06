@@ -8,6 +8,7 @@ import {
   MoreHorizontal,
   FileText,
   EyeOff,
+  Eye,
   Trash2,
   Plus,
 } from "lucide-react";
@@ -38,7 +39,7 @@ const monthKey = (ts: number) =>
 
 const Receipts = () => {
   const navigate = useNavigate();
-  const { receipts, hideReceipt, deleteReceipt } = useAppStore();
+  const { receipts, hideReceipt, unhideReceipt, deleteReceipt } = useAppStore();
   const { user: authUser, profile } = useAuth();
   const avatarUrl =
     profile?.avatar_url ||
@@ -50,12 +51,13 @@ const Receipts = () => {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
 
   const filtered = useMemo(() => {
     const now = Date.now();
     const day = 24 * 60 * 60 * 1000;
     return receipts
-      .filter((r) => !r.hidden)
+      .filter((r) => (showHidden ? r.hidden : !r.hidden))
       .filter((r) => {
         if (query && !r.pharmacy.toLowerCase().includes(query.toLowerCase())) return false;
         const age = now - r.date;
@@ -69,7 +71,9 @@ const Receipts = () => {
         return true;
       })
       .sort((a, b) => b.date - a.date);
-  }, [receipts, query, filter, customFrom, customTo]);
+  }, [receipts, query, filter, customFrom, customTo, showHidden]);
+
+  const hiddenCount = receipts.filter((r) => r.hidden).length;
 
   const grouped = useMemo(() => {
     const map = new Map<string, Receipt[]>();
@@ -195,6 +199,27 @@ const Receipts = () => {
         })}
       </div>
 
+      {/* HIDDEN TOGGLE */}
+      <div className="flex items-center justify-between px-1 animate-fade-in-up">
+        <p className="text-xs text-muted-foreground">
+          {showHidden
+            ? `Showing ${hiddenCount} hidden receipt${hiddenCount === 1 ? "" : "s"}`
+            : hiddenCount > 0
+              ? `${hiddenCount} hidden receipt${hiddenCount === 1 ? "" : "s"}`
+              : "No hidden receipts"}
+        </p>
+        <button
+          onClick={() => setShowHidden((v) => !v)}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold inline-flex items-center gap-1.5 active:scale-95 transition ${
+            showHidden ? "text-white shadow-glow" : "glass text-foreground/80"
+          }`}
+          style={showHidden ? { background: "var(--gradient-primary)" } : undefined}
+        >
+          {showHidden ? <Eye className="w-3.5 h-3.5" strokeWidth={2.4} /> : <EyeOff className="w-3.5 h-3.5" strokeWidth={2.4} />}
+          {showHidden ? "Show All" : "Hidden"}
+        </button>
+      </div>
+
       {/* GROUPED LIST */}
       <div className="space-y-6 animate-fade-in-up" style={{ animationDelay: "180ms" }}>
         {grouped.map(([month, list]) => {
@@ -215,8 +240,13 @@ const Receipts = () => {
                   onMenu={() => setOpenMenu((v) => (v === r.id ? null : r.id))}
                   onMenuClose={() => setOpenMenu(null)}
                   onOpen={() => navigate(`/receipts/${r.id}`)}
+                  isHidden={!!r.hidden}
                   onHide={() => {
                     hideReceipt(r.id);
+                    setOpenMenu(null);
+                  }}
+                  onUnhide={() => {
+                    unhideReceipt(r.id);
                     setOpenMenu(null);
                   }}
                   onDelete={() => {
@@ -282,7 +312,9 @@ const ReceiptCard = ({
   onMenu,
   onMenuClose,
   onOpen,
+  isHidden,
   onHide,
+  onUnhide,
   onDelete,
 }: {
   r: Receipt;
@@ -290,7 +322,9 @@ const ReceiptCard = ({
   onMenu: () => void;
   onMenuClose: () => void;
   onOpen: () => void;
+  isHidden: boolean;
   onHide: () => void;
+  onUnhide: () => void;
   onDelete: () => void;
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -355,11 +389,11 @@ const ReceiptCard = ({
           }}
         >
           <button
-            onClick={onHide}
+            onClick={isHidden ? onUnhide : onHide}
             className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-foreground hover:bg-primary/5 active:bg-primary/10"
           >
-            <EyeOff className="w-4 h-4" strokeWidth={2.4} />
-            Hide
+            {isHidden ? <Eye className="w-4 h-4" strokeWidth={2.4} /> : <EyeOff className="w-4 h-4" strokeWidth={2.4} />}
+            {isHidden ? "Unhide" : "Hide"}
           </button>
           <button
             onClick={onDelete}

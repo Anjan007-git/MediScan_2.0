@@ -115,6 +115,7 @@ interface AppState {
   addScan: (s: ScanRecord) => void;
   addReceipt: (r: Receipt) => void;
   hideReceipt: (id: string) => void;
+  unhideReceipt: (id: string) => void;
   deleteReceipt: (id: string) => void;
   toggleSaved: (id: string) => void;
   deleteScan: (id: string) => void;
@@ -159,6 +160,10 @@ export const useAppStore = create<AppState>()(
       hideReceipt: (id) =>
         set((state) => ({
           receipts: state.receipts.map((r) => (r.id === id ? { ...r, hidden: true } : r)),
+        })),
+      unhideReceipt: (id) =>
+        set((state) => ({
+          receipts: state.receipts.map((r) => (r.id === id ? { ...r, hidden: false } : r)),
         })),
       deleteReceipt: (id) =>
         set((state) => ({ receipts: state.receipts.filter((r) => r.id !== id) })),

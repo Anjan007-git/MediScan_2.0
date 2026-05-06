@@ -370,7 +370,7 @@ const Insights = () => {
         <div className="flex items-center justify-between mb-3 px-1">
           <h3 className="font-bold text-foreground">Medicine Reminders</h3>
           <button
-            onClick={() => navigate("/settings#reminders")}
+            onClick={() => navigate("/home/reminders")}
             className="text-sm font-semibold text-primary active:opacity-70"
           >
             View All
@@ -403,11 +403,11 @@ const Insights = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-foreground truncate">{r.medicine}</p>
-                    <p className="text-[12px] text-muted-foreground mt-0.5 capitalize">
-                      {r.frequency}
+                    <p className="text-[12px] text-muted-foreground mt-0.5">
+                      Medicine time at — {r.time}
                     </p>
                   </div>
-                  <span className="text-sm font-semibold text-primary">{r.time}</span>
+                  <span className="text-sm font-semibold text-primary capitalize">{r.frequency}</span>
                 </div>
               );
             })
@@ -418,11 +418,12 @@ const Insights = () => {
       {/* HEALTH TIP */}
       {!tipDismissed && (
         <section
-          className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up"
+          onClick={() => navigate("/home/healthtip")}
+          className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up cursor-pointer active:scale-[0.99] transition"
           style={{ animationDelay: "360ms" }}
         >
           <button
-            onClick={() => setTipDismissed(true)}
+            onClick={(e) => { e.stopPropagation(); setTipDismissed(true); }}
             className="absolute top-3 right-3 w-6 h-6 rounded-full glass flex items-center justify-center active:scale-90"
             aria-label="Dismiss"
           >
@@ -442,7 +443,10 @@ const Insights = () => {
                 Always complete your full course of antibiotics as prescribed by your doctor.
               </p>
             </div>
-            <button className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary self-end shrink-0 active:scale-95">
+            <button
+              onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
+              className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary self-end shrink-0 active:scale-95"
+            >
               Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
             </button>
           </div>
