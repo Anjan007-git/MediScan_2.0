@@ -24,6 +24,7 @@ import ProfileEdit from "./pages/ProfileEdit";
 import InsightsCategories from "./pages/InsightsCategories";
 import UploadImage from "./pages/UploadImage";
 import PremiumPayment from "./pages/PremiumPayment";
+import HealthTip from "./pages/HealthTip";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
