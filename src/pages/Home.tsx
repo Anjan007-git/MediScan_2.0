@@ -197,7 +197,8 @@ const Home = () => {
         </section>
       ) : (
         <section
-          className="glass-tinted rounded-[24px] p-5 relative overflow-hidden animate-fade-in-up"
+          onClick={() => navigate("/home/healthtip")}
+          className="glass-tinted rounded-[24px] p-5 relative overflow-hidden animate-fade-in-up cursor-pointer active:scale-[0.99] transition"
           style={{ animationDelay: "200ms" }}
         >
           <div className="flex items-start gap-3">
@@ -214,7 +215,7 @@ const Home = () => {
                 Scan your first medicine to start building your personal health log. Always check expiry dates and consult a pharmacist when in doubt.
               </p>
               <button
-                onClick={() => navigate("/insights")}
+                onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
                 className="mt-3 glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary active:scale-95"
               >
                 Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
