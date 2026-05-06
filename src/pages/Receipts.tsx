@@ -71,7 +71,9 @@ const Receipts = () => {
         return true;
       })
       .sort((a, b) => b.date - a.date);
-  }, [receipts, query, filter, customFrom, customTo]);
+  }, [receipts, query, filter, customFrom, customTo, showHidden]);
+
+  const hiddenCount = receipts.filter((r) => r.hidden).length;
 
   const grouped = useMemo(() => {
     const map = new Map<string, Receipt[]>();
