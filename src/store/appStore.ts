@@ -161,6 +161,10 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           receipts: state.receipts.map((r) => (r.id === id ? { ...r, hidden: true } : r)),
         })),
+      unhideReceipt: (id) =>
+        set((state) => ({
+          receipts: state.receipts.map((r) => (r.id === id ? { ...r, hidden: false } : r)),
+        })),
       deleteReceipt: (id) =>
         set((state) => ({ receipts: state.receipts.filter((r) => r.id !== id) })),
       toggleSaved: (id) =>
