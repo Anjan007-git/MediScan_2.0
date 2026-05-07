@@ -51,7 +51,7 @@ const PremiumPayment = () => {
           <span className="text-sm font-bold tracking-wide uppercase">Premium Plan</span>
         </div>
         <div className="relative mt-3 flex items-end gap-1">
-          <span className="text-5xl font-extrabold leading-none">₹199</span>
+          <span className="text-5xl font-extrabold leading-none">₹99</span>
           <span className="text-sm font-semibold opacity-90 mb-1">/month</span>
         </div>
         <p className="relative text-[12px] opacity-90 mt-2">Cancel anytime. Billed monthly.</p>

@@ -89,7 +89,7 @@ const Settings = () => {
             {plan === "premium" ? (
               <>
                 <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
-                Premium • ₹199/mo
+                Premium • ₹99/mo
               </>
             ) : (
               <>
@@ -98,49 +98,13 @@ const Settings = () => {
               </>
             )}
           </span>
-        </div>
-        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" strokeWidth={2.4} />
-      </button>
-
-      {/* SUBSCRIPTION PLANS */}
-      <SectionLabel>Subscription</SectionLabel>
-      <section
-        className="grid grid-cols-2 gap-3 animate-fade-in-up"
-        style={{ animationDelay: "80ms" }}
-      >
-        <button
-          onClick={() => setPlan("basic")}
-          className={`rounded-[20px] p-4 text-left transition-all active:scale-[0.97] overflow-hidden relative ${
-            plan === "basic"
-              ? "text-white shadow-glow ring-2 ring-white/70"
-              : "glass text-foreground"
-          }`}
-          style={plan === "basic" ? { background: "var(--gradient-primary)" } : undefined}
-        >
-          {plan === "basic" && (
-            <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
-          )}
-          <div className="relative flex items-center gap-2 mb-1.5">
-            <Sparkles className={`w-4 h-4 ${plan === "basic" ? "" : "text-foreground/70"}`} strokeWidth={2.4} />
-            <span className="text-sm font-bold">Basic</span>
-          </div>
-          <p className="relative text-2xl font-extrabold">₹0</p>
-          <p className={`relative text-[11px] mt-1 ${plan === "basic" ? "opacity-90" : "text-muted-foreground"}`}>
-            10 scans / week
-          </p>
-        </button>
-        <button
-          onClick={() => navigate("/settings/premium-payment")}
-          className={`relative glass rounded-[20px] p-4 text-left transition-all active:scale-[0.97] overflow-hidden ${
-            plan === "premium" ? "ring-2 ring-primary shadow-glow" : ""
-          }`}
-        >
+...
           <div className="relative flex items-center gap-2 mb-1.5">
             <Crown className="w-4 h-4 text-primary" strokeWidth={2.6} fill="currentColor" />
             <span className="text-sm font-bold text-foreground">Premium</span>
           </div>
           <p className="relative text-2xl font-extrabold text-foreground">
-            ₹199<span className="text-xs font-semibold text-muted-foreground">/mo</span>
+            ₹99<span className="text-xs font-semibold text-muted-foreground">/mo</span>
           </p>
           <p className="relative text-[11px] text-muted-foreground mt-1">Unlimited scans + Insights</p>
         </button>
