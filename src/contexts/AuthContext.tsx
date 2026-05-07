@@ -71,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Only clear legacy unscoped key (if it ever existed).
     try {
       localStorage.removeItem("mediscan-store");
+      localStorage.removeItem("mediscan-onboarded");
     } catch {
       /* ignore */
     }

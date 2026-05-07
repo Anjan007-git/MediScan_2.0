@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,9 +8,11 @@ import { Loader2, Mail, Lock, ShieldCheck, Sparkles, Eye, EyeOff } from "lucide-
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { session, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const initialMode = new URLSearchParams(location.search).get("mode") === "signup" ? "signup" : "signin";
+  const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

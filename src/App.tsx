@@ -26,6 +26,7 @@ import UploadImage from "./pages/UploadImage";
 import PremiumPayment from "./pages/PremiumPayment";
 import HealthTip from "./pages/HealthTip";
 import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -43,6 +44,7 @@ const App = () => (
           <StoreBinder />
           <ReminderEngine />
           <Routes>
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
