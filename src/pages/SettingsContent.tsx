@@ -80,7 +80,7 @@ const CONTENT: Record<Kind, { title: string; sections: Section[] }> = {
           "Can I use MediScan offline? — Browsing is offline; scanning needs internet.",
           "How do reminders work? — They trigger locally with sound + glass alerts.",
         ],
-        footer: "📧 support@mediscan.app  •  🌐 help.mediscan.app  •  Reply within 24 hours.",
+        footer: "📧 support@mediscan.app\n🌐 help.mediscan.app\n • Reply within 24 hours.",
       },
     ],
   },
@@ -140,7 +140,7 @@ const SettingsContent = () => {
             </ul>
           )}
           {s.footer && (
-            <p className="text-xs text-muted-foreground pt-2 leading-relaxed border-t border-border/40 mt-3">
+            <p className="text-xs text-muted-foreground pt-2 leading-relaxed border-t border-border/40 mt-3 whitespace-pre-line">
               {s.footer}
             </p>
           )}
