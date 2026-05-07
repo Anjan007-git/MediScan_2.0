@@ -15,7 +15,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!session) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    const onboarded = (() => { try { return localStorage.getItem("mediscan-onboarded") === "1"; } catch { return false; } })();
+    return <Navigate to={onboarded ? "/login" : "/onboarding"} replace state={{ from: location.pathname }} />;
   }
 
   return <>{children}</>;
