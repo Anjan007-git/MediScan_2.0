@@ -211,14 +211,6 @@ const Onboarding = () => {
   const deltaX = useRef(0);
   const [drag, setDrag] = useState(0);
 
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("mediscan-onboarded") === "1") {
-        navigate("/login", { replace: true });
-      }
-    } catch {}
-  }, [navigate]);
-
   const finish = (mode: "signin" | "signup") => {
     try {
       localStorage.setItem("mediscan-onboarded", "1");
