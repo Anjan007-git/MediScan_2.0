@@ -250,7 +250,7 @@ const Settings = () => {
           </IconTile>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-foreground text-[15px]">Version</p>
-            <p className="text-[12px] text-muted-foreground">1.0.0 (Build 100)</p>
+            <p className="text-[12px] text-muted-foreground">v1.0.0</p>
           </div>
           <span className="bg-primary/10 text-primary text-[11px] font-bold px-3 py-1.5 rounded-full">
             Up to date
