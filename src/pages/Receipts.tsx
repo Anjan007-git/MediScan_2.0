@@ -270,7 +270,7 @@ const Receipts = () => {
       </div>
 
       {/* SUMMARY CARD */}
-      <section className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: "240ms" }}>
+      <section className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: "240ms", zIndex: 1 }}>
         <div className="flex items-center gap-4">
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-glow relative overflow-hidden"
