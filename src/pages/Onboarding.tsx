@@ -254,8 +254,10 @@ const Onboarding = () => {
 
   return (
     <div
-      className="min-h-screen w-full overflow-hidden relative flex flex-col"
+      className="fixed inset-0 w-full overflow-hidden flex flex-col"
       style={{
+        height: "100dvh",
+        touchAction: "pan-x",
         background:
           "radial-gradient(1200px 600px at 80% -10%, #DBEAFE 0%, transparent 60%), radial-gradient(900px 500px at -10% 110%, #E0F2FE 0%, transparent 55%), linear-gradient(180deg, #F4F8FF 0%, #F8FBFF 100%)",
       }}

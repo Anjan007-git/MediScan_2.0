@@ -270,7 +270,7 @@ const Receipts = () => {
       </div>
 
       {/* SUMMARY CARD */}
-      <section className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: "240ms" }}>
+      <section className="glass-tinted rounded-[24px] p-4 relative overflow-hidden animate-fade-in-up" style={{ animationDelay: "240ms", zIndex: 1 }}>
         <div className="flex items-center gap-4">
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-glow relative overflow-hidden"
@@ -339,7 +339,10 @@ const ReceiptCard = ({
   }, [menuOpen, onMenuClose]);
 
   return (
-    <article className="relative glass rounded-2xl p-3 pr-4 hover:shadow-glass-lg transition-all" style={{ overflow: "visible" }}>
+    <article
+      className="relative glass rounded-2xl p-3 pr-4 hover:shadow-glass-lg transition-all"
+      style={{ overflow: "visible", zIndex: menuOpen ? 70 : "auto" }}
+    >
       {/* Menu button — absolutely positioned, won't collide with content */}
       <button
         onClick={onMenu}

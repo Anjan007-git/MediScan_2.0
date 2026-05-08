@@ -59,7 +59,7 @@ const ProfileEdit = () => {
       </header>
 
       <section className="glass-strong rounded-[24px] p-5 flex flex-col items-center animate-fade-in-up">
-        <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white shadow-glow">
+        <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-white shadow-soft">
           <img
             src={avatarUrl}
             alt="Profile"
