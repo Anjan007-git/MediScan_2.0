@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -207,17 +207,12 @@ const slides: Slide[] = [
 const Onboarding = () => {
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
+  const lockRef = useRef(false);
   const startX = useRef<number | null>(null);
+  const startY = useRef<number | null>(null);
   const deltaX = useRef(0);
+  const swiped = useRef(false);
   const [drag, setDrag] = useState(0);
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("mediscan-onboarded") === "1") {
-        navigate("/login", { replace: true });
-      }
-    } catch {}
-  }, [navigate]);
 
   const finish = (mode: "signin" | "signup") => {
     try {
@@ -226,24 +221,49 @@ const Onboarding = () => {
     navigate(mode === "signup" ? "/login?mode=signup" : "/login", { replace: true });
   };
 
-  const goNext = () => index < slides.length - 1 && setIndex(index + 1);
-  const goPrev = () => index > 0 && setIndex(index - 1);
+  const step = (dir: 1 | -1) => {
+    if (lockRef.current) return;
+    setIndex((i) => {
+      const next = i + dir;
+      if (next < 0 || next > slides.length - 1) return i;
+      lockRef.current = true;
+      window.setTimeout(() => {
+        lockRef.current = false;
+      }, 350);
+      return next;
+    });
+  };
+
+  const goNext = () => step(1);
+  const goPrev = () => step(-1);
 
   const onTouchStart = (e: React.TouchEvent) => {
     startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
     deltaX.current = 0;
+    swiped.current = false;
   };
   const onTouchMove = (e: React.TouchEvent) => {
-    if (startX.current == null) return;
-    deltaX.current = e.touches[0].clientX - startX.current;
-    setDrag(deltaX.current);
+    if (startX.current == null || startY.current == null) return;
+    const dx = e.touches[0].clientX - startX.current;
+    const dy = e.touches[0].clientY - startY.current;
+    // Ignore vertical scrolls
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10) {
+      startX.current = null;
+      setDrag(0);
+      return;
+    }
+    deltaX.current = dx;
+    setDrag(dx);
   };
   const onTouchEnd = () => {
-    if (Math.abs(deltaX.current) > 60) {
+    if (Math.abs(deltaX.current) > 60 && !swiped.current) {
+      swiped.current = true;
       if (deltaX.current < 0) goNext();
       else goPrev();
     }
     startX.current = null;
+    startY.current = null;
     deltaX.current = 0;
     setDrag(0);
   };
