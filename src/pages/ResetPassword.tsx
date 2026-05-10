@@ -12,14 +12,30 @@ const ResetPassword = () => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Supabase auto-handles the recovery hash and emits a PASSWORD_RECOVERY event
+    let cancelled = false;
+
+    const verifyRecoverySession = async () => {
+      const code = new URL(window.location.href).searchParams.get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error && !cancelled) setReady(true);
+        return;
+      }
+
+      const { data } = await supabase.auth.getSession();
+      if (data.session && !cancelled) setReady(true);
+    };
+
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
+      if (!cancelled && (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN")) setReady(true);
     });
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setReady(true);
-    });
-    return () => sub.subscription.unsubscribe();
+
+    verifyRecoverySession();
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
