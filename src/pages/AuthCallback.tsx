@@ -9,12 +9,34 @@ const AuthCallback = () => {
   useEffect(() => {
     let cancelled = false;
 
-    // Supabase JS auto-detects the session from the URL (hash or ?code=).
-    // We just wait for it to be available, then redirect.
-    const finish = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (cancelled) return;
-      navigate(data.session ? "/" : "/login", { replace: true });
+    const run = async () => {
+      try {
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get("code");
+        const errorDesc = url.searchParams.get("error_description") || url.searchParams.get("error");
+
+        if (errorDesc) {
+          if (!cancelled) navigate("/login", { replace: true });
+          return;
+        }
+
+        // PKCE flow: exchange ?code= for a session
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          if (error) {
+            if (!cancelled) navigate("/login", { replace: true });
+            return;
+          }
+        }
+        // Implicit flow with #access_token=... is auto-detected by the client.
+
+        // Confirm session is set, then redirect.
+        const { data } = await supabase.auth.getSession();
+        if (cancelled) return;
+        navigate(data.session ? "/" : "/login", { replace: true });
+      } catch {
+        if (!cancelled) navigate("/login", { replace: true });
+      }
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
@@ -22,12 +44,10 @@ const AuthCallback = () => {
       if (sess) navigate("/", { replace: true });
     });
 
-    // Small delay to allow Supabase to process the URL params first
-    const t = window.setTimeout(finish, 300);
+    run();
 
     return () => {
       cancelled = true;
-      window.clearTimeout(t);
       sub.subscription.unsubscribe();
     };
   }, [navigate]);
