@@ -1,13 +1,22 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 
 const AuthCallback = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     let cancelled = false;
+    const getRedirectTarget = () => {
+      try {
+        const target = localStorage.getItem("mediscan-auth-redirect") || "/";
+        localStorage.removeItem("mediscan-auth-redirect");
+        return target.startsWith("/") ? target : "/";
+      } catch {
+        return "/";
+      }
+    };
 
     const run = async () => {
       try {
@@ -22,18 +31,17 @@ const AuthCallback = () => {
 
         // PKCE flow: exchange ?code= for a session
         if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
           if (error) {
             if (!cancelled) navigate("/login", { replace: true });
             return;
           }
         }
-        // Implicit flow with #access_token=... is auto-detected by the client.
 
         // Confirm session is set, then redirect.
         const { data } = await supabase.auth.getSession();
         if (cancelled) return;
-        navigate(data.session ? "/" : "/login", { replace: true });
+        navigate(data.session ? getRedirectTarget() : "/login", { replace: true });
       } catch {
         if (!cancelled) navigate("/login", { replace: true });
       }
@@ -41,7 +49,7 @@ const AuthCallback = () => {
 
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, sess) => {
       if (cancelled) return;
-      if (sess) navigate("/", { replace: true });
+      if (sess) navigate(getRedirectTarget(), { replace: true });
     });
 
     run();
