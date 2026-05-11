@@ -32,34 +32,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let mounted = true;
-    let sessionRestored = false;
 
-    const applySession = (sess: Session | null) => {
+    const apply = (sess: Session | null) => {
       if (!mounted) return;
       setSession(sess);
       setUser(sess?.user ?? null);
       if (!sess?.user) setProfile(null);
     };
 
-    const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
-      if (event === "INITIAL_SESSION" && sessionRestored) return;
-      applySession(sess);
-      if (event !== "INITIAL_SESSION" || sessionRestored) {
-        setLoading(false);
-      }
+    // Subscribe FIRST so we never miss SIGNED_IN events fired during init
+    // (e.g. from AuthCallback's exchangeCodeForSession).
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+      apply(sess);
+      // Once any auth event fires, we've finished initializing.
+      if (mounted) setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      sessionRestored = true;
-      applySession(data.session);
-      setLoading(false);
-    }).catch(() => {
-      if (mounted) {
-        sessionRestored = true;
-        setLoading(false);
-      }
-    });
+    // Then restore any persisted session from storage.
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        apply(data.session);
+      })
+      .catch(() => {
+        /* ignore */
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
 
     return () => {
       mounted = false;
@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  // Load profile when user changes (deferred)
+  // Load profile when user changes (deferred to avoid blocking auth callback)
   useEffect(() => {
     if (!user) return;
     let active = true;
@@ -87,7 +87,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     // IMPORTANT: do NOT remove the per-user mediscan-store-<uid> slot.
     // That data must persist so the same account restores its history on next login.
-    // Only clear legacy unscoped key (if it ever existed).
     try {
       localStorage.removeItem("mediscan-store");
       localStorage.removeItem("mediscan-onboarded");
