@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, sess) => {
+      if (event === "INITIAL_SESSION" && sessionRestored) return;
       applySession(sess);
       if (event !== "INITIAL_SESSION" || sessionRestored) {
         setLoading(false);
