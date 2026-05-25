@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 
 const corsHeaders = {
@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 
 // In-memory rate limiter (per edge function instance)
 // Limits: 10 requests per minute per IP
@@ -32,6 +38,44 @@ function isRateLimited(ip: string): boolean {
 
 // ~10 MB raw → ~13.4 MB base64. Allow some padding.
 const MAX_IMAGE_PAYLOAD = 14_000_000;
+
+const parseAiJson = (content: unknown) => {
+  const text = Array.isArray(content)
+    ? content.map((part) => (typeof part === "string" ? part : part?.text || "")).join("\n")
+    : String(content || "");
+
+  const cleaned = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : cleaned);
+};
+
+const callAiGateway = async (lovableApiKey: string, body: Record<string, unknown>) => {
+  let lastResponse: Response | null = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Lovable-API-Key": lovableApiKey,
+        "X-Lovable-AIG-SDK": "mediscan-edge-fetch",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    lastResponse = response;
+    if (response.ok || ![408, 429, 500, 502, 503, 504].includes(response.status) || attempt === 2) {
+      return response;
+    }
+
+    console.warn(`[analyze-medicine] AI gateway retry ${attempt} after HTTP ${response.status}`);
+    await response.body?.cancel();
+    await new Promise((resolve) => setTimeout(resolve, 650));
+  }
+  return lastResponse!;
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
