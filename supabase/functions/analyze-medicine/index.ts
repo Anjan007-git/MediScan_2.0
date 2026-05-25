@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 
 const corsHeaders = {
@@ -7,6 +7,12 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 
 // In-memory rate limiter (per edge function instance)
 // Limits: 10 requests per minute per IP
@@ -33,10 +39,50 @@ function isRateLimited(ip: string): boolean {
 // ~10 MB raw → ~13.4 MB base64. Allow some padding.
 const MAX_IMAGE_PAYLOAD = 14_000_000;
 
+const parseAiJson = (content: unknown) => {
+  const text = Array.isArray(content)
+    ? content.map((part: any) => (typeof part === "string" ? part : part?.text || "")).join("\n")
+    : String(content || "");
+
+  const cleaned = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : cleaned);
+};
+
+const callAiGateway = async (lovableApiKey: string, body: Record<string, unknown>) => {
+  let lastResponse: Response | null = null;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Lovable-API-Key": lovableApiKey,
+        "X-Lovable-AIG-SDK": "mediscan-edge-fetch",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    lastResponse = response;
+    if (response.ok || ![408, 429, 500, 502, 503, 504].includes(response.status) || attempt === 2) {
+      return response;
+    }
+
+    console.warn(`[analyze-medicine] AI gateway retry ${attempt} after HTTP ${response.status}`);
+    await response.body?.cancel();
+    await new Promise((resolve) => setTimeout(resolve, 650));
+  }
+  return lastResponse!;
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  let scanId: string | undefined;
 
   try {
     const ip =
@@ -45,65 +91,56 @@ serve(async (req) => {
       "unknown";
 
     if (isRateLimited(ip)) {
-      return new Response(
-        JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Too many requests. Please wait a moment and try again." }, 429);
     }
 
     // Require authentication — prevents anonymous abuse of AI credits
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
     if (!token) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required." }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.warn("[analyze-medicine] Missing Authorization header");
+      return jsonResponse({ error: "Authentication required." }, 401);
     }
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
+      global: { headers: { Authorization: authHeader } },
     });
-    const { data: userData, error: userErr } = await authClient.auth.getUser(token);
-    if (userErr || !userData?.user) {
-      return new Response(
-        JSON.stringify({ error: "Invalid or expired session." }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const { data: claimsData, error: claimsErr } = await authClient.auth.getClaims(token);
+    if (claimsErr || !claimsData?.claims?.sub) {
+      console.warn("[analyze-medicine] Invalid session claims", claimsErr?.message);
+      return jsonResponse({ error: "Invalid or expired session." }, 401);
     }
 
-    const { imageData, scanId } = await req.json();
+    const requestBody = await req.json().catch((error) => {
+      console.error("[analyze-medicine] Failed to parse request JSON", error);
+      return null;
+    });
+    const imageData = requestBody?.imageData;
+    scanId = requestBody?.scanId;
+    console.log(
+      `[analyze-medicine] Request scanId=${scanId || "missing"} | type=${typeof imageData} | bytes=${
+        typeof imageData === "string" ? imageData.length : 0
+      } | mime=${typeof imageData === "string" ? imageData.slice(5, imageData.indexOf(";")) : "n/a"}`
+    );
 
 
     if (!imageData || typeof imageData !== "string") {
-      return new Response(
-        JSON.stringify({ error: "No image data provided", scanId }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "No image data provided", scanId }, 400);
     }
 
     if (!imageData.startsWith("data:image/")) {
-      return new Response(
-        JSON.stringify({ error: "Invalid image format", scanId }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Invalid image format", scanId }, 400);
     }
 
     if (imageData.length > MAX_IMAGE_PAYLOAD) {
-      return new Response(
-        JSON.stringify({ error: "Image too large. Please upload an image under 10 MB.", scanId }),
-        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Image too large. Please upload an image under 10 MB.", scanId }, 413);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       console.error("LOVABLE_API_KEY is not configured");
-      return new Response(
-        JSON.stringify({ error: "Service is temporarily unavailable.", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Service is temporarily unavailable.", scanId }, 500);
     }
 
     const systemPrompt = `You are a medicine identification expert. Analyze the provided image and determine if it contains a medicine (tablet strip, bottle, packaging, etc.).
@@ -135,14 +172,9 @@ Return your response as a JSON object with this EXACT structure:
 If isMedicine is false, set medicine to null and confidence to how sure you are it's NOT medicine.
 If isMedicine is true, confidence should reflect how sure you are about the identification.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+    const response = await callAiGateway(LOVABLE_API_KEY, {
+        model: "google/gemini-2.5-pro",
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: systemPrompt },
           {
@@ -159,83 +191,89 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
             ],
           },
         ],
-      }),
     });
+
+    console.log(`[analyze-medicine] AI response status=${response.status} scanId=${scanId}`);
 
     if (!response.ok) {
       const statusCode = response.status;
       if (statusCode === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment.", scanId }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return jsonResponse({ error: "Rate limit exceeded. Please try again in a moment.", scanId }, 429);
       }
       if (statusCode === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add funds.", scanId }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return jsonResponse({ error: "AI credits exhausted. Please add funds.", scanId }, 402);
       }
       const errText = await response.text();
       console.error(`AI gateway error [${statusCode}]:`, errText);
-      return new Response(
-        JSON.stringify({ error: "Failed to analyze image", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Failed to analyze image", scanId }, 500);
     }
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content;
+    console.log(
+      `[analyze-medicine] AI payload scanId=${scanId} | hasContent=${Boolean(content)} | finish=${
+        aiResponse.choices?.[0]?.finish_reason || "unknown"
+      }`
+    );
 
     if (!content) {
-      return new Response(
-        JSON.stringify({ error: "No response from AI", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "No response from AI", scanId }, 500);
     }
 
     // Parse the JSON from the AI response (strip markdown code fences if present)
     let parsed;
     try {
-      const cleaned = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-      parsed = JSON.parse(cleaned);
-    } catch {
-      console.error("Failed to parse AI response:", content);
-      return new Response(
-        JSON.stringify({ error: "Unable to process AI response", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      parsed = parseAiJson(content);
+    } catch (parseError) {
+      console.error("Failed to parse AI response:", parseError, content);
+      return jsonResponse({ error: "Unable to process AI response", scanId }, 500);
     }
 
-    // Validate the response
-    if (!parsed.isMedicine || !parsed.medicine || !parsed.medicine.name) {
-      return new Response(
-        JSON.stringify({
+    // Validate the response. Accept partial medicine data when the model clearly
+    // identified a medicine so the UI does not show a false failure for usable scans.
+    const hasMedicineFields = Boolean(
+      parsed.medicine &&
+        (parsed.medicine.name ||
+          parsed.medicine.generic ||
+          parsed.medicine.composition ||
+          (Array.isArray(parsed.medicine.uses) && parsed.medicine.uses.length > 0))
+    );
+    if (!parsed.isMedicine || !hasMedicineFields) {
+      console.log(`[analyze-medicine] No medicine detected scanId=${scanId} confidence=${parsed.confidence || 0}`);
+      return jsonResponse(
+        {
           isMedicine: false,
           confidence: parsed.confidence || 0,
           medicine: null,
           scanId,
-        }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        },
+        200
       );
     }
 
     console.log(`[analyze-medicine] scanId=${scanId} | detected=${parsed.medicine.name} | confidence=${parsed.confidence}`);
 
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         isMedicine: true,
-        confidence: parsed.confidence,
-        medicine: parsed.medicine,
+        confidence: Number(parsed.confidence) || 80,
+        medicine: {
+          name: String(parsed.medicine.name || parsed.medicine.generic || "Medicine detected"),
+          generic: String(parsed.medicine.generic || "Consult a healthcare professional"),
+          uses: Array.isArray(parsed.medicine.uses) && parsed.medicine.uses.length ? parsed.medicine.uses : ["Consult a healthcare professional for verified uses."],
+          composition: String(parsed.medicine.composition || parsed.medicine.generic || "Not identified from image"),
+          dosage: String(parsed.medicine.dosage || "Follow the label or consult a healthcare professional."),
+          precautions: Array.isArray(parsed.medicine.precautions) && parsed.medicine.precautions.length ? parsed.medicine.precautions : ["Verify this result with a pharmacist or doctor before use."],
+          warnings: Array.isArray(parsed.medicine.warnings) && parsed.medicine.warnings.length ? parsed.medicine.warnings : ["Do not use medicine based only on AI identification."],
+          sideEffects: Array.isArray(parsed.medicine.sideEffects) ? parsed.medicine.sideEffects : [],
+          storage: String(parsed.medicine.storage || "Store according to the package instructions."),
+        },
         scanId,
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      },
+      200
     );
   } catch (e) {
     console.error("analyze-medicine error:", e);
-    return new Response(
-      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ error: "An unexpected error occurred. Please try again.", scanId }, 500);
   }
 });

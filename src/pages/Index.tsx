@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import Header from "@/components/Header";
 import ScanCard from "@/components/ScanCard";
 import FeatureCards from "@/components/FeatureCards";
@@ -49,6 +49,13 @@ const Index = () => {
       return;
     }
 
+    console.log("[MediScan] Upload selected", {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified,
+    });
+
     const reader = new FileReader();
     reader.onload = async (e) => {
       const imageData = e.target?.result as string;
@@ -63,13 +70,15 @@ const Index = () => {
   }, [clearResult]);
 
   // Show error toast if scan fails
-  if (error) {
-    toast({
-      title: "Scan Failed",
-      description: error,
-      variant: "destructive",
-    });
-  }
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Scan Failed",
+        description: error,
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
 
   return (
     <div className="min-h-screen pb-8">

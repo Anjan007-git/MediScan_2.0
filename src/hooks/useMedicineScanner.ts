@@ -2,11 +2,70 @@ import { useState, useCallback, useRef } from "react";
 import { MedicineInfo } from "@/components/MedicineResult";
 import { supabase } from "@/lib/supabaseClient";
 import { useAppStore } from "@/store/appStore";
+
 export interface ScanResult {
   medicine: MedicineInfo | null;
   confidence: number;
   isMedicine: boolean;
 }
+
+const MAX_ANALYSIS_EDGE_BYTES = 6_000_000;
+const MAX_IMAGE_DIMENSION = 1600;
+
+const getImageMeta = (imageData: string) => ({
+  length: imageData.length,
+  approxKb: Math.round(imageData.length / 1024),
+  mime: imageData.match(/^data:([^;]+);/)?.[1] || "unknown",
+});
+
+const preprocessImageForAnalysis = async (imageData: string): Promise<string> => {
+  const meta = getImageMeta(imageData);
+  if (!imageData.startsWith("data:image/")) {
+    throw new Error("Invalid image format. Please upload a supported image file.");
+  }
+
+  const shouldNormalize =
+    meta.length > MAX_ANALYSIS_EDGE_BYTES || !["image/jpeg", "image/png", "image/webp"].includes(meta.mime);
+
+  if (!shouldNormalize) {
+    console.log("[MediScan] Image preprocessing skipped", meta);
+    return imageData;
+  }
+
+  console.log("[MediScan] Image preprocessing started", meta);
+
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      const ratio = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(image.naturalWidth, image.naturalHeight));
+      const width = Math.max(1, Math.round(image.naturalWidth * ratio));
+      const height = Math.max(1, Math.round(image.naturalHeight * ratio));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        console.warn("[MediScan] Canvas unavailable; using original image");
+        resolve(imageData);
+        return;
+      }
+      ctx.drawImage(image, 0, 0, width, height);
+      const normalized = canvas.toDataURL("image/jpeg", 0.82);
+      console.log("[MediScan] Image preprocessing completed", {
+        original: meta,
+        normalized: getImageMeta(normalized),
+        width,
+        height,
+      });
+      resolve(normalized);
+    };
+    image.onerror = () => {
+      console.warn("[MediScan] Image preprocessing failed; using original payload", meta);
+      resolve(imageData);
+    };
+    image.src = imageData;
+  });
+};
 
 export const useMedicineScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
@@ -15,6 +74,84 @@ export const useMedicineScanner = () => {
 
   // Track the latest scan to prevent race conditions
   const activeScanIdRef = useRef<string | null>(null);
+
+  const callAnalyzeMedicine = useCallback(async (payload: { imageData: string; scanId: string }, accessToken: string) => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !publishableKey) {
+      console.error("[MediScan] Missing production environment variables", {
+        hasSupabaseUrl: Boolean(supabaseUrl),
+        hasPublishableKey: Boolean(publishableKey),
+      });
+      throw new Error("Scan service is not configured for this deployment.");
+    }
+
+    const functionUrl = `${supabaseUrl}/functions/v1/analyze-medicine`;
+    console.log("[MediScan] Calling analyze-medicine", {
+      scanId: payload.scanId,
+      functionUrl,
+      payload: getImageMeta(payload.imageData),
+      hasAccessToken: Boolean(accessToken),
+      hasSupabaseUrl: Boolean(supabaseUrl),
+      hasPublishableKey: Boolean(publishableKey),
+    });
+
+    let lastError: Error | null = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const response = await fetch(functionUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+            apikey: publishableKey,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const responseText = await response.text();
+        let responseBody: any = null;
+        try {
+          responseBody = responseText ? JSON.parse(responseText) : null;
+        } catch (parseError) {
+          console.error("[MediScan] Response JSON parse failure", {
+            scanId: payload.scanId,
+            status: response.status,
+            responseText,
+            parseError,
+          });
+        }
+
+        console.log("[MediScan] analyze-medicine response", {
+          scanId: payload.scanId,
+          attempt,
+          status: response.status,
+          ok: response.ok,
+          body: responseBody,
+        });
+
+        if (response.ok) return responseBody;
+
+        const message = responseBody?.error || responseBody?.message || `Scan service returned HTTP ${response.status}`;
+        if (![408, 429, 500, 502, 503, 504].includes(response.status) || attempt === 2) {
+          throw new Error(message);
+        }
+        lastError = new Error(message);
+        await new Promise((resolve) => setTimeout(resolve, 700));
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error("Scan request failed");
+        console.error("[MediScan] analyze-medicine request failed", {
+          scanId: payload.scanId,
+          attempt,
+          error: lastError.message,
+        });
+        if (attempt === 2) break;
+        await new Promise((resolve) => setTimeout(resolve, 700));
+      }
+    }
+
+    throw lastError || new Error("Scan request failed");
+  }, []);
 
   const scanMedicine = useCallback(
     async (imageData: string) => {
@@ -27,13 +164,18 @@ export const useMedicineScanner = () => {
       setError(null);
       setIsScanning(true);
 
-      console.log(`[MediScan] Starting scan ${scanId} | payload=${Math.round(imageData.length / 1024)}KB`);
+      console.log("[MediScan] Starting scan", { scanId, uploadedImage: getImageMeta(imageData) });
 
       try {
+        const processedImageData = await preprocessImageForAnalysis(imageData);
+
         // Ensure we have a fresh session and explicitly pass the bearer token.
         // supabase.functions.invoke usually attaches Authorization automatically,
         // but in some deployments (preview/Vercel) it can be missing — pass it manually.
-        const { data: sessionData } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          console.error("[MediScan] Session restore error", sessionError);
+        }
         const accessToken = sessionData?.session?.access_token;
         if (!accessToken) {
           console.error(`[MediScan] No active session — user not authenticated`);
@@ -42,34 +184,11 @@ export const useMedicineScanner = () => {
           return;
         }
 
-        const { data, error: fnError } = await supabase.functions.invoke("analyze-medicine", {
-          body: { imageData, scanId },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        const data = await callAnalyzeMedicine({ imageData: processedImageData, scanId }, accessToken);
 
         // Only apply result if this scan is still the active one
         if (activeScanIdRef.current !== scanId) {
           console.log(`[MediScan] Scan ${scanId} superseded, discarding`);
-          return;
-        }
-
-        if (fnError) {
-          // Try to extract the real error body from FunctionsHttpError
-          let detail = "";
-          try {
-            const ctx = (fnError as { context?: Response }).context;
-            if (ctx && typeof ctx.json === "function") {
-              const body = await ctx.json();
-              detail = body?.error || JSON.stringify(body);
-            } else if (ctx && typeof ctx.text === "function") {
-              detail = await ctx.text();
-            }
-          } catch (_) {
-            /* ignore parse failure */
-          }
-          console.error(`[MediScan] Function error:`, fnError, "| detail:", detail);
-          setResult(null);
-          setError(detail || "Unable to detect medicine. Please try again with a clear image.");
           return;
         }
 
@@ -138,7 +257,7 @@ export const useMedicineScanner = () => {
         }
       }
     },
-    []
+    [callAnalyzeMedicine]
   );
 
   const clearResult = useCallback(() => {
