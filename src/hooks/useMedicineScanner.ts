@@ -57,8 +57,7 @@ export const useMedicineScanner = () => {
           // Try to extract the real error body from FunctionsHttpError
           let detail = "";
           try {
-            // @ts-expect-error supabase-js attaches the Response on .context
-            const ctx = fnError.context;
+            const ctx = (fnError as { context?: Response }).context;
             if (ctx && typeof ctx.json === "function") {
               const body = await ctx.json();
               detail = body?.error || JSON.stringify(body);
