@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      insights: {
+        Row: {
+          created_at: string
+          id: string
+          last_scan_at: string | null
+          stats: Json
+          total_reminders: number
+          total_saved: number
+          total_scans: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_scan_at?: string | null
+          stats?: Json
+          total_reminders?: number
+          total_saved?: number
+          total_scans?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_scan_at?: string | null
+          stats?: Json
+          total_reminders?: number
+          total_saved?: number
+          total_scans?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -21,6 +87,8 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          plan: string
+          preferences: Json
           updated_at: string
           user_id: string
         }
@@ -30,6 +98,8 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          plan?: string
+          preferences?: Json
           updated_at?: string
           user_id: string
         }
@@ -39,6 +109,242 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          plan?: string
+          preferences?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      receipts: {
+        Row: {
+          created_at: string
+          date_text: string | null
+          hidden: boolean
+          id: string
+          image_url: string | null
+          items: Json
+          medicines: string[] | null
+          pharmacy: string | null
+          raw_text: string | null
+          receipt_date: string | null
+          total: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_text?: string | null
+          hidden?: boolean
+          id?: string
+          image_url?: string | null
+          items?: Json
+          medicines?: string[] | null
+          pharmacy?: string | null
+          raw_text?: string | null
+          receipt_date?: string | null
+          total?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_text?: string | null
+          hidden?: boolean
+          id?: string
+          image_url?: string | null
+          items?: Json
+          medicines?: string[] | null
+          pharmacy?: string | null
+          raw_text?: string | null
+          receipt_date?: string | null
+          total?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      reminders: {
+        Row: {
+          created_at: string
+          dosage: string | null
+          enabled: boolean
+          frequency: string
+          id: string
+          last_fired_key: string | null
+          medicine: string
+          notifications: boolean
+          schedule: Json
+          time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage?: string | null
+          enabled?: boolean
+          frequency?: string
+          id?: string
+          last_fired_key?: string | null
+          medicine: string
+          notifications?: boolean
+          schedule?: Json
+          time: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string | null
+          enabled?: boolean
+          frequency?: string
+          id?: string
+          last_fired_key?: string | null
+          medicine?: string
+          notifications?: boolean
+          schedule?: Json
+          time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_medicines: {
+        Row: {
+          composition: string | null
+          created_at: string
+          description: string | null
+          details: Json
+          dosage: string | null
+          generic: string | null
+          id: string
+          name: string
+          precautions: string[] | null
+          side_effects: string[] | null
+          status: string | null
+          storage: string | null
+          updated_at: string
+          user_id: string
+          uses: string[] | null
+          warnings: string[] | null
+        }
+        Insert: {
+          composition?: string | null
+          created_at?: string
+          description?: string | null
+          details?: Json
+          dosage?: string | null
+          generic?: string | null
+          id?: string
+          name: string
+          precautions?: string[] | null
+          side_effects?: string[] | null
+          status?: string | null
+          storage?: string | null
+          updated_at?: string
+          user_id: string
+          uses?: string[] | null
+          warnings?: string[] | null
+        }
+        Update: {
+          composition?: string | null
+          created_at?: string
+          description?: string | null
+          details?: Json
+          dosage?: string | null
+          generic?: string | null
+          id?: string
+          name?: string
+          precautions?: string[] | null
+          side_effects?: string[] | null
+          status?: string | null
+          storage?: string | null
+          updated_at?: string
+          user_id?: string
+          uses?: string[] | null
+          warnings?: string[] | null
+        }
+        Relationships: []
+      }
+      scans: {
+        Row: {
+          analysis: Json
+          confidence: number | null
+          created_at: string
+          detected_text: string | null
+          id: string
+          image_url: string | null
+          is_medicine: boolean
+          medicine_name: string | null
+          source: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analysis?: Json
+          confidence?: number | null
+          created_at?: string
+          detected_text?: string | null
+          id?: string
+          image_url?: string | null
+          is_medicine?: boolean
+          medicine_name?: string | null
+          source?: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analysis?: Json
+          confidence?: number | null
+          created_at?: string
+          detected_text?: string | null
+          id?: string
+          image_url?: string | null
+          is_medicine?: boolean
+          medicine_name?: string | null
+          source?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          active: boolean
+          billing: Json
+          created_at: string
+          ends_at: string | null
+          id: string
+          plan: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          billing?: Json
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          plan?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          billing?: Json
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          plan?: string
+          started_at?: string
+          status?: string
           updated_at?: string
           user_id?: string
         }
