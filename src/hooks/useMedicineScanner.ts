@@ -76,14 +76,24 @@ export const useMedicineScanner = () => {
   const activeScanIdRef = useRef<string | null>(null);
 
   const callAnalyzeMedicine = useCallback(async (payload: { imageData: string; scanId: string }, accessToken: string) => {
-    const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-medicine`;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !publishableKey) {
+      console.error("[MediScan] Missing production environment variables", {
+        hasSupabaseUrl: Boolean(supabaseUrl),
+        hasPublishableKey: Boolean(publishableKey),
+      });
+      throw new Error("Scan service is not configured for this deployment.");
+    }
+
+    const functionUrl = `${supabaseUrl}/functions/v1/analyze-medicine`;
     console.log("[MediScan] Calling analyze-medicine", {
       scanId: payload.scanId,
       functionUrl,
       payload: getImageMeta(payload.imageData),
       hasAccessToken: Boolean(accessToken),
-      hasSupabaseUrl: Boolean(import.meta.env.VITE_SUPABASE_URL),
-      hasPublishableKey: Boolean(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY),
+      hasSupabaseUrl: Boolean(supabaseUrl),
+      hasPublishableKey: Boolean(publishableKey),
     });
 
     let lastError: Error | null = null;
@@ -94,7 +104,7 @@ export const useMedicineScanner = () => {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "",
+            apikey: publishableKey,
           },
           body: JSON.stringify(payload),
         });
