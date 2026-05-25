@@ -2,11 +2,70 @@ import { useState, useCallback, useRef } from "react";
 import { MedicineInfo } from "@/components/MedicineResult";
 import { supabase } from "@/lib/supabaseClient";
 import { useAppStore } from "@/store/appStore";
+
 export interface ScanResult {
   medicine: MedicineInfo | null;
   confidence: number;
   isMedicine: boolean;
 }
+
+const MAX_ANALYSIS_EDGE_BYTES = 6_000_000;
+const MAX_IMAGE_DIMENSION = 1600;
+
+const getImageMeta = (imageData: string) => ({
+  length: imageData.length,
+  approxKb: Math.round(imageData.length / 1024),
+  mime: imageData.match(/^data:([^;]+);/)?.[1] || "unknown",
+});
+
+const preprocessImageForAnalysis = async (imageData: string): Promise<string> => {
+  const meta = getImageMeta(imageData);
+  if (!imageData.startsWith("data:image/")) {
+    throw new Error("Invalid image format. Please upload a supported image file.");
+  }
+
+  const shouldNormalize =
+    meta.length > MAX_ANALYSIS_EDGE_BYTES || !["image/jpeg", "image/png", "image/webp"].includes(meta.mime);
+
+  if (!shouldNormalize) {
+    console.log("[MediScan] Image preprocessing skipped", meta);
+    return imageData;
+  }
+
+  console.log("[MediScan] Image preprocessing started", meta);
+
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => {
+      const ratio = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(image.naturalWidth, image.naturalHeight));
+      const width = Math.max(1, Math.round(image.naturalWidth * ratio));
+      const height = Math.max(1, Math.round(image.naturalHeight * ratio));
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        console.warn("[MediScan] Canvas unavailable; using original image");
+        resolve(imageData);
+        return;
+      }
+      ctx.drawImage(image, 0, 0, width, height);
+      const normalized = canvas.toDataURL("image/jpeg", 0.82);
+      console.log("[MediScan] Image preprocessing completed", {
+        original: meta,
+        normalized: getImageMeta(normalized),
+        width,
+        height,
+      });
+      resolve(normalized);
+    };
+    image.onerror = () => {
+      console.warn("[MediScan] Image preprocessing failed; using original payload", meta);
+      resolve(imageData);
+    };
+    image.src = imageData;
+  });
+};
 
 export const useMedicineScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
