@@ -154,13 +154,18 @@ export const useMedicineScanner = () => {
       setError(null);
       setIsScanning(true);
 
-      console.log(`[MediScan] Starting scan ${scanId} | payload=${Math.round(imageData.length / 1024)}KB`);
+      console.log("[MediScan] Starting scan", { scanId, uploadedImage: getImageMeta(imageData) });
 
       try {
+        const processedImageData = await preprocessImageForAnalysis(imageData);
+
         // Ensure we have a fresh session and explicitly pass the bearer token.
         // supabase.functions.invoke usually attaches Authorization automatically,
         // but in some deployments (preview/Vercel) it can be missing — pass it manually.
-        const { data: sessionData } = await supabase.auth.getSession();
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          console.error("[MediScan] Session restore error", sessionError);
+        }
         const accessToken = sessionData?.session?.access_token;
         if (!accessToken) {
           console.error(`[MediScan] No active session — user not authenticated`);
@@ -169,34 +174,11 @@ export const useMedicineScanner = () => {
           return;
         }
 
-        const { data, error: fnError } = await supabase.functions.invoke("analyze-medicine", {
-          body: { imageData, scanId },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        const data = await callAnalyzeMedicine({ imageData: processedImageData, scanId }, accessToken);
 
         // Only apply result if this scan is still the active one
         if (activeScanIdRef.current !== scanId) {
           console.log(`[MediScan] Scan ${scanId} superseded, discarding`);
-          return;
-        }
-
-        if (fnError) {
-          // Try to extract the real error body from FunctionsHttpError
-          let detail = "";
-          try {
-            const ctx = (fnError as { context?: Response }).context;
-            if (ctx && typeof ctx.json === "function") {
-              const body = await ctx.json();
-              detail = body?.error || JSON.stringify(body);
-            } else if (ctx && typeof ctx.text === "function") {
-              detail = await ctx.text();
-            }
-          } catch (_) {
-            /* ignore parse failure */
-          }
-          console.error(`[MediScan] Function error:`, fnError, "| detail:", detail);
-          setResult(null);
-          setError(detail || "Unable to detect medicine. Please try again with a clear image.");
           return;
         }
 
@@ -265,7 +247,7 @@ export const useMedicineScanner = () => {
         }
       }
     },
-    []
+    [callAnalyzeMedicine]
   );
 
   const clearResult = useCallback(() => {
