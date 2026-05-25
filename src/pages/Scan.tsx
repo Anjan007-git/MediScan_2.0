@@ -226,6 +226,12 @@ const Scan = () => {
       toast({ title: "File too large", description: "Max 10MB.", variant: "destructive" });
       return;
     }
+    console.log("[MediScan] Scan page file selected", {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified,
+    });
     const reader = new FileReader();
     reader.onload = (ev) => {
       const data = ev.target?.result as string;
