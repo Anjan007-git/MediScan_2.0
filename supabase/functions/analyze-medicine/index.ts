@@ -41,7 +41,7 @@ const MAX_IMAGE_PAYLOAD = 14_000_000;
 
 const parseAiJson = (content: unknown) => {
   const text = Array.isArray(content)
-    ? content.map((part) => (typeof part === "string" ? part : part?.text || "")).join("\n")
+    ? content.map((part: any) => (typeof part === "string" ? part : part?.text || "")).join("\n")
     : String(content || "");
 
   const cleaned = text
