@@ -77,10 +77,10 @@ export const useMedicineScanner = () => {
   const activeScanIdRef = useRef<string | null>(null);
 
   const callAnalyzeMedicine = useCallback(async (payload: { imageData: string; scanId: string }, accessToken: string) => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const supabaseUrl = SUPABASE_URL;
+    const publishableKey = SUPABASE_PUBLISHABLE_KEY;
     if (!supabaseUrl || !publishableKey) {
-      console.error("[MediScan] Missing production environment variables", {
+      console.error("[MediScan] Missing production runtime config", {
         hasSupabaseUrl: Boolean(supabaseUrl),
         hasPublishableKey: Boolean(publishableKey),
       });
