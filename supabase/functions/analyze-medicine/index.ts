@@ -172,14 +172,9 @@ Return your response as a JSON object with this EXACT structure:
 If isMedicine is false, set medicine to null and confidence to how sure you are it's NOT medicine.
 If isMedicine is true, confidence should reflect how sure you are about the identification.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+    const response = await callAiGateway(LOVABLE_API_KEY, {
+        model: "google/gemini-2.5-pro",
+        response_format: { type: "json_object" },
         messages: [
           { role: "system", content: systemPrompt },
           {
@@ -196,83 +191,81 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
             ],
           },
         ],
-      }),
     });
+
+    console.log(`[analyze-medicine] AI response status=${response.status} scanId=${scanId}`);
 
     if (!response.ok) {
       const statusCode = response.status;
       if (statusCode === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment.", scanId }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return jsonResponse({ error: "Rate limit exceeded. Please try again in a moment.", scanId }, 429);
       }
       if (statusCode === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add funds.", scanId }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return jsonResponse({ error: "AI credits exhausted. Please add funds.", scanId }, 402);
       }
       const errText = await response.text();
       console.error(`AI gateway error [${statusCode}]:`, errText);
-      return new Response(
-        JSON.stringify({ error: "Failed to analyze image", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Failed to analyze image", scanId }, 500);
     }
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content;
+    console.log(
+      `[analyze-medicine] AI payload scanId=${scanId} | hasContent=${Boolean(content)} | finish=${
+        aiResponse.choices?.[0]?.finish_reason || "unknown"
+      }`
+    );
 
     if (!content) {
-      return new Response(
-        JSON.stringify({ error: "No response from AI", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "No response from AI", scanId }, 500);
     }
 
     // Parse the JSON from the AI response (strip markdown code fences if present)
     let parsed;
     try {
-      const cleaned = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-      parsed = JSON.parse(cleaned);
-    } catch {
-      console.error("Failed to parse AI response:", content);
-      return new Response(
-        JSON.stringify({ error: "Unable to process AI response", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      parsed = parseAiJson(content);
+    } catch (parseError) {
+      console.error("Failed to parse AI response:", parseError, content);
+      return jsonResponse({ error: "Unable to process AI response", scanId }, 500);
     }
 
     // Validate the response
     if (!parsed.isMedicine || !parsed.medicine || !parsed.medicine.name) {
-      return new Response(
-        JSON.stringify({
+      console.log(`[analyze-medicine] No medicine detected scanId=${scanId} confidence=${parsed.confidence || 0}`);
+      return jsonResponse(
+        {
           isMedicine: false,
           confidence: parsed.confidence || 0,
           medicine: null,
           scanId,
-        }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        },
+        200
       );
     }
 
     console.log(`[analyze-medicine] scanId=${scanId} | detected=${parsed.medicine.name} | confidence=${parsed.confidence}`);
 
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         isMedicine: true,
-        confidence: parsed.confidence,
-        medicine: parsed.medicine,
+        confidence: Number(parsed.confidence) || 80,
+        medicine: {
+          name: String(parsed.medicine.name || "Unknown medicine"),
+          generic: String(parsed.medicine.generic || "Consult a healthcare professional"),
+          uses: Array.isArray(parsed.medicine.uses) && parsed.medicine.uses.length ? parsed.medicine.uses : ["Consult a healthcare professional for verified uses."],
+          composition: String(parsed.medicine.composition || parsed.medicine.generic || "Not identified from image"),
+          dosage: String(parsed.medicine.dosage || "Follow the label or consult a healthcare professional."),
+          precautions: Array.isArray(parsed.medicine.precautions) && parsed.medicine.precautions.length ? parsed.medicine.precautions : ["Verify this result with a pharmacist or doctor before use."],
+          warnings: Array.isArray(parsed.medicine.warnings) && parsed.medicine.warnings.length ? parsed.medicine.warnings : ["Do not use medicine based only on AI identification."],
+          sideEffects: Array.isArray(parsed.medicine.sideEffects) ? parsed.medicine.sideEffects : [],
+          storage: String(parsed.medicine.storage || "Store according to the package instructions."),
+        },
         scanId,
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      },
+      200
     );
   } catch (e) {
     console.error("analyze-medicine error:", e);
-    return new Response(
-      JSON.stringify({ error: "An unexpected error occurred. Please try again." }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse({ error: "An unexpected error occurred. Please try again.", scanId }, 500);
   }
 });
