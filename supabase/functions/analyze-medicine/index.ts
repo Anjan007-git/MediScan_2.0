@@ -229,8 +229,16 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
       return jsonResponse({ error: "Unable to process AI response", scanId }, 500);
     }
 
-    // Validate the response
-    if (!parsed.isMedicine || !parsed.medicine || !parsed.medicine.name) {
+    // Validate the response. Accept partial medicine data when the model clearly
+    // identified a medicine so the UI does not show a false failure for usable scans.
+    const hasMedicineFields = Boolean(
+      parsed.medicine &&
+        (parsed.medicine.name ||
+          parsed.medicine.generic ||
+          parsed.medicine.composition ||
+          (Array.isArray(parsed.medicine.uses) && parsed.medicine.uses.length > 0))
+    );
+    if (!parsed.isMedicine || !hasMedicineFields) {
       console.log(`[analyze-medicine] No medicine detected scanId=${scanId} confidence=${parsed.confidence || 0}`);
       return jsonResponse(
         {
@@ -250,7 +258,7 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
         isMedicine: true,
         confidence: Number(parsed.confidence) || 80,
         medicine: {
-          name: String(parsed.medicine.name || "Unknown medicine"),
+          name: String(parsed.medicine.name || parsed.medicine.generic || "Medicine detected"),
           generic: String(parsed.medicine.generic || "Consult a healthcare professional"),
           uses: Array.isArray(parsed.medicine.uses) && parsed.medicine.uses.length ? parsed.medicine.uses : ["Consult a healthcare professional for verified uses."],
           composition: String(parsed.medicine.composition || parsed.medicine.generic || "Not identified from image"),
