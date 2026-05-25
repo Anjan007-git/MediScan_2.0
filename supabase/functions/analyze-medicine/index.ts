@@ -82,6 +82,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let scanId: string | undefined;
+
   try {
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
@@ -89,65 +91,56 @@ serve(async (req) => {
       "unknown";
 
     if (isRateLimited(ip)) {
-      return new Response(
-        JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Too many requests. Please wait a moment and try again." }, 429);
     }
 
     // Require authentication — prevents anonymous abuse of AI credits
     const authHeader = req.headers.get("Authorization") || "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
     if (!token) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required." }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      console.warn("[analyze-medicine] Missing Authorization header");
+      return jsonResponse({ error: "Authentication required." }, 401);
     }
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
     const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      global: { headers: { Authorization: `Bearer ${token}` } },
+      global: { headers: { Authorization: authHeader } },
     });
-    const { data: userData, error: userErr } = await authClient.auth.getUser(token);
-    if (userErr || !userData?.user) {
-      return new Response(
-        JSON.stringify({ error: "Invalid or expired session." }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const { data: claimsData, error: claimsErr } = await authClient.auth.getClaims(token);
+    if (claimsErr || !claimsData?.claims?.sub) {
+      console.warn("[analyze-medicine] Invalid session claims", claimsErr?.message);
+      return jsonResponse({ error: "Invalid or expired session." }, 401);
     }
 
-    const { imageData, scanId } = await req.json();
+    const requestBody = await req.json().catch((error) => {
+      console.error("[analyze-medicine] Failed to parse request JSON", error);
+      return null;
+    });
+    const imageData = requestBody?.imageData;
+    scanId = requestBody?.scanId;
+    console.log(
+      `[analyze-medicine] Request scanId=${scanId || "missing"} | type=${typeof imageData} | bytes=${
+        typeof imageData === "string" ? imageData.length : 0
+      } | mime=${typeof imageData === "string" ? imageData.slice(5, imageData.indexOf(";")) : "n/a"}`
+    );
 
 
     if (!imageData || typeof imageData !== "string") {
-      return new Response(
-        JSON.stringify({ error: "No image data provided", scanId }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "No image data provided", scanId }, 400);
     }
 
     if (!imageData.startsWith("data:image/")) {
-      return new Response(
-        JSON.stringify({ error: "Invalid image format", scanId }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Invalid image format", scanId }, 400);
     }
 
     if (imageData.length > MAX_IMAGE_PAYLOAD) {
-      return new Response(
-        JSON.stringify({ error: "Image too large. Please upload an image under 10 MB.", scanId }),
-        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Image too large. Please upload an image under 10 MB.", scanId }, 413);
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       console.error("LOVABLE_API_KEY is not configured");
-      return new Response(
-        JSON.stringify({ error: "Service is temporarily unavailable.", scanId }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse({ error: "Service is temporarily unavailable.", scanId }, 500);
     }
 
     const systemPrompt = `You are a medicine identification expert. Analyze the provided image and determine if it contains a medicine (tablet strip, bottle, packaging, etc.).
