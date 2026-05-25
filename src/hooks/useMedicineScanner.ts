@@ -75,6 +75,74 @@ export const useMedicineScanner = () => {
   // Track the latest scan to prevent race conditions
   const activeScanIdRef = useRef<string | null>(null);
 
+  const callAnalyzeMedicine = useCallback(async (payload: { imageData: string; scanId: string }, accessToken: string) => {
+    const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-medicine`;
+    console.log("[MediScan] Calling analyze-medicine", {
+      scanId: payload.scanId,
+      functionUrl,
+      payload: getImageMeta(payload.imageData),
+      hasAccessToken: Boolean(accessToken),
+      hasSupabaseUrl: Boolean(import.meta.env.VITE_SUPABASE_URL),
+      hasPublishableKey: Boolean(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY),
+    });
+
+    let lastError: Error | null = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const response = await fetch(functionUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const responseText = await response.text();
+        let responseBody: any = null;
+        try {
+          responseBody = responseText ? JSON.parse(responseText) : null;
+        } catch (parseError) {
+          console.error("[MediScan] Response JSON parse failure", {
+            scanId: payload.scanId,
+            status: response.status,
+            responseText,
+            parseError,
+          });
+        }
+
+        console.log("[MediScan] analyze-medicine response", {
+          scanId: payload.scanId,
+          attempt,
+          status: response.status,
+          ok: response.ok,
+          body: responseBody,
+        });
+
+        if (response.ok) return responseBody;
+
+        const message = responseBody?.error || responseBody?.message || `Scan service returned HTTP ${response.status}`;
+        if (![408, 429, 500, 502, 503, 504].includes(response.status) || attempt === 2) {
+          throw new Error(message);
+        }
+        lastError = new Error(message);
+        await new Promise((resolve) => setTimeout(resolve, 700));
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error("Scan request failed");
+        console.error("[MediScan] analyze-medicine request failed", {
+          scanId: payload.scanId,
+          attempt,
+          error: lastError.message,
+        });
+        if (attempt === 2) break;
+        await new Promise((resolve) => setTimeout(resolve, 700));
+      }
+    }
+
+    throw lastError || new Error("Scan request failed");
+  }, []);
+
   const scanMedicine = useCallback(
     async (imageData: string) => {
       // Generate a unique scan ID
