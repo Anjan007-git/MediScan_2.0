@@ -400,7 +400,10 @@ const Onboarding = () => {
       </main>
 
       {/* Mobile/Tablet bottom controls */}
-      <footer className="lg:hidden relative z-20 w-full px-5 sm:px-8 pb-8 sm:pb-10 pt-2">
+      <footer
+        className="lg:hidden sticky bottom-0 z-20 w-full px-5 sm:px-8 pt-3 bg-gradient-to-t from-[#F8FBFF] via-[#F8FBFF]/95 to-transparent backdrop-blur-sm"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
+      >
         <div className="mx-auto max-w-md">
           <div className="flex items-center gap-2 mb-5 justify-center">
             {slides.map((_, i) => (
