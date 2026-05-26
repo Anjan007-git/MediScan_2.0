@@ -274,8 +274,9 @@ const Onboarding = () => {
 
   return (
     <div
-      className="fixed inset-0 w-full overflow-hidden flex flex-col"
+      className="fixed inset-0 w-full flex flex-col overflow-y-auto lg:overflow-hidden"
       style={{
+        minHeight: "100dvh",
         height: "100dvh",
         touchAction: "pan-x",
         background:
@@ -323,8 +324,8 @@ const Onboarding = () => {
       </header>
 
       {/* Main */}
-      <main className="relative z-10 flex-1 w-full">
-        <div className="mx-auto max-w-6xl h-full px-5 sm:px-8 lg:px-12 py-8 sm:py-10 lg:py-12 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      <main className="relative z-10 flex-1 w-full min-h-0">
+        <div className="mx-auto max-w-6xl h-full px-5 sm:px-8 lg:px-12 py-4 sm:py-8 lg:py-12 grid lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-16 items-center">
           {/* Text */}
           <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
             <div
@@ -389,7 +390,7 @@ const Onboarding = () => {
           <div className="order-1 lg:order-2 flex justify-center items-center">
             <div
               key={`art-${index}`}
-              className="animate-scale-in transition-transform"
+              className="animate-scale-in transition-transform origin-center scale-[0.72] sm:scale-90 lg:scale-100"
               style={{ transform: `translateX(${drag * 0.2}px)` }}
             >
               {current.illustration}
@@ -399,7 +400,10 @@ const Onboarding = () => {
       </main>
 
       {/* Mobile/Tablet bottom controls */}
-      <footer className="lg:hidden relative z-20 w-full px-5 sm:px-8 pb-8 sm:pb-10 pt-2">
+      <footer
+        className="lg:hidden sticky bottom-0 z-20 w-full px-5 sm:px-8 pt-3 bg-gradient-to-t from-[#F8FBFF] via-[#F8FBFF]/95 to-transparent backdrop-blur-sm"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
+      >
         <div className="mx-auto max-w-md">
           <div className="flex items-center gap-2 mb-5 justify-center">
             {slides.map((_, i) => (
