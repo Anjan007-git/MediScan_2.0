@@ -390,7 +390,7 @@ const Onboarding = () => {
           <div className="order-1 lg:order-2 flex justify-center items-center">
             <div
               key={`art-${index}`}
-              className="animate-scale-in transition-transform"
+              className="animate-scale-in transition-transform origin-center scale-[0.72] sm:scale-90 lg:scale-100"
               style={{ transform: `translateX(${drag * 0.2}px)` }}
             >
               {current.illustration}
