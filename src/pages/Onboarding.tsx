@@ -324,8 +324,8 @@ const Onboarding = () => {
       </header>
 
       {/* Main */}
-      <main className="relative z-10 flex-1 w-full">
-        <div className="mx-auto max-w-6xl h-full px-5 sm:px-8 lg:px-12 py-8 sm:py-10 lg:py-12 grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      <main className="relative z-10 flex-1 w-full min-h-0">
+        <div className="mx-auto max-w-6xl h-full px-5 sm:px-8 lg:px-12 py-4 sm:py-8 lg:py-12 grid lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-16 items-center">
           {/* Text */}
           <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
             <div
