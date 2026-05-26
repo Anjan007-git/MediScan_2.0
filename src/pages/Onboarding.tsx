@@ -31,7 +31,7 @@ const PhoneFrame = ({ children, accent = "from-sky-400 to-blue-600" }: { childre
     <div className="absolute -top-6 -left-6 w-3 h-3 rounded-full bg-blue-400/60" />
     <div className="absolute top-10 -right-8 w-2 h-2 rounded-full bg-sky-400/70" />
     <div className="absolute -bottom-4 left-2 w-2.5 h-2.5 rounded-full bg-blue-300/70" />
-    <div className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[2.5rem] bg-white shadow-[0_30px_60px_-20px_rgba(37,99,235,0.35)] border border-white p-3">
+    <div className="relative w-[200px] h-[380px] xs:w-[220px] xs:h-[420px] sm:w-[260px] sm:h-[520px] rounded-[2.5rem] bg-white shadow-[0_30px_60px_-20px_rgba(37,99,235,0.35)] border border-white p-3">
       <div className="w-full h-full rounded-[2rem] bg-gradient-to-b from-sky-50 to-blue-50 overflow-hidden relative">
         <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-1.5 rounded-full bg-slate-200" />
         {children}
