@@ -274,8 +274,9 @@ const Onboarding = () => {
 
   return (
     <div
-      className="fixed inset-0 w-full overflow-hidden flex flex-col"
+      className="fixed inset-0 w-full flex flex-col overflow-y-auto lg:overflow-hidden"
       style={{
+        minHeight: "100dvh",
         height: "100dvh",
         touchAction: "pan-x",
         background:
