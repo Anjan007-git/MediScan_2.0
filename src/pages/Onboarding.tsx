@@ -31,7 +31,7 @@ const PhoneFrame = ({ children, accent = "from-sky-400 to-blue-600" }: { childre
     <div className="absolute -top-6 -left-6 w-3 h-3 rounded-full bg-blue-400/60" />
     <div className="absolute top-10 -right-8 w-2 h-2 rounded-full bg-sky-400/70" />
     <div className="absolute -bottom-4 left-2 w-2.5 h-2.5 rounded-full bg-blue-300/70" />
-    <div className="relative w-[240px] sm:w-[260px] h-[480px] sm:h-[520px] rounded-[2.5rem] bg-white shadow-[0_30px_60px_-20px_rgba(37,99,235,0.35)] border border-white p-3">
+    <div className="relative w-[200px] h-[380px] xs:w-[220px] xs:h-[420px] sm:w-[260px] sm:h-[520px] rounded-[2.5rem] bg-white shadow-[0_30px_60px_-20px_rgba(37,99,235,0.35)] border border-white p-3">
       <div className="w-full h-full rounded-[2rem] bg-gradient-to-b from-sky-50 to-blue-50 overflow-hidden relative">
         <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-1.5 rounded-full bg-slate-200" />
         {children}
@@ -274,11 +274,11 @@ const Onboarding = () => {
 
   return (
     <div
-      className="fixed inset-0 w-full flex flex-col overflow-y-auto lg:overflow-hidden"
+      className="fixed inset-0 w-full flex flex-col overflow-hidden"
       style={{
-        minHeight: "100dvh",
         height: "100dvh",
-        touchAction: "pan-x",
+        minHeight: "100dvh",
+        touchAction: "pan-y",
         background:
           "radial-gradient(1200px 600px at 80% -10%, #DBEAFE 0%, transparent 60%), radial-gradient(900px 500px at -10% 110%, #E0F2FE 0%, transparent 55%), linear-gradient(180deg, #F4F8FF 0%, #F8FBFF 100%)",
       }}
@@ -291,31 +291,31 @@ const Onboarding = () => {
       <div className="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-sky-300/20 blur-3xl" />
 
       {/* Header */}
-      <header className="relative z-20 w-full">
-        <div className="mx-auto max-w-6xl flex items-center justify-between px-5 sm:px-8 lg:px-12 pt-6 sm:pt-8">
+      <header className="relative z-20 w-full flex-shrink-0">
+        <div className="mx-auto max-w-6xl flex items-center justify-between px-5 sm:px-8 lg:px-12 pt-4 sm:pt-6 lg:pt-8">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl border-2 border-blue-500 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl border-2 border-blue-500 flex items-center justify-center bg-white/60 backdrop-blur-sm">
               <Plus className="text-blue-500 w-5 h-5" strokeWidth={3} />
             </div>
             <div className="leading-tight">
-              <div className="text-[20px] font-bold">
+              <div className="text-[18px] sm:text-[20px] font-bold">
                 <span className="text-slate-900">Medi</span>
                 <span className="text-blue-500">Scan</span>
               </div>
-              <div className="text-[11px] text-slate-500 -mt-0.5">Scan. Understand. Stay Healthy.</div>
+              <div className="text-[10px] sm:text-[11px] text-slate-500 -mt-0.5">Scan. Understand. Stay Healthy.</div>
             </div>
           </div>
           {showSkip ? (
             <button
               onClick={() => setIndex(slides.length - 1)}
-              className="text-slate-700 hover:text-blue-600 font-semibold text-[15px] active:opacity-60 transition"
+              className="text-slate-700 hover:text-blue-600 font-semibold text-[14px] sm:text-[15px] active:opacity-60 transition"
             >
               Skip
             </button>
           ) : (
             <button
               onClick={() => setIndex(0)}
-              className="text-slate-700 hover:text-blue-600 font-semibold text-[15px] active:opacity-60 transition"
+              className="text-slate-700 hover:text-blue-600 font-semibold text-[14px] sm:text-[15px] active:opacity-60 transition"
             >
               Start Over
             </button>
@@ -324,28 +324,23 @@ const Onboarding = () => {
       </header>
 
       {/* Main */}
-      <main className="relative z-10 flex-1 w-full min-h-0">
-        <div className="mx-auto max-w-6xl h-full px-5 sm:px-8 lg:px-12 py-4 sm:py-8 lg:py-12 grid lg:grid-cols-2 gap-4 sm:gap-8 lg:gap-16 items-center">
-          {/* Text */}
+      <main className="relative z-10 flex-1 min-h-0 w-full overflow-hidden lg:overflow-visible">
+        {/* Desktop / tablet layout */}
+        <div className="hidden lg:grid mx-auto max-w-6xl h-full px-12 py-12 lg:grid-cols-2 gap-16 items-center">
           <div className="order-2 lg:order-1 max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
-            <div
-              key={`title-${index}`}
-              className="animate-fade-in"
-            >
-              <h1 className="text-[32px] sm:text-[40px] lg:text-[52px] font-extrabold leading-[1.1] whitespace-pre-line tracking-tight">
+            <div key={`title-${index}`} className="animate-fade-in">
+              <h1 className="text-[52px] font-extrabold leading-[1.1] whitespace-pre-line tracking-tight">
                 {current.titleParts.map((p, i) => (
                   <span key={i} className={p.className}>
                     {p.text}
                   </span>
                 ))}
               </h1>
-              <p className="mt-4 sm:mt-5 text-slate-600 text-[15px] sm:text-[17px] lg:text-[18px] leading-relaxed max-w-md mx-auto lg:mx-0">
+              <p className="mt-5 text-slate-600 text-[18px] leading-relaxed max-w-md">
                 {current.subtitle}
               </p>
             </div>
-
-            {/* Desktop CTAs (inline) */}
-            <div className="hidden lg:block mt-10">
+            <div className="mt-10">
               {isLast ? (
                 <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
                   <button
@@ -385,27 +380,54 @@ const Onboarding = () => {
               )}
             </div>
           </div>
-
-          {/* Illustration */}
           <div className="order-1 lg:order-2 flex justify-center items-center">
             <div
-              key={`art-${index}`}
-              className="animate-scale-in transition-transform origin-center scale-[0.72] sm:scale-90 lg:scale-100"
+              key={`art-desktop-${index}`}
+              className="animate-scale-in"
               style={{ transform: `translateX(${drag * 0.2}px)` }}
             >
               {current.illustration}
             </div>
           </div>
         </div>
+
+        {/* Mobile / tablet layout */}
+        <div className="lg:hidden h-full w-full flex flex-col items-center justify-between px-5 sm:px-8 pt-2 pb-3">
+          <div
+            key={`art-mobile-${index}`}
+            className="flex-1 min-h-0 w-full flex items-center justify-center animate-scale-in"
+            style={{ transform: `translateX(${drag * 0.2}px)` }}
+          >
+            <div className="origin-center scale-[0.78] xs:scale-90 sm:scale-100 max-h-full">
+              {current.illustration}
+            </div>
+          </div>
+
+          <div
+            key={`title-mobile-${index}`}
+            className="w-full max-w-md mx-auto text-center animate-fade-in flex-shrink-0 mt-2"
+          >
+            <h1 className="text-[26px] xs:text-[30px] sm:text-[36px] font-extrabold leading-[1.15] whitespace-pre-line tracking-tight">
+              {current.titleParts.map((p, i) => (
+                <span key={i} className={p.className}>
+                  {p.text}
+                </span>
+              ))}
+            </h1>
+            <p className="mt-2 sm:mt-3 text-slate-600 text-[13px] xs:text-[14px] sm:text-[16px] leading-relaxed px-2">
+              {current.subtitle}
+            </p>
+          </div>
+        </div>
       </main>
 
       {/* Mobile/Tablet bottom controls */}
       <footer
-        className="lg:hidden sticky bottom-0 z-20 w-full px-5 sm:px-8 pt-3 bg-gradient-to-t from-[#F8FBFF] via-[#F8FBFF]/95 to-transparent backdrop-blur-sm"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.25rem)" }}
+        className="lg:hidden relative z-20 w-full flex-shrink-0 px-5 sm:px-8 pt-3"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
       >
         <div className="mx-auto max-w-md">
-          <div className="flex items-center gap-2 mb-5 justify-center">
+          <div className="flex items-center gap-2 mb-4 justify-center">
             {slides.map((_, i) => (
               <div
                 key={i}
@@ -417,17 +439,17 @@ const Onboarding = () => {
           </div>
 
           {isLast ? (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               <button
                 onClick={() => finish("signin")}
-                className="w-full h-14 rounded-2xl border-2 border-blue-500 bg-white/70 backdrop-blur-md text-blue-600 font-semibold text-[15px] flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition"
+                className="w-full h-12 sm:h-14 rounded-2xl border-2 border-blue-500 bg-white/70 backdrop-blur-md text-blue-600 font-semibold text-[14px] sm:text-[15px] flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition"
               >
                 I already have an account. Sign in!
                 <ChevronRight className="w-4 h-4" />
               </button>
               <button
                 onClick={() => finish("signup")}
-                className="w-full h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[16px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
+                className="w-full h-12 sm:h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[15px] sm:text-[16px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
               >
                 Register / Activate
                 <ChevronRight className="w-4 h-4" />
@@ -437,7 +459,7 @@ const Onboarding = () => {
             <div className="flex justify-end">
               <button
                 onClick={goNext}
-                className="h-14 px-10 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[16px] flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
+                className="h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[15px] sm:text-[16px] flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
               >
                 Next <ArrowRight className="w-5 h-5" />
               </button>
