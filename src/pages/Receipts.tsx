@@ -262,10 +262,8 @@ const Receipts = () => {
                     setOpenMenu(null);
                   }}
                   onDelete={() => {
-                    if (confirm("Delete this receipt permanently?")) {
-                      deleteReceipt(r.id);
-                    }
                     setOpenMenu(null);
+                    setConfirmDeleteId(r.id);
                   }}
                 />
               ))}
