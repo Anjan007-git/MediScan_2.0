@@ -62,6 +62,7 @@ const Receipts = () => {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
 
   const filtered = useMemo(() => {
