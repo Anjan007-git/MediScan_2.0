@@ -361,26 +361,58 @@ const ReceiptCard = ({
   onDelete: () => void;
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!menuOpen || !triggerRef.current) {
+      setMenuPos(null);
+      return;
+    }
+    const computePos = () => {
+      if (!triggerRef.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      const menuWidth = 176; // w-44
+      const left = Math.max(
+        8,
+        Math.min(window.innerWidth - menuWidth - 8, rect.right - menuWidth),
+      );
+      const top = rect.bottom + 6;
+      setMenuPos({ top, left });
+    };
+    computePos();
+    window.addEventListener("scroll", computePos, true);
+    window.addEventListener("resize", computePos);
+    return () => {
+      window.removeEventListener("scroll", computePos, true);
+      window.removeEventListener("resize", computePos);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     if (!menuOpen) return;
-    const onDoc = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) onMenuClose();
+    const onDoc = (e: PointerEvent) => {
+      const target = e.target as Node;
+      if (menuRef.current?.contains(target)) return;
+      if (triggerRef.current?.contains(target)) return;
+      onMenuClose();
     };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+    document.addEventListener("pointerdown", onDoc);
+    return () => document.removeEventListener("pointerdown", onDoc);
   }, [menuOpen, onMenuClose]);
 
   return (
     <article
       className="relative glass rounded-2xl p-3 pr-4 hover:shadow-glass-lg transition-all"
-      style={{ overflow: "visible", zIndex: menuOpen ? 70 : "auto" }}
+      style={{ overflow: "visible" }}
     >
-      {/* Menu button — absolutely positioned, won't collide with content */}
       <button
+        ref={triggerRef}
         onClick={onMenu}
         className="absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground active:bg-primary/10 z-20"
         aria-label="More options"
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
       >
         <MoreHorizontal className="w-4 h-4" strokeWidth={2.4} />
       </button>
@@ -414,32 +446,44 @@ const ReceiptCard = ({
         </div>
       </button>
 
-      {menuOpen && (
-        <div
-          ref={menuRef}
-          className="absolute top-12 right-3 z-[60] glass-strong rounded-2xl p-2 w-40 shadow-float animate-fade-in-up flex flex-col gap-2"
-          style={{
-            background: "rgba(255,255,255,0.96)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-          }}
-        >
-          <button
-            onClick={isHidden ? onUnhide : onHide}
-            className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-foreground hover:bg-primary/5 active:bg-primary/10"
+      {menuOpen && menuPos &&
+        createPortal(
+          <div
+            ref={menuRef}
+            role="menu"
+            className="rounded-2xl p-2 w-44 shadow-float animate-fade-in-up flex flex-col gap-2"
+            style={{
+              position: "fixed",
+              top: menuPos.top,
+              left: menuPos.left,
+              zIndex: 9999,
+              background: "rgba(255,255,255,0.98)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.7)",
+              pointerEvents: "auto",
+              touchAction: "manipulation",
+            }}
           >
-            {isHidden ? <Eye className="w-4 h-4" strokeWidth={2.4} /> : <EyeOff className="w-4 h-4" strokeWidth={2.4} />}
-            {isHidden ? "Unhide" : "Hide"}
-          </button>
-          <button
-            onClick={onDelete}
-            className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-danger hover:bg-danger/5 active:bg-danger/10"
-          >
-            <Trash2 className="w-4 h-4" strokeWidth={2.4} />
-            Delete
-          </button>
-        </div>
-      )}
+            <button
+              type="button"
+              onClick={isHidden ? onUnhide : onHide}
+              className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-foreground hover:bg-primary/5 active:bg-primary/10"
+            >
+              {isHidden ? <Eye className="w-4 h-4" strokeWidth={2.4} /> : <EyeOff className="w-4 h-4" strokeWidth={2.4} />}
+              {isHidden ? "Unhide" : "Hide"}
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-danger hover:bg-danger/5 active:bg-danger/10"
+            >
+              <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+              Delete
+            </button>
+          </div>,
+          document.body,
+        )}
     </article>
   );
 };
