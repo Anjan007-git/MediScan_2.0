@@ -392,29 +392,29 @@ const Onboarding = () => {
         </div>
 
         {/* Mobile / tablet layout */}
-        <div className="lg:hidden h-full w-full flex flex-col items-center justify-between px-5 sm:px-8 pt-2 pb-3">
+        <div className="lg:hidden h-full w-full flex flex-col items-center justify-between px-5 sm:px-8 pt-3 pb-2">
           <div
             key={`art-mobile-${index}`}
             className="flex-1 min-h-0 w-full flex items-center justify-center animate-scale-in"
             style={{ transform: `translateX(${drag * 0.2}px)` }}
           >
-            <div className="origin-center scale-[0.78] xs:scale-90 sm:scale-100 max-h-full">
+            <div className="origin-center scale-[0.98] xs:scale-105 sm:scale-110 max-h-full">
               {current.illustration}
             </div>
           </div>
 
           <div
             key={`title-mobile-${index}`}
-            className="w-full max-w-md mx-auto text-center animate-fade-in flex-shrink-0 mt-2"
+            className="w-full max-w-md mx-auto text-center animate-fade-in flex-shrink-0 mt-3"
           >
-            <h1 className="text-[26px] xs:text-[30px] sm:text-[36px] font-extrabold leading-[1.15] whitespace-pre-line tracking-tight">
+            <h1 className="text-[34px] xs:text-[38px] sm:text-[44px] font-extrabold leading-[1.12] whitespace-pre-line tracking-tight">
               {current.titleParts.map((p, i) => (
                 <span key={i} className={p.className}>
                   {p.text}
                 </span>
               ))}
             </h1>
-            <p className="mt-2 sm:mt-3 text-slate-600 text-[13px] xs:text-[14px] sm:text-[16px] leading-relaxed px-2">
+            <p className="mt-3 sm:mt-4 text-slate-600 text-[15px] xs:text-[16px] sm:text-[18px] leading-relaxed px-2">
               {current.subtitle}
             </p>
           </div>
