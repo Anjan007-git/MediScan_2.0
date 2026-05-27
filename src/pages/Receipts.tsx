@@ -312,6 +312,29 @@ const Receipts = () => {
         <Plus className="w-5 h-5" strokeWidth={2.6} />
         Add Receipt
       </button>
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this receipt?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove the receipt. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirmDeleteId) deleteReceipt(confirmDeleteId);
+                setConfirmDeleteId(null);
+              }}
+              className="bg-danger text-white hover:bg-danger/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
