@@ -423,11 +423,11 @@ const Onboarding = () => {
 
       {/* Mobile/Tablet bottom controls */}
       <footer
-        className="lg:hidden relative z-20 w-full flex-shrink-0 px-5 sm:px-8 pt-3"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1rem)" }}
+        className="lg:hidden relative z-20 w-full flex-shrink-0 px-5 sm:px-8 pt-4"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 1.75rem)" }}
       >
         <div className="mx-auto max-w-md">
-          <div className="flex items-center gap-2 mb-4 justify-center">
+          <div className="flex items-center gap-2 mb-5 justify-center">
             {slides.map((_, i) => (
               <div
                 key={i}
@@ -439,17 +439,17 @@ const Onboarding = () => {
           </div>
 
           {isLast ? (
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-3">
               <button
                 onClick={() => finish("signin")}
-                className="w-full h-12 sm:h-14 rounded-2xl border-2 border-blue-500 bg-white/70 backdrop-blur-md text-blue-600 font-semibold text-[14px] sm:text-[15px] flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition"
+                className="w-full h-14 sm:h-16 rounded-2xl border-2 border-blue-500 bg-white/70 backdrop-blur-md text-blue-600 font-semibold text-[15px] sm:text-[16px] flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition"
               >
                 I already have an account. Sign in!
                 <ChevronRight className="w-4 h-4" />
               </button>
               <button
                 onClick={() => finish("signup")}
-                className="w-full h-12 sm:h-14 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[15px] sm:text-[16px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
+                className="w-full h-14 sm:h-16 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[16px] sm:text-[17px] flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
               >
                 Register / Activate
                 <ChevronRight className="w-4 h-4" />
@@ -459,7 +459,7 @@ const Onboarding = () => {
             <div className="flex justify-end">
               <button
                 onClick={goNext}
-                className="h-12 sm:h-14 px-8 sm:px-10 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[15px] sm:text-[16px] flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
+                className="h-16 sm:h-[68px] px-11 sm:px-12 rounded-2xl bg-blue-500 hover:bg-blue-600 text-white font-semibold text-[17px] sm:text-[18px] flex items-center justify-center gap-3 shadow-lg shadow-blue-500/30 active:scale-[0.98] transition"
               >
                 Next <ArrowRight className="w-5 h-5" />
               </button>
