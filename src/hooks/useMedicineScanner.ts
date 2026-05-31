@@ -75,6 +75,7 @@ export const useMedicineScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [limitInfo, setLimitInfo] = useState<ScanLimitInfo | null>(null);
 
   // Track the latest scan to prevent race conditions
   const activeScanIdRef = useRef<string | null>(null);
