@@ -15,6 +15,8 @@ import {
 import Tesseract from "tesseract.js";
 import { useAppStore } from "@/store/appStore";
 import { useToast } from "@/hooks/use-toast";
+import { consumeScan } from "@/lib/premium";
+import LimitReachedModal from "@/components/LimitReachedModal";
 
 interface ParsedReceipt {
   pharmacyName: string;
