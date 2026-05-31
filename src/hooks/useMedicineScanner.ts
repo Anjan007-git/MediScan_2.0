@@ -292,4 +292,3 @@ export const useMedicineScanner = () => {
     clearResult,
   };
 };
-};
