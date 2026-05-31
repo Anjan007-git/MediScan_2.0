@@ -74,13 +74,26 @@ const PremiumPayment = () => {
         ))}
       </section>
 
-      {/* Payment note */}
-      <section className="glass rounded-[20px] p-4 flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" strokeWidth={2.4} />
-        <div className="text-[12px] text-muted-foreground leading-relaxed">
-          <span className="font-semibold text-foreground">Secure payment powered by Razorpay</span>{" "}
-          <span className="text-primary font-semibold">(Coming Soon)</span>. Your payment details
-          are encrypted and never stored on our servers.
+      {/* Promo code card */}
+      <section className="glass-strong rounded-[24px] p-5 flex items-start gap-3">
+        <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+          style={{ background: "var(--gradient-primary)" }}>
+          <Gift className="w-5 h-5 text-white" strokeWidth={2.4} />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5">
+            <span aria-hidden>🎁</span> Have a promo code?
+          </h3>
+          <p className="text-[12.5px] text-muted-foreground mt-1 leading-relaxed">
+            <button
+              type="button"
+              onClick={() => setPromoOpen(true)}
+              className="text-blue-600 dark:text-blue-400 underline-offset-2 hover:underline cursor-pointer font-semibold"
+            >
+              Click here to enter your code
+            </button>{" "}
+            and unlock Premium benefits.
+          </p>
         </div>
       </section>
 
@@ -93,18 +106,13 @@ const PremiumPayment = () => {
         Proceed to Payment
       </button>
 
-      {plan !== "premium" && (
-        <button
-          onClick={() => {
-            setPlan("premium");
-            toast.success("Premium activated (preview mode)");
-            navigate("/settings");
-          }}
-          className="w-full text-center text-[12px] text-muted-foreground font-medium underline underline-offset-4"
-        >
-          Activate preview mode (skip payment)
-        </button>
+      {plan === "premium" && (
+        <p className="text-center text-[12px] text-success font-semibold">
+          ✓ Premium is active on your account
+        </p>
       )}
+
+      <PromoCodeModal open={promoOpen} onOpenChange={setPromoOpen} />
     </div>
   );
 };
