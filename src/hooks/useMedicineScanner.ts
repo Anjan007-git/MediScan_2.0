@@ -3,12 +3,15 @@ import { MedicineInfo } from "@/components/MedicineResult";
 import { supabase } from "@/lib/supabaseClient";
 import { useAppStore } from "@/store/appStore";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/runtimeConfig";
+import { consumeScan } from "@/lib/premium";
 
 export interface ScanResult {
   medicine: MedicineInfo | null;
   confidence: number;
   isMedicine: boolean;
 }
+
+export type ScanLimitInfo = { used: number; limit: number; resetAt?: string };
 
 const MAX_ANALYSIS_EDGE_BYTES = 6_000_000;
 const MAX_IMAGE_DIMENSION = 1600;
