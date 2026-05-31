@@ -5,13 +5,14 @@ import { useMedicineScanner } from "@/hooks/useMedicineScanner";
 import { useToast } from "@/hooks/use-toast";
 import MedicineResult from "@/components/MedicineResult";
 import ScanningOverlay from "@/components/ScanningOverlay";
+import LimitReachedModal from "@/components/LimitReachedModal";
 
 /** Dedicated Upload Image page — opens gallery picker only.
  *  Does NOT touch the camera or redirect to /scan. */
 const UploadImage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const { isScanning, result, error, limitInfo, clearLimit, scanMedicine, clearResult } = useMedicineScanner();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const autoOpenedRef = useRef(false);
@@ -137,6 +138,11 @@ const UploadImage = () => {
         onChange={handleFile}
       />
       <ScanningOverlay isVisible={isScanning} />
+      <LimitReachedModal
+        open={!!limitInfo}
+        onOpenChange={(o) => { if (!o) clearLimit(); }}
+        kind="medicine"
+      />
     </div>
   );
 };

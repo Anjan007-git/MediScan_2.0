@@ -13,6 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useMedicineScanner } from "@/hooks/useMedicineScanner";
+import LimitReachedModal from "@/components/LimitReachedModal";
 import { useToast } from "@/hooks/use-toast";
 import { useAppStore as useAppStoreScan } from "@/store/appStore";
 import MedicineResult from "@/components/MedicineResult";
@@ -25,7 +26,7 @@ const Scan = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const { isScanning, result, error, limitInfo, clearLimit, scanMedicine, clearResult } = useMedicineScanner();
   const addReceipt = useAppStoreScan((s) => s.addReceipt);
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -549,6 +550,11 @@ const Scan = () => {
       />
       <canvas ref={canvasRef} className="hidden" />
       <ScanningOverlay isVisible={isScanning} />
+      <LimitReachedModal
+        open={!!limitInfo}
+        onOpenChange={(o) => { if (!o) clearLimit(); }}
+        kind="medicine"
+      />
     </div>
   );
 };

@@ -116,6 +116,36 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
       receipts: {
         Row: {
           created_at: string
@@ -313,38 +343,77 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          activated_at: string | null
           active: boolean
           billing: Json
+          billing_type: string | null
           created_at: string
           ends_at: string | null
           id: string
           plan: string
+          promo_code: string | null
           started_at: string
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          activated_at?: string | null
           active?: boolean
           billing?: Json
+          billing_type?: string | null
           created_at?: string
           ends_at?: string | null
           id?: string
           plan?: string
+          promo_code?: string | null
           started_at?: string
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          activated_at?: string | null
           active?: boolean
           billing?: Json
+          billing_type?: string | null
           created_at?: string
           ends_at?: string | null
           id?: string
           plan?: string
+          promo_code?: string | null
           started_at?: string
           status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      usage_counters: {
+        Row: {
+          created_at: string
+          medicine_scan_reset_at: string
+          medicine_scans_used: number
+          receipt_scan_reset_at: string
+          receipt_scans_used: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          medicine_scan_reset_at?: string
+          medicine_scans_used?: number
+          receipt_scan_reset_at?: string
+          receipt_scans_used?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          medicine_scan_reset_at?: string
+          medicine_scans_used?: number
+          receipt_scan_reset_at?: string
+          receipt_scans_used?: number
           updated_at?: string
           user_id?: string
         }

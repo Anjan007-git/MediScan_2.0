@@ -15,6 +15,8 @@ import {
 import Tesseract from "tesseract.js";
 import { useAppStore } from "@/store/appStore";
 import { useToast } from "@/hooks/use-toast";
+import { consumeScan } from "@/lib/premium";
+import LimitReachedModal from "@/components/LimitReachedModal";
 
 interface ParsedReceipt {
   pharmacyName: string;
@@ -117,6 +119,7 @@ const ReceiptScan = () => {
   const [progress, setProgress] = useState(0);
   const [parsed, setParsed] = useState<ParsedReceipt | null>(null);
   const [flashOn, setFlashOn] = useState(false);
+  const [limitOpen, setLimitOpen] = useState(false);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -169,6 +172,14 @@ const ReceiptScan = () => {
 
   const runOCR = useCallback(
     async (imageData: string) => {
+      // Enforce monthly receipt-scan limit BEFORE running OCR
+      const usage = await consumeScan("receipt");
+      if (!usage.ok && usage.reason === "limit") {
+        setPreview(null);
+        setLimitOpen(true);
+        return;
+      }
+
       setProcessing(true);
       setProgress(0);
       try {
@@ -480,6 +491,7 @@ const ReceiptScan = () => {
         onChange={handleFile}
       />
       <canvas ref={canvasRef} className="hidden" />
+      <LimitReachedModal open={limitOpen} onOpenChange={setLimitOpen} kind="receipt" />
     </div>
   );
 };

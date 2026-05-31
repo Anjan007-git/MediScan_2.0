@@ -5,6 +5,7 @@ import FeatureCards from "@/components/FeatureCards";
 import CameraCapture from "@/components/CameraCapture";
 import ScanningOverlay from "@/components/ScanningOverlay";
 import MedicineResult from "@/components/MedicineResult";
+import LimitReachedModal from "@/components/LimitReachedModal";
 import { useMedicineScanner } from "@/hooks/useMedicineScanner";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,7 +13,7 @@ const Index = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const { isScanning, result, error, limitInfo, clearLimit, scanMedicine, clearResult } = useMedicineScanner();
 
   const handleScanClick = useCallback(() => {
     setIsCameraOpen(true);
@@ -112,6 +113,12 @@ const Index = () => {
       />
 
       <ScanningOverlay isVisible={isScanning} />
+
+      <LimitReachedModal
+        open={!!limitInfo}
+        onOpenChange={(o) => { if (!o) clearLimit(); }}
+        kind="medicine"
+      />
     </div>
   );
 };
