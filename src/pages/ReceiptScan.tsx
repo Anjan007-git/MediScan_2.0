@@ -172,6 +172,14 @@ const ReceiptScan = () => {
 
   const runOCR = useCallback(
     async (imageData: string) => {
+      // Enforce monthly receipt-scan limit BEFORE running OCR
+      const usage = await consumeScan("receipt");
+      if (!usage.ok && usage.reason === "limit") {
+        setPreview(null);
+        setLimitOpen(true);
+        return;
+      }
+
       setProcessing(true);
       setProgress(0);
       try {
