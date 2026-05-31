@@ -5,6 +5,7 @@ import { useMedicineScanner } from "@/hooks/useMedicineScanner";
 import { useToast } from "@/hooks/use-toast";
 import MedicineResult from "@/components/MedicineResult";
 import ScanningOverlay from "@/components/ScanningOverlay";
+import LimitReachedModal from "@/components/LimitReachedModal";
 
 /** Dedicated Upload Image page — opens gallery picker only.
  *  Does NOT touch the camera or redirect to /scan. */
