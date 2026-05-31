@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Crown, Check, ShieldCheck, Sparkles, Infinity as InfinityIcon, BarChart3, Bell } from "lucide-react";
+import { ArrowLeft, Crown, Check, ShieldCheck, Sparkles, Infinity as InfinityIcon, BarChart3, Bell, Gift } from "lucide-react";
 import { useAppStore } from "@/store/appStore";
 import { toast } from "sonner";
+import PromoCodeModal from "@/components/PromoCodeModal";
 
 const features = [
   { icon: InfinityIcon, label: "Unlimited medicine scans" },
@@ -13,7 +15,8 @@ const features = [
 
 const PremiumPayment = () => {
   const navigate = useNavigate();
-  const { plan, setPlan } = useAppStore();
+  const { plan } = useAppStore();
+  const [promoOpen, setPromoOpen] = useState(false);
 
   const handleProceed = () => {
     toast.info("Razorpay integration coming soon", {
