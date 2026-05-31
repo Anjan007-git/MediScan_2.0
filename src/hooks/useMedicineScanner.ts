@@ -167,11 +167,20 @@ export const useMedicineScanner = () => {
       // Fully reset state before processing
       setResult(null);
       setError(null);
+      setLimitInfo(null);
       setIsScanning(true);
 
       console.log("[MediScan] Starting scan", { scanId, uploadedImage: getImageMeta(imageData) });
 
       try {
+        // Enforce free-plan weekly limit server-side BEFORE running analysis
+        const usage = await consumeScan("medicine");
+        if (!usage.ok && usage.reason === "limit") {
+          setLimitInfo({ used: usage.used ?? 10, limit: usage.limit ?? 10, resetAt: usage.resetAt });
+          setIsScanning(false);
+          return;
+        }
+
         const processedImageData = await preprocessImageForAnalysis(imageData);
 
         // Ensure we have a fresh session and explicitly pass the bearer token.
