@@ -278,6 +278,7 @@ export const useMedicineScanner = () => {
     activeScanIdRef.current = null;
     setResult(null);
     setError(null);
+    setLimitInfo(null);
     setIsScanning(false);
   }, []);
 
@@ -285,7 +286,10 @@ export const useMedicineScanner = () => {
     isScanning,
     result,
     error,
+    limitInfo,
+    clearLimit: () => setLimitInfo(null),
     scanMedicine,
     clearResult,
   };
+};
 };
