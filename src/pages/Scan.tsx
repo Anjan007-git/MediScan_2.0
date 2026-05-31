@@ -26,7 +26,7 @@ const Scan = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const { isScanning, result, error, limitInfo, clearLimit, scanMedicine, clearResult } = useMedicineScanner();
   const addReceipt = useAppStoreScan((s) => s.addReceipt);
 
   const videoRef = useRef<HTMLVideoElement>(null);
