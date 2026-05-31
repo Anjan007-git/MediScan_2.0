@@ -491,6 +491,7 @@ const ReceiptScan = () => {
         onChange={handleFile}
       />
       <canvas ref={canvasRef} className="hidden" />
+      <LimitReachedModal open={limitOpen} onOpenChange={setLimitOpen} kind="receipt" />
     </div>
   );
 };
