@@ -138,6 +138,11 @@ const UploadImage = () => {
         onChange={handleFile}
       />
       <ScanningOverlay isVisible={isScanning} />
+      <LimitReachedModal
+        open={!!limitInfo}
+        onOpenChange={(o) => { if (!o) clearLimit(); }}
+        kind="medicine"
+      />
     </div>
   );
 };
