@@ -12,7 +12,7 @@ import LimitReachedModal from "@/components/LimitReachedModal";
 const UploadImage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isScanning, result, error, scanMedicine, clearResult } = useMedicineScanner();
+  const { isScanning, result, error, limitInfo, clearLimit, scanMedicine, clearResult } = useMedicineScanner();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const autoOpenedRef = useRef(false);
