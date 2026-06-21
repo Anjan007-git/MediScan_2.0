@@ -71,7 +71,7 @@ const MedicineDetail = () => {
           className="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <div className="glass rounded-2xl p-8 text-center">
           <p className="text-sm text-muted-foreground">Medicine not found.</p>
@@ -128,7 +128,7 @@ const MedicineDetail = () => {
           className="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <button
           onClick={handleToggleSave}
@@ -137,7 +137,7 @@ const MedicineDetail = () => {
         >
           <Star
             className={`w-5 h-5 ${isFav ? "text-warning" : "text-muted-foreground"}`}
-            strokeWidth={2.4}
+            strokeWidth={1.8}
             fill={isFav ? "currentColor" : "none"}
           />
         </button>
@@ -158,7 +158,7 @@ const MedicineDetail = () => {
         <div
           className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full text-xs font-bold ${cfg.bg} ${cfg.color}`}
         >
-          <cfg.icon className="w-3.5 h-3.5" strokeWidth={2.6} />
+          <cfg.icon className="w-3.5 h-3.5" strokeWidth={1.9} />
           {cfg.label}
         </div>
       </section>
@@ -248,7 +248,7 @@ const MedicineDetail = () => {
             Expiry
           </p>
           <p className="text-sm font-bold text-foreground mt-1 inline-flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5" strokeWidth={2.4} /> {data.expiry}
+            <Calendar className="w-3.5 h-3.5" strokeWidth={1.8} /> {data.expiry}
           </p>
         </div>
         <div>
@@ -256,7 +256,7 @@ const MedicineDetail = () => {
             {data.kind === "saved" ? "Saved" : "Scanned"}
           </p>
           <p className="text-sm font-bold text-foreground mt-1 inline-flex items-center gap-1">
-            <Clock className="w-3.5 h-3.5" strokeWidth={2.4} /> {timeAgo(data.scannedAt)}
+            <Clock className="w-3.5 h-3.5" strokeWidth={1.8} /> {timeAgo(data.scannedAt)}
           </p>
         </div>
       </section>
@@ -291,7 +291,7 @@ const DetailCard = ({
     style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(20px)" }}
   >
     <h3 className="font-bold text-foreground text-[15px] flex items-center gap-2 mb-2">
-      <Icon className="w-4 h-4 text-primary" strokeWidth={2.4} />
+      <Icon className="w-4 h-4 text-primary" strokeWidth={1.8} />
       {title}
     </h3>
     {children}

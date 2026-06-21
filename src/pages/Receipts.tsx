@@ -126,7 +126,7 @@ const Receipts = () => {
       {/* SEARCH */}
       <div className="flex items-center gap-3 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={2.4} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
           <input
             type="text"
             placeholder="Search receipts..."
@@ -143,7 +143,7 @@ const Receipts = () => {
           style={showFilter || filter === "custom" ? { background: "var(--gradient-primary)" } : undefined}
           aria-label="Filter"
         >
-          <SlidersHorizontal className="w-4 h-4" strokeWidth={2.4} />
+          <SlidersHorizontal className="w-4 h-4" strokeWidth={1.8} />
         </button>
       </div>
 
@@ -227,7 +227,7 @@ const Receipts = () => {
           }`}
           style={showHidden ? { background: "var(--gradient-primary)" } : undefined}
         >
-          {showHidden ? <Eye className="w-3.5 h-3.5" strokeWidth={2.4} /> : <EyeOff className="w-3.5 h-3.5" strokeWidth={2.4} />}
+          {showHidden ? <Eye className="w-3.5 h-3.5" strokeWidth={1.8} /> : <EyeOff className="w-3.5 h-3.5" strokeWidth={1.8} />}
           {showHidden ? "Show All" : "Hidden"}
         </button>
       </div>
@@ -287,7 +287,7 @@ const Receipts = () => {
             style={{ background: "var(--gradient-primary)" }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-            <FileText className="relative w-5 h-5 text-white" strokeWidth={2.4} />
+            <FileText className="relative w-5 h-5 text-white" strokeWidth={1.8} />
           </div>
           <div className="flex-1 grid grid-cols-2 gap-2">
             <div>
@@ -309,7 +309,7 @@ const Receipts = () => {
         style={{ background: "var(--gradient-primary)" }}
         aria-label="Add Receipt"
       >
-        <Plus className="w-5 h-5" strokeWidth={2.6} />
+        <Plus className="w-5 h-5" strokeWidth={1.9} />
         Add Receipt
       </button>
 
@@ -414,7 +414,7 @@ const ReceiptCard = ({
         aria-haspopup="menu"
         aria-expanded={menuOpen}
       >
-        <MoreHorizontal className="w-4 h-4" strokeWidth={2.4} />
+        <MoreHorizontal className="w-4 h-4" strokeWidth={1.8} />
       </button>
 
       <button
@@ -442,7 +442,7 @@ const ReceiptCard = ({
         </div>
         <div className="flex flex-col items-end shrink-0 mt-4">
           <span className="font-extrabold text-foreground text-[15px]">{formatINR(r.total)}</span>
-          <ChevronRight className="w-4 h-4 text-muted-foreground mt-1" strokeWidth={2.4} />
+          <ChevronRight className="w-4 h-4 text-muted-foreground mt-1" strokeWidth={1.8} />
         </div>
       </button>
 
@@ -470,7 +470,7 @@ const ReceiptCard = ({
               onClick={isHidden ? onUnhide : onHide}
               className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-foreground hover:bg-primary/5 active:bg-primary/10"
             >
-              {isHidden ? <Eye className="w-4 h-4" strokeWidth={2.4} /> : <EyeOff className="w-4 h-4" strokeWidth={2.4} />}
+              {isHidden ? <Eye className="w-4 h-4" strokeWidth={1.8} /> : <EyeOff className="w-4 h-4" strokeWidth={1.8} />}
               {isHidden ? "Unhide" : "Hide"}
             </button>
             <button
@@ -478,7 +478,7 @@ const ReceiptCard = ({
               onClick={onDelete}
               className="w-full min-h-[44px] px-3 rounded-xl flex items-center gap-2 text-sm font-semibold text-danger hover:bg-danger/5 active:bg-danger/10"
             >
-              <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+              <Trash2 className="w-4 h-4" strokeWidth={1.8} />
               Delete
             </button>
           </div>,

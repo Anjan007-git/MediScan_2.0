@@ -1,9 +1,9 @@
-import { Zap, Brain, FileText } from "lucide-react";
+import { Gauge, Sparkles, ClipboardList } from "lucide-react";
 
 const features = [
-  { icon: Zap, title: "Fast", description: "Results in seconds" },
-  { icon: Brain, title: "Accurate", description: "AI-powered recognition" },
-  { icon: FileText, title: "Detailed", description: "Complete information" },
+  { icon: Gauge, title: "Fast", description: "Results in seconds" },
+  { icon: Sparkles, title: "Accurate", description: "AI-powered recognition" },
+  { icon: ClipboardList, title: "Detailed", description: "Complete information" },
 ];
 
 const FeatureCards = () => {
@@ -17,7 +17,7 @@ const FeatureCards = () => {
             style={{ animationDelay: `${300 + index * 80}ms` }}
           >
             <div className="relative w-11 h-11 rounded-2xl mx-auto mb-3 flex items-center justify-center glass-subtle overflow-hidden">
-              <feature.icon className="relative w-5 h-5 text-primary" strokeWidth={2.4} />
+              <feature.icon className="relative w-5 h-5 text-primary" strokeWidth={1.7} />
             </div>
             <h3 className="text-sm font-bold text-foreground mb-0.5">{feature.title}</h3>
             <p className="text-muted-foreground text-[11px] leading-tight">{feature.description}</p>

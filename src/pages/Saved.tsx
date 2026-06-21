@@ -23,7 +23,7 @@ const Saved = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95 transition"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.8} />
         </button>
         <div>
           <h1 className="text-[26px] font-extrabold tracking-tight leading-none">Saved</h1>
@@ -37,7 +37,7 @@ const Saved = () => {
             className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-glow mb-4"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Star className="w-7 h-7 text-white" strokeWidth={2.2} fill="currentColor" fillOpacity={0.3} />
+            <Star className="w-7 h-7 text-white" strokeWidth={1.75} fill="currentColor" fillOpacity={0.3} />
           </div>
           <h3 className="text-lg font-bold text-foreground">No saved medicines</h3>
           <p className="text-sm text-muted-foreground mt-1">
@@ -100,7 +100,7 @@ const SavedItem = ({
             <span
               className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${cfg.bg} ${cfg.text}`}
             >
-              <cfg.icon className="w-2.5 h-2.5" strokeWidth={2.6} />
+              <cfg.icon className="w-2.5 h-2.5" strokeWidth={1.9} />
               {cfg.label}
             </span>
           </div>
@@ -118,7 +118,7 @@ const SavedItem = ({
         className="w-9 h-9 rounded-full glass flex items-center justify-center text-danger active:scale-90 shrink-0"
         aria-label="Remove"
       >
-        <Trash2 className="w-4 h-4" strokeWidth={2.2} />
+        <Trash2 className="w-4 h-4" strokeWidth={1.75} />
       </button>
     </div>
   );

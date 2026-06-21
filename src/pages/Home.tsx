@@ -86,7 +86,7 @@ const Home = () => {
             Hello, {displayName} <span className="text-2xl">👋</span>
           </h1>
           <div className="flex items-center gap-1.5 mt-1.5">
-            <ShieldCheck className="w-4 h-4 text-primary" strokeWidth={2.4} />
+            <ShieldCheck className="w-4 h-4 text-primary" strokeWidth={1.8} />
             <p className="text-sm text-muted-foreground font-medium">{storeUser.greeting}</p>
           </div>
         </div>
@@ -117,7 +117,7 @@ const Home = () => {
         <div className="relative grid grid-cols-[1.05fr_1fr] gap-3 items-center">
           <div>
             <span className="inline-flex items-center gap-1 glass-subtle rounded-full px-2.5 py-1 text-[11px] font-semibold text-primary mb-3">
-              <Sparkles className="w-3 h-3" strokeWidth={2.6} />
+              <Sparkles className="w-3 h-3" strokeWidth={1.9} />
               AI Powered
             </span>
             <h2 className="text-[26px] leading-[1.05] font-extrabold tracking-tight">
@@ -131,9 +131,9 @@ const Home = () => {
               className="glossy shimmer relative mt-4 inline-flex items-center gap-2 rounded-full pl-4 pr-3 py-3 text-white font-semibold text-sm shadow-glow active:scale-[0.97] transition"
               style={{ background: "var(--gradient-primary)" }}
             >
-              <Camera className="w-4 h-4" strokeWidth={2.4} />
+              <Camera className="w-4 h-4" strokeWidth={1.8} />
               Start Scanning
-              <ChevronRight className="w-4 h-4" strokeWidth={2.6} />
+              <ChevronRight className="w-4 h-4" strokeWidth={1.9} />
             </button>
           </div>
           <div className="relative h-[200px] flex items-center justify-center">
@@ -163,7 +163,7 @@ const Home = () => {
               className={`relative w-12 h-12 rounded-full bg-gradient-to-br ${a.bg} flex items-center justify-center shadow-soft mb-2`}
             >
               <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/35 to-transparent" />
-              <a.icon className="relative w-5 h-5 text-white" strokeWidth={2.4} />
+              <a.icon className="relative w-5 h-5 text-white" strokeWidth={1.8} />
             </div>
             <span className="text-[11px] font-bold text-foreground leading-tight">{a.label}</span>
             <span className="text-[10px] text-muted-foreground leading-tight mt-0.5">{a.sub}</span>
@@ -180,7 +180,7 @@ const Home = () => {
               onClick={() => navigate("/history")}
               className="flex items-center gap-1 text-sm font-semibold text-primary active:opacity-70"
             >
-              See All <ChevronRight className="w-4 h-4" strokeWidth={2.6} />
+              See All <ChevronRight className="w-4 h-4" strokeWidth={1.9} />
             </button>
           </div>
           <div className="space-y-3">
@@ -207,7 +207,7 @@ const Home = () => {
               style={{ background: "var(--gradient-primary)" }}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-              <Shield className="relative w-6 h-6 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+              <Shield className="relative w-6 h-6 text-white" strokeWidth={1.8} fill="currentColor" fillOpacity={0.2} />
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="font-bold text-foreground text-sm">Health Tip</h4>
@@ -218,7 +218,7 @@ const Home = () => {
                 onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
                 className="mt-3 glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary active:scale-95"
               >
-                Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
+                Learn More <ChevronRight className="w-3 h-3" strokeWidth={1.9} />
               </button>
             </div>
           </div>
@@ -237,7 +237,7 @@ const Home = () => {
             className="absolute top-3 right-3 w-6 h-6 rounded-full glass flex items-center justify-center active:scale-90"
             aria-label="Dismiss tip"
           >
-            <X className="w-3.5 h-3.5 text-foreground/60" strokeWidth={2.5} />
+            <X className="w-3.5 h-3.5 text-foreground/60" strokeWidth={1.85} />
           </button>
           <div className="flex items-start gap-3 pr-6">
             <div
@@ -245,7 +245,7 @@ const Home = () => {
               style={{ background: "var(--gradient-primary)" }}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-              <Shield className="relative w-6 h-6 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+              <Shield className="relative w-6 h-6 text-white" strokeWidth={1.8} fill="currentColor" fillOpacity={0.2} />
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="font-bold text-foreground text-sm">Health Tip</h4>
@@ -257,7 +257,7 @@ const Home = () => {
               className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary self-end shrink-0 active:scale-95"
               onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
             >
-              Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
+              Learn More <ChevronRight className="w-3 h-3" strokeWidth={1.9} />
             </button>
           </div>
         </section>
@@ -311,7 +311,7 @@ const ActionSheet = ({
     >
       <div className="px-5 pt-6 pb-4 text-center">
         <div className="w-14 h-14 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-3">
-          <Trash2 className="w-6 h-6 text-danger" strokeWidth={2.2} />
+          <Trash2 className="w-6 h-6 text-danger" strokeWidth={1.75} />
         </div>
         <h3 className="text-[17px] font-bold text-foreground">Delete this scan?</h3>
         <p className="text-[13px] text-muted-foreground mt-1.5 truncate">{title}</p>
@@ -324,7 +324,7 @@ const ActionSheet = ({
           onClick={onDelete}
           className="w-full min-h-[48px] rounded-2xl text-[15px] font-bold text-white bg-danger active:scale-[0.98] flex items-center justify-center gap-2 shadow-md"
         >
-          <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+          <Trash2 className="w-4 h-4" strokeWidth={1.8} />
           Delete
         </button>
         <button
@@ -422,11 +422,11 @@ const RecentScanCard = ({
           <span>{timeAgo(scan.scannedAt)}</span>
           <span className="opacity-40">|</span>
           <span className="inline-flex items-center gap-1">
-            <Calendar className="w-3 h-3" strokeWidth={2.4} /> Exp. {scan.expiry}
+            <Calendar className="w-3 h-3" strokeWidth={1.8} /> Exp. {scan.expiry}
           </span>
         </div>
       </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" strokeWidth={2.4} />
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" strokeWidth={1.8} />
     </button>
   );
 };
@@ -442,7 +442,7 @@ const StatusBadge = ({ status }: { status: ScanRecord["status"] }) => {
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${cfg.bg} ${cfg.text}`}
     >
-      <cfg.icon className="w-2.5 h-2.5" strokeWidth={2.6} />
+      <cfg.icon className="w-2.5 h-2.5" strokeWidth={1.9} />
       {cfg.label}
     </span>
   );

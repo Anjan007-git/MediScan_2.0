@@ -33,7 +33,7 @@ const PremiumPayment = () => {
           className="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-95 transition"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.8} />
         </button>
         <div>
           <h1 className="text-[26px] font-extrabold tracking-tight leading-none">Upgrade to Premium</h1>
@@ -50,7 +50,7 @@ const PremiumPayment = () => {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
         <div className="relative flex items-center gap-2">
-          <Crown className="w-5 h-5" strokeWidth={2.6} fill="currentColor" />
+          <Crown className="w-5 h-5" strokeWidth={1.9} fill="currentColor" />
           <span className="text-sm font-bold tracking-wide uppercase">Premium Plan</span>
         </div>
         <div className="relative mt-3 flex items-end gap-1">
@@ -66,7 +66,7 @@ const PremiumPayment = () => {
         {features.map(({ icon: Icon, label }) => (
           <div key={label} className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <Icon className="w-4 h-4 text-primary" strokeWidth={2.4} />
+              <Icon className="w-4 h-4 text-primary" strokeWidth={1.8} />
             </div>
             <p className="text-[14px] font-medium text-foreground flex-1">{label}</p>
             <Check className="w-4 h-4 text-success" strokeWidth={3} />
@@ -78,7 +78,7 @@ const PremiumPayment = () => {
       <section className="glass-strong rounded-[24px] p-5 flex items-start gap-3">
         <div className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
           style={{ background: "var(--gradient-primary)" }}>
-          <Gift className="w-5 h-5 text-white" strokeWidth={2.4} />
+          <Gift className="w-5 h-5 text-white" strokeWidth={1.8} />
         </div>
         <div className="flex-1">
           <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5">

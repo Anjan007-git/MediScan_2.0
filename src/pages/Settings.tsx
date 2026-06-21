@@ -79,7 +79,7 @@ const Settings = () => {
         <div className="flex-1 text-left min-w-0">
           <h2 className="font-bold text-foreground text-lg leading-tight truncate">{displayName}</h2>
           <p className="text-[13px] text-muted-foreground truncate inline-flex items-center gap-1">
-            <Mail className="w-3 h-3" strokeWidth={2.4} /> {userEmail}
+            <Mail className="w-3 h-3" strokeWidth={1.8} /> {userEmail}
           </p>
           <span
             className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full mt-1.5 ${
@@ -88,18 +88,18 @@ const Settings = () => {
           >
             {plan === "premium" ? (
               <>
-                <Crown className="w-3 h-3" strokeWidth={2.6} fill="currentColor" />
+                <Crown className="w-3 h-3" strokeWidth={1.9} fill="currentColor" />
                 Premium • ₹99/mo
               </>
             ) : (
               <>
-                <Sparkles className="w-3 h-3" strokeWidth={2.6} />
+                <Sparkles className="w-3 h-3" strokeWidth={1.9} />
                 Basic • Free
               </>
             )}
           </span>
         </div>
-        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" strokeWidth={2.4} />
+        <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" strokeWidth={1.8} />
       </button>
 
       {/* SUBSCRIPTION PLANS */}
@@ -121,7 +121,7 @@ const Settings = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
           )}
           <div className="relative flex items-center gap-2 mb-1.5">
-            <Sparkles className={`w-4 h-4 ${plan === "basic" ? "" : "text-foreground/70"}`} strokeWidth={2.4} />
+            <Sparkles className={`w-4 h-4 ${plan === "basic" ? "" : "text-foreground/70"}`} strokeWidth={1.8} />
             <span className="text-sm font-bold">Basic</span>
           </div>
           <p className="relative text-2xl font-extrabold">₹0</p>
@@ -136,7 +136,7 @@ const Settings = () => {
           }`}
         >
           <div className="relative flex items-center gap-2 mb-1.5">
-            <Crown className="w-4 h-4 text-primary" strokeWidth={2.6} fill="currentColor" />
+            <Crown className="w-4 h-4 text-primary" strokeWidth={1.9} fill="currentColor" />
             <span className="text-sm font-bold text-foreground">Premium</span>
           </div>
           <p className="relative text-2xl font-extrabold text-foreground">
@@ -153,7 +153,7 @@ const Settings = () => {
         style={{ animationDelay: "100ms" }}
       >
         <IconTile color="primary">
-          <Sun className="w-5 h-5 text-primary" strokeWidth={2.2} />
+          <Sun className="w-5 h-5 text-primary" strokeWidth={1.75} />
         </IconTile>
         <div className="flex-1 min-w-0">
           <p className="font-bold text-foreground text-[15px]">Theme</p>
@@ -172,7 +172,7 @@ const Settings = () => {
         style={{ animationDelay: "140ms" }}
       >
         <PreferenceRow
-          icon={<Bell className="w-5 h-5 text-primary" strokeWidth={2.2} fill="currentColor" fillOpacity={0.15} />}
+          icon={<Bell className="w-5 h-5 text-primary" strokeWidth={1.75} fill="currentColor" fillOpacity={0.15} />}
           tile="primary"
           title="Notifications"
           subtitle="Manage your notification preferences"
@@ -181,7 +181,7 @@ const Settings = () => {
         />
         <Divider />
         <PreferenceRow
-          icon={<Clock className="w-5 h-5 text-success" strokeWidth={2.2} />}
+          icon={<Clock className="w-5 h-5 text-success" strokeWidth={1.75} />}
           tile="success"
           title="Reminders"
           subtitle="Manage medicine reminders"
@@ -190,7 +190,7 @@ const Settings = () => {
         />
         <Divider />
         <PreferenceRow
-          icon={<ShieldCheck className="w-5 h-5 text-violet-500" strokeWidth={2.2} fill="currentColor" fillOpacity={0.15} />}
+          icon={<ShieldCheck className="w-5 h-5 text-violet-500" strokeWidth={1.75} fill="currentColor" fillOpacity={0.15} />}
           tile="violet"
           title="Safety Alerts"
           subtitle="Receive important safety updates"
@@ -206,7 +206,7 @@ const Settings = () => {
         style={{ animationDelay: "180ms" }}
       >
         <LinkRow
-          icon={<Info className="w-5 h-5 text-primary" strokeWidth={2.2} />}
+          icon={<Info className="w-5 h-5 text-primary" strokeWidth={1.75} />}
           tile="primary"
           title="About MediScan"
           subtitle="Learn more about the app"
@@ -214,7 +214,7 @@ const Settings = () => {
         />
         <Divider />
         <LinkRow
-          icon={<FileText className="w-5 h-5 text-success" strokeWidth={2.2} />}
+          icon={<FileText className="w-5 h-5 text-success" strokeWidth={1.75} />}
           tile="success"
           title="Privacy Policy"
           subtitle="Read our privacy policy"
@@ -222,7 +222,7 @@ const Settings = () => {
         />
         <Divider />
         <LinkRow
-          icon={<Lock className="w-5 h-5 text-violet-500" strokeWidth={2.2} />}
+          icon={<Lock className="w-5 h-5 text-violet-500" strokeWidth={1.75} />}
           tile="violet"
           title="Security"
           subtitle="Manage your data and security"
@@ -230,7 +230,7 @@ const Settings = () => {
         />
         <Divider />
         <LinkRow
-          icon={<HelpCircle className="w-5 h-5 text-warning" strokeWidth={2.2} />}
+          icon={<HelpCircle className="w-5 h-5 text-warning" strokeWidth={1.75} />}
           tile="warning"
           title="Help & Support"
           subtitle="Get help and contact support"
@@ -246,7 +246,7 @@ const Settings = () => {
       >
         <div className="flex items-center gap-3 px-3 py-3">
           <IconTile color="primary">
-            <ClipboardList className="w-5 h-5 text-primary" strokeWidth={2.2} />
+            <ClipboardList className="w-5 h-5 text-primary" strokeWidth={1.75} />
           </IconTile>
           <div className="flex-1 min-w-0">
             <p className="font-bold text-foreground text-[15px]">Version</p>
@@ -258,7 +258,7 @@ const Settings = () => {
         </div>
         <Divider />
         <LinkRow
-          icon={<Code2 className="w-5 h-5 text-success" strokeWidth={2.2} />}
+          icon={<Code2 className="w-5 h-5 text-success" strokeWidth={1.75} />}
           tile="success"
           title="Designed by Anjan"
           subtitle={
@@ -269,7 +269,7 @@ const Settings = () => {
         />
         <Divider />
         <LinkRow
-          icon={<LogOut className="w-5 h-5 text-danger" strokeWidth={2.2} />}
+          icon={<LogOut className="w-5 h-5 text-danger" strokeWidth={1.75} />}
           tile="danger"
           title="Log Out"
           subtitle="Sign out from your account"
@@ -325,7 +325,7 @@ const PreferenceRow = ({ icon, tile, title, subtitle, value, onToggle }: PrefRow
       <p className="text-[12px] text-muted-foreground truncate">{subtitle}</p>
     </div>
     <Toggle value={value} onToggle={() => onToggle(!value)} />
-    <ChevronRight className="w-4 h-4 text-muted-foreground/60 shrink-0" strokeWidth={2.4} />
+    <ChevronRight className="w-4 h-4 text-muted-foreground/60 shrink-0" strokeWidth={1.8} />
   </div>
 );
 
@@ -347,7 +347,7 @@ const LinkRow = ({ icon, tile, title, subtitle, onClick }: LinkRowProps) => (
       <p className="font-bold text-foreground text-[15px]">{title}</p>
       <p className="text-[12px] text-muted-foreground truncate">{subtitle}</p>
     </div>
-    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={2.4} />
+    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={1.8} />
   </button>
 );
 

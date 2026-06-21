@@ -61,7 +61,7 @@ const PromoCodeModal = ({ open, onOpenChange }: Props) => {
             className="mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-2"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Gift className="w-6 h-6 text-white" strokeWidth={2.4} />
+            <Gift className="w-6 h-6 text-white" strokeWidth={1.8} />
           </div>
           <DialogTitle className="text-center">Enter Promo Code</DialogTitle>
           <DialogDescription className="text-center">

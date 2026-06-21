@@ -1,13 +1,13 @@
 import { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, FileText, Camera, PieChart, Settings } from "lucide-react";
+import { House, ReceiptText, ScanLine, ChartPie, Settings2 } from "lucide-react";
 
 const items = [
-  { to: "/", label: "Home", icon: Home },
-  { to: "/receipts", label: "Receipts", icon: FileText },
-  { to: "/scan", label: "Scan", icon: Camera },
-  { to: "/insights", label: "Insights", icon: PieChart },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/", label: "Home", icon: House },
+  { to: "/receipts", label: "Receipts", icon: ReceiptText },
+  { to: "/scan", label: "Scan", icon: ScanLine },
+  { to: "/insights", label: "Insights", icon: ChartPie },
+  { to: "/settings", label: "Settings", icon: Settings2 },
 ];
 
 const NAV_HEIGHT = 68;
@@ -111,7 +111,7 @@ const BottomNav = () => {
                   transform: isActive ? "scale(1.08)" : "scale(1)",
                   transition: "transform 250ms ease-in-out, color 200ms ease",
                 }}
-                strokeWidth={isActive ? 2.4 : 2.1}
+                strokeWidth={isActive ? 1.9 : 1.7}
               />
               <span
                 style={{

@@ -19,7 +19,7 @@ const ReceiptDetail = () => {
           className="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <div className="glass rounded-2xl p-8 text-center">
           <p className="text-sm text-muted-foreground">Receipt not found.</p>
@@ -36,7 +36,7 @@ const ReceiptDetail = () => {
           className="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <h1 className="text-lg font-bold">Receipt</h1>
         <div className="w-10 h-10" />
@@ -108,7 +108,7 @@ const ReceiptDetail = () => {
             className="w-12 h-12 rounded-full flex items-center justify-center shadow-glow relative overflow-hidden"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <FileText className="w-5 h-5 text-white" strokeWidth={2.4} />
+            <FileText className="w-5 h-5 text-white" strokeWidth={1.8} />
           </div>
           <div>
             <p className="text-xs text-muted-foreground font-medium">Total Amount</p>

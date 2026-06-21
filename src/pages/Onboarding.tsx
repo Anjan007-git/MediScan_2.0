@@ -139,7 +139,7 @@ const Slide4Art = () => (
       <div className="relative w-28 h-28">
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-sky-400 animate-pulse opacity-30" />
         <div className="absolute inset-2 rounded-full bg-white shadow-lg flex items-center justify-center">
-          <ShieldCheck className="w-12 h-12 text-blue-500" strokeWidth={2.2} />
+          <ShieldCheck className="w-12 h-12 text-blue-500" strokeWidth={1.75} />
         </div>
       </div>
       <div className="mt-5 text-center">

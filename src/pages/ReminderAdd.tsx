@@ -48,7 +48,7 @@ const ReminderAdd = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">New Reminder</h1>
@@ -61,7 +61,7 @@ const ReminderAdd = () => {
           className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-glow"
           style={{ background: "var(--gradient-primary)" }}
         >
-          <Bell className="w-7 h-7 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+          <Bell className="w-7 h-7 text-white" strokeWidth={1.8} fill="currentColor" fillOpacity={0.2} />
         </div>
         <p className="text-sm font-semibold mt-3">Set a medicine reminder</p>
         <p className="text-[11px] text-muted-foreground text-center mt-1">
@@ -91,7 +91,7 @@ const ReminderAdd = () => {
 
         <div>
           <div className="flex items-center gap-2 mb-2 px-1">
-            <Repeat className="w-4 h-4 text-primary" strokeWidth={2.4} />
+            <Repeat className="w-4 h-4 text-primary" strokeWidth={1.8} />
             <span className="text-[12px] font-semibold text-foreground/80">Repeat</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
@@ -119,7 +119,7 @@ const ReminderAdd = () => {
         className="glossy w-full mt-8 rounded-full py-4 font-bold text-white shadow-glow active:scale-[0.97] transition inline-flex items-center justify-center gap-2"
         style={{ background: "var(--gradient-primary)" }}
       >
-        <Save className="w-4 h-4" strokeWidth={2.6} />
+        <Save className="w-4 h-4" strokeWidth={1.9} />
         Set Reminder
       </button>
     </div>
@@ -137,7 +137,7 @@ const Field = ({
 }) => (
   <div className="glass rounded-2xl px-4 py-3">
     <div className="flex items-center gap-2 mb-1">
-      <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={2.4} />
+      <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={1.8} />
       <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">
         {label}
       </span>

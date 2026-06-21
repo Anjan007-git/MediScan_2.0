@@ -68,7 +68,7 @@ const InsightsCategories = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Categories</h1>
@@ -85,7 +85,7 @@ const InsightsCategories = () => {
             className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-glow"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Sparkles className="w-7 h-7 text-white" strokeWidth={2.2} />
+            <Sparkles className="w-7 h-7 text-white" strokeWidth={1.75} />
           </div>
           <h3 className="font-bold text-foreground text-base">No medicine categories scanned yet</h3>
           <p className="text-sm text-muted-foreground mt-2 max-w-[260px]">
@@ -107,7 +107,7 @@ const InsightsCategories = () => {
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-soft"
                 style={{ background: c.color }}
               >
-                <Pill className="w-5 h-5 text-white rotate-45" strokeWidth={2.4} />
+                <Pill className="w-5 h-5 text-white rotate-45" strokeWidth={1.8} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">

@@ -63,7 +63,7 @@ const ResetPassword = () => {
         </p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-primary" strokeWidth={2.4} />
+            <Lock className="w-4 h-4 text-primary" strokeWidth={1.8} />
             <input
               type="password"
               required

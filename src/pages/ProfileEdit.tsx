@@ -53,7 +53,7 @@ const ProfileEdit = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <h1 className="text-2xl font-extrabold tracking-tight">Edit Profile</h1>
       </header>
@@ -73,7 +73,7 @@ const ProfileEdit = () => {
       <section className="space-y-3 animate-fade-in-up" style={{ animationDelay: "60ms" }}>
         <div className="glass rounded-2xl px-4 py-3">
           <div className="flex items-center gap-2 mb-1">
-            <User className="w-3.5 h-3.5 text-primary" strokeWidth={2.4} />
+            <User className="w-3.5 h-3.5 text-primary" strokeWidth={1.8} />
             <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">Name</span>
           </div>
           <input
@@ -86,7 +86,7 @@ const ProfileEdit = () => {
 
         <div className="glass rounded-2xl px-4 py-3 opacity-80">
           <div className="flex items-center gap-2 mb-1">
-            <Mail className="w-3.5 h-3.5 text-primary" strokeWidth={2.4} />
+            <Mail className="w-3.5 h-3.5 text-primary" strokeWidth={1.8} />
             <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">
               Email
             </span>
@@ -112,7 +112,7 @@ const ProfileEdit = () => {
         className="glossy w-full rounded-full py-4 font-bold text-white shadow-glow active:scale-[0.97] transition inline-flex items-center justify-center gap-2"
         style={{ background: "var(--gradient-primary)" }}
       >
-        <Save className="w-4 h-4" strokeWidth={2.6} />
+        <Save className="w-4 h-4" strokeWidth={1.9} />
         Save Changes
       </button>
     </div>

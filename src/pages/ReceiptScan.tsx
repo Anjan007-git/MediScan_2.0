@@ -278,7 +278,7 @@ const ReceiptScan = () => {
             className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
             aria-label="Back"
           >
-            <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+            <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
           </button>
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight">Receipt Details</h1>
@@ -319,7 +319,7 @@ const ReceiptScan = () => {
                   })}
                 </p>
               </div>
-              <CheckCircle2 className="w-9 h-9 opacity-90" strokeWidth={2.2} />
+              <CheckCircle2 className="w-9 h-9 opacity-90" strokeWidth={1.75} />
             </div>
             {parsed.medicines.length > 0 && (
               <div>
@@ -387,7 +387,7 @@ const ReceiptScan = () => {
             className="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center active:scale-95"
             aria-label="Back"
           >
-            <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+            <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
           </button>
           <div className="text-center">
             <h1 className="text-lg font-bold">Scan Receipt</h1>
@@ -401,16 +401,16 @@ const ReceiptScan = () => {
             aria-label="Toggle flash"
           >
             {flashOn ? (
-              <Zap className="w-5 h-5 text-primary-glow" strokeWidth={2.4} fill="currentColor" />
+              <Zap className="w-5 h-5 text-primary-glow" strokeWidth={1.8} fill="currentColor" />
             ) : (
-              <ZapOff className="w-5 h-5 text-white" strokeWidth={2.2} />
+              <ZapOff className="w-5 h-5 text-white" strokeWidth={1.75} />
             )}
           </button>
         </header>
 
         <div className="flex justify-center px-5 mb-2">
           <div className="bg-white/10 backdrop-blur-md rounded-full px-4 py-2 inline-flex items-center gap-2 border border-white/15">
-            <ScanLine className="w-3.5 h-3.5 text-primary-glow" strokeWidth={2.6} />
+            <ScanLine className="w-3.5 h-3.5 text-primary-glow" strokeWidth={1.9} />
             <span className="text-[12px] font-medium">OCR will extract pharmacy, date & total</span>
           </div>
         </div>
@@ -449,7 +449,7 @@ const ReceiptScan = () => {
               disabled={processing}
             >
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/15">
-                <ImageIcon className="w-5 h-5 text-white" strokeWidth={2.2} />
+                <ImageIcon className="w-5 h-5 text-white" strokeWidth={1.75} />
               </div>
               <span className="text-[11px] text-white/80 font-medium">Gallery</span>
             </button>
@@ -465,7 +465,7 @@ const ReceiptScan = () => {
                 className="absolute inset-[6px] rounded-full flex items-center justify-center shadow-[0_0_24px_rgba(59,130,246,0.7)]"
                 style={{ background: "var(--gradient-primary)" }}
               >
-                <Camera className="w-8 h-8 text-white" strokeWidth={2.2} />
+                <Camera className="w-8 h-8 text-white" strokeWidth={1.75} />
               </div>
             </button>
 
@@ -475,7 +475,7 @@ const ReceiptScan = () => {
               disabled={processing}
             >
               <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/15">
-                <RotateCw className="w-5 h-5 text-white" strokeWidth={2.2} />
+                <RotateCw className="w-5 h-5 text-white" strokeWidth={1.75} />
               </div>
               <span className="text-[11px] text-white/80 font-medium">Reset</span>
             </button>

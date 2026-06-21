@@ -40,7 +40,7 @@ const LimitReachedModal = ({ open, onOpenChange, kind }: Props) => {
         <AlertDialogHeader>
           <div className="mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-2"
             style={{ background: "var(--gradient-primary)" }}>
-            <Crown className="w-6 h-6 text-white" strokeWidth={2.4} fill="currentColor" />
+            <Crown className="w-6 h-6 text-white" strokeWidth={1.8} fill="currentColor" />
           </div>
           <AlertDialogTitle className="text-center">{copy.title}</AlertDialogTitle>
           <AlertDialogDescription className="text-center">
