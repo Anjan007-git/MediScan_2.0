@@ -157,7 +157,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }: CameraCaptureProps) => {
         >
           <div className="absolute inset-0 rounded-full glass-strong" />
           <div className="absolute inset-1.5 rounded-full overflow-hidden glossy flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
-            <Camera className="relative w-8 h-8 text-white" strokeWidth={2.2} />
+            <Camera className="relative w-8 h-8 text-white" strokeWidth={1.75} />
           </div>
         </button>
       </div>

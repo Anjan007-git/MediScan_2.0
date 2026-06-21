@@ -31,7 +31,7 @@ const Reminders = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <h1 className="text-xl font-extrabold tracking-tight">Reminders</h1>
         <button
@@ -40,7 +40,7 @@ const Reminders = () => {
           style={{ background: "var(--gradient-primary)" }}
           aria-label="Add reminder"
         >
-          <Plus className="w-5 h-5" strokeWidth={2.6} />
+          <Plus className="w-5 h-5" strokeWidth={1.9} />
         </button>
       </header>
 
@@ -50,7 +50,7 @@ const Reminders = () => {
           style={{ background: "var(--gradient-primary)" }}
         >
           <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-          <Bell className="relative w-5 h-5 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+          <Bell className="relative w-5 h-5 text-white" strokeWidth={1.8} fill="currentColor" fillOpacity={0.2} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs text-muted-foreground font-medium">Active reminders</p>
@@ -91,7 +91,7 @@ const Reminders = () => {
         style={{ background: "var(--gradient-primary)" }}
         aria-label="Add Reminder"
       >
-        <Plus className="w-5 h-5" strokeWidth={2.6} />
+        <Plus className="w-5 h-5" strokeWidth={1.9} />
         Reminder
       </button>
 
@@ -111,7 +111,7 @@ const Reminders = () => {
           >
             <div className="px-5 pt-6 pb-4 text-center">
               <div className="w-14 h-14 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-3">
-                <Trash2 className="w-6 h-6 text-danger" strokeWidth={2.2} />
+                <Trash2 className="w-6 h-6 text-danger" strokeWidth={1.75} />
               </div>
               <h3 className="text-[17px] font-bold text-foreground">Delete this reminder?</h3>
               <p className="text-[13px] text-muted-foreground mt-1.5 truncate">{actionItem.medicine}</p>
@@ -124,7 +124,7 @@ const Reminders = () => {
                 onClick={() => handleDelete(actionItem)}
                 className="w-full min-h-[48px] rounded-2xl text-[15px] font-bold text-white bg-danger active:scale-[0.98] flex items-center justify-center gap-2 shadow-md"
               >
-                <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+                <Trash2 className="w-4 h-4" strokeWidth={1.8} />
                 Delete
               </button>
               <button
@@ -185,12 +185,12 @@ const ReminderItem = ({
       }`}
     >
       <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-        <Pill className="w-5 h-5 text-primary rotate-45" strokeWidth={2.2} />
+        <Pill className="w-5 h-5 text-primary rotate-45" strokeWidth={1.75} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-bold text-foreground text-[15px] truncate">{r.medicine}</p>
         <p className="text-[12px] text-muted-foreground inline-flex items-center gap-1 mt-0.5">
-          <Clock className="w-3 h-3" strokeWidth={2.4} />
+          <Clock className="w-3 h-3" strokeWidth={1.8} />
           {r.time} · {r.frequency}
         </p>
       </div>

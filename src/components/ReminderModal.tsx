@@ -65,7 +65,7 @@ const ReminderModal = ({ open, onClose }: ReminderModalProps) => {
               className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-glow"
               style={{ background: "var(--gradient-primary)" }}
             >
-              <Bell className="w-5 h-5 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+              <Bell className="w-5 h-5 text-white" strokeWidth={1.8} fill="currentColor" fillOpacity={0.2} />
             </div>
             <div>
               <h3 className="font-bold text-foreground text-lg leading-tight">New Reminder</h3>
@@ -76,7 +76,7 @@ const ReminderModal = ({ open, onClose }: ReminderModalProps) => {
             onClick={onClose}
             className="w-9 h-9 rounded-full glass flex items-center justify-center active:scale-90"
           >
-            <X className="w-4 h-4 text-foreground" strokeWidth={2.4} />
+            <X className="w-4 h-4 text-foreground" strokeWidth={1.8} />
           </button>
         </div>
 
@@ -102,7 +102,7 @@ const ReminderModal = ({ open, onClose }: ReminderModalProps) => {
 
           <div>
             <div className="flex items-center gap-2 mb-2 px-1">
-              <Repeat className="w-4 h-4 text-primary" strokeWidth={2.4} />
+              <Repeat className="w-4 h-4 text-primary" strokeWidth={1.8} />
               <span className="text-[12px] font-semibold text-foreground/80">Repeat</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -153,7 +153,7 @@ const Field = ({
 }) => (
   <div className="glass rounded-2xl px-4 py-3">
     <div className="flex items-center gap-2 mb-1">
-      <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={2.4} />
+      <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={1.8} />
       <span className="text-[11px] font-semibold text-foreground/70 uppercase tracking-wide">{label}</span>
     </div>
     {children}

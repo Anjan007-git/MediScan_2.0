@@ -323,9 +323,9 @@ const Scan = () => {
               }`}
             >
               {flashOn ? (
-                <Zap className="w-5 h-5 text-primary-glow" strokeWidth={2.4} fill="currentColor" />
+                <Zap className="w-5 h-5 text-primary-glow" strokeWidth={1.8} fill="currentColor" />
               ) : (
-                <ZapOff className="w-5 h-5 text-white" strokeWidth={2.2} />
+                <ZapOff className="w-5 h-5 text-white" strokeWidth={1.75} />
               )}
             </div>
             <span className="text-[11px] font-medium text-white/80">Flash</span>
@@ -348,7 +348,7 @@ const Scan = () => {
             aria-label="Help"
           >
             <div className="w-11 h-11 rounded-full glass-dark flex items-center justify-center">
-              <HelpCircle className="w-5 h-5 text-white" strokeWidth={2.2} />
+              <HelpCircle className="w-5 h-5 text-white" strokeWidth={1.75} />
             </div>
             <span className="text-[11px] font-medium text-white/80">Help</span>
           </button>
@@ -357,7 +357,7 @@ const Scan = () => {
         {/* AI HINT PILL */}
         <div className="flex justify-center px-5">
           <div className="glass-dark rounded-full px-4 py-2 inline-flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-primary-glow" strokeWidth={2.6} fill="currentColor" />
+            <Sparkles className="w-3.5 h-3.5 text-primary-glow" strokeWidth={1.9} fill="currentColor" />
             <span className="text-[12px] font-medium text-white/90">
               AI will detect medicine details automatically
             </span>
@@ -418,7 +418,7 @@ const Scan = () => {
         <div className="px-6 pb-3 flex justify-center">
           <div className="glass-dark rounded-full px-4 py-3 inline-flex items-center gap-3 max-w-sm">
             <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
-              <Calendar className="w-4 h-4 text-primary-glow" strokeWidth={2.4} />
+              <Calendar className="w-4 h-4 text-primary-glow" strokeWidth={1.8} />
             </div>
             <p className="text-[12px] leading-snug text-white/90">
               {uploadedPreview
@@ -436,7 +436,7 @@ const Scan = () => {
               className="flex flex-col items-center gap-1.5 active:scale-95 transition"
             >
               <div className="w-12 h-12 rounded-full glass-dark flex items-center justify-center">
-                <ImageIcon className="w-5 h-5 text-white" strokeWidth={2.2} />
+                <ImageIcon className="w-5 h-5 text-white" strokeWidth={1.75} />
               </div>
               <span className="text-[11px] text-white/80 font-medium">Gallery</span>
             </button>
@@ -454,7 +454,7 @@ const Scan = () => {
                 style={{ background: "var(--gradient-primary)" }}
               >
                 <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/25 to-transparent" />
-                <Camera className="relative w-8 h-8 text-white" strokeWidth={2.2} />
+                <Camera className="relative w-8 h-8 text-white" strokeWidth={1.75} />
               </div>
             </button>
 
@@ -469,7 +469,7 @@ const Scan = () => {
               className="flex flex-col items-center gap-1.5 active:scale-95 transition"
             >
               <div className="w-12 h-12 rounded-full glass-dark flex items-center justify-center">
-                <RotateCw className="w-5 h-5 text-white" strokeWidth={2.2} />
+                <RotateCw className="w-5 h-5 text-white" strokeWidth={1.75} />
               </div>
               <span className="text-[11px] text-white/80 font-medium">
                 {uploadedPreview ? "Retake" : "Flip"}

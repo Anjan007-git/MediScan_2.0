@@ -28,7 +28,7 @@ const History = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95 transition"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5 text-foreground" strokeWidth={1.8} />
         </button>
         <div>
           <h1 className="text-[26px] font-extrabold tracking-tight leading-none">Scan History</h1>
@@ -42,7 +42,7 @@ const History = () => {
             className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-glow mb-4"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <HistoryIcon className="w-7 h-7 text-white" strokeWidth={2.2} />
+            <HistoryIcon className="w-7 h-7 text-white" strokeWidth={1.75} />
           </div>
           <h3 className="text-lg font-bold text-foreground">No scans yet</h3>
           <p className="text-sm text-muted-foreground mt-1">
@@ -85,7 +85,7 @@ const History = () => {
           >
             <div className="px-5 pt-6 pb-4 text-center">
               <div className="w-14 h-14 rounded-full bg-danger/10 flex items-center justify-center mx-auto mb-3">
-                <Trash2 className="w-6 h-6 text-danger" strokeWidth={2.2} />
+                <Trash2 className="w-6 h-6 text-danger" strokeWidth={1.75} />
               </div>
               <h3 className="text-[17px] font-bold text-foreground">Delete this scan?</h3>
               <p className="text-[13px] text-muted-foreground mt-1.5 truncate">{actionScan.name}</p>
@@ -102,7 +102,7 @@ const History = () => {
                 }}
                 className="w-full min-h-[48px] rounded-2xl text-[15px] font-bold text-white bg-danger active:scale-[0.98] flex items-center justify-center gap-2 shadow-md"
               >
-                <Trash2 className="w-4 h-4" strokeWidth={2.4} />
+                <Trash2 className="w-4 h-4" strokeWidth={1.8} />
                 Delete
               </button>
               <button
@@ -178,11 +178,11 @@ const ScanItem = ({
           <span>{timeAgo(scan.scannedAt)}</span>
           <span className="opacity-40">|</span>
           <span className="inline-flex items-center gap-1">
-            <Calendar className="w-3 h-3" strokeWidth={2.4} /> {scan.expiry}
+            <Calendar className="w-3 h-3" strokeWidth={1.8} /> {scan.expiry}
           </span>
         </div>
       </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" strokeWidth={2.4} />
+      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-1" strokeWidth={1.8} />
     </button>
   );
 };
@@ -198,7 +198,7 @@ const StatusBadge = ({ status }: { status: ScanRecord["status"] }) => {
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${cfg.bg} ${cfg.text}`}
     >
-      <cfg.icon className="w-2.5 h-2.5" strokeWidth={2.6} />
+      <cfg.icon className="w-2.5 h-2.5" strokeWidth={1.9} />
       {cfg.label}
     </span>
   );

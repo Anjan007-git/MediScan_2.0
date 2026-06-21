@@ -100,7 +100,7 @@ const Login = () => {
             style={{ background: "var(--gradient-primary)" }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-            <ShieldCheck className="relative w-8 h-8 text-white" strokeWidth={2.4} />
+            <ShieldCheck className="relative w-8 h-8 text-white" strokeWidth={1.8} />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight">
             {mode === "signin" ? "Welcome back" : "Create account"}
@@ -130,7 +130,7 @@ const Login = () => {
         <form onSubmit={handleEmailAuth} className="space-y-3">
           {mode === "signup" && (
             <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" strokeWidth={2.4} />
+              <Sparkles className="w-4 h-4 text-primary" strokeWidth={1.8} />
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -140,7 +140,7 @@ const Login = () => {
             </div>
           )}
           <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2">
-            <Mail className="w-4 h-4 text-primary" strokeWidth={2.4} />
+            <Mail className="w-4 h-4 text-primary" strokeWidth={1.8} />
             <input
               type="email"
               required
@@ -152,7 +152,7 @@ const Login = () => {
             />
           </div>
           <div className="glass rounded-2xl px-4 py-3 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-primary" strokeWidth={2.4} />
+            <Lock className="w-4 h-4 text-primary" strokeWidth={1.8} />
             <input
               type={showPassword ? "text" : "password"}
               required
@@ -170,9 +170,9 @@ const Login = () => {
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (
-                <EyeOff className="w-4 h-4 transition-opacity duration-200" strokeWidth={2.2} />
+                <EyeOff className="w-4 h-4 transition-opacity duration-200" strokeWidth={1.75} />
               ) : (
-                <Eye className="w-4 h-4 transition-opacity duration-200" strokeWidth={2.2} />
+                <Eye className="w-4 h-4 transition-opacity duration-200" strokeWidth={1.75} />
               )}
             </button>
           </div>

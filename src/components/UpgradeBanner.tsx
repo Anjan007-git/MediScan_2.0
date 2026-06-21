@@ -17,7 +17,7 @@ const UpgradeBanner = ({ message = DEFAULT_MSG, className = "" }: Props) => {
       style={{ background: "var(--gradient-primary)" }}
     >
       <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-        <Crown className="w-4 h-4 text-white" strokeWidth={2.6} fill="currentColor" />
+        <Crown className="w-4 h-4 text-white" strokeWidth={1.9} fill="currentColor" />
       </div>
       <div className="flex-1">
         <p className="text-[13px] leading-snug font-medium">{message}</p>

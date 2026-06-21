@@ -11,7 +11,7 @@ const HealthTip = () => {
           className="w-11 h-11 rounded-full glass flex items-center justify-center active:scale-95"
           aria-label="Back"
         >
-          <ArrowLeft className="w-5 h-5" strokeWidth={2.4} />
+          <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
         </button>
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Health Tips</h1>
@@ -27,7 +27,7 @@ const HealthTip = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
         <div className="relative flex items-start gap-3">
           <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-            <ShieldCheck className="w-6 h-6" strokeWidth={2.4} />
+            <ShieldCheck className="w-6 h-6" strokeWidth={1.8} />
           </div>
           <div>
             <h2 className="font-extrabold text-lg leading-tight">Doctor first, always</h2>
@@ -71,7 +71,7 @@ const HealthTip = () => {
       />
 
       <section className="glass rounded-[20px] p-4 flex items-start gap-3 animate-fade-in-up">
-        <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" strokeWidth={2.4} />
+        <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" strokeWidth={1.8} />
         <p className="text-[12px] text-muted-foreground leading-relaxed">
           <span className="font-bold text-foreground">Medical Disclaimer:</span> The information shown
           in MediScan is provided for educational and informational purposes only and is not a
@@ -100,7 +100,7 @@ const Card = ({
         style={{ background: "var(--gradient-primary)" }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-        <Icon className="relative w-5 h-5 text-white" strokeWidth={2.4} />
+        <Icon className="relative w-5 h-5 text-white" strokeWidth={1.8} />
       </div>
       <h3 className="font-bold text-foreground text-base">{title}</h3>
     </div>

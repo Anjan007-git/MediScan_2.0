@@ -167,7 +167,7 @@ const Insights = () => {
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-1.5">
             <h2 className="font-bold text-foreground">Scan Overview</h2>
-            <Info className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+            <Info className="w-4 h-4 text-muted-foreground" strokeWidth={1.75} />
           </div>
           <PeriodPill value={period} onChange={setPeriod} />
         </div>
@@ -249,7 +249,7 @@ const Insights = () => {
             className="w-8 h-8 rounded-full glass-subtle flex items-center justify-center active:scale-90"
             aria-label="View all categories"
           >
-            <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.6} />
+            <ChevronRight className="w-4 h-4 text-primary" strokeWidth={1.9} />
           </button>
         </div>
         {categories.length === 0 ? (
@@ -303,7 +303,7 @@ const Insights = () => {
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-1.5">
             <h3 className="font-bold text-foreground">Spending Overview</h3>
-            <Info className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+            <Info className="w-4 h-4 text-muted-foreground" strokeWidth={1.75} />
           </div>
           <PeriodPill value={period} onChange={setPeriod} />
         </div>
@@ -339,7 +339,7 @@ const Insights = () => {
                   type="monotone"
                   dataKey="y"
                   stroke="hsl(217 91% 60%)"
-                  strokeWidth={2.5}
+                  strokeWidth={1.85}
                   fill="url(#spendArea)"
                 />
                 <ReferenceDot
@@ -348,7 +348,7 @@ const Insights = () => {
                   r={5}
                   fill="white"
                   stroke="hsl(217 91% 60%)"
-                  strokeWidth={2.5}
+                  strokeWidth={1.85}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -396,7 +396,7 @@ const Insights = () => {
                   >
                     <Bell
                       className={`w-5 h-5 ${isEvening ? "text-warning" : "text-success"}`}
-                      strokeWidth={2.2}
+                      strokeWidth={1.75}
                       fill="currentColor"
                       fillOpacity={0.15}
                     />
@@ -427,7 +427,7 @@ const Insights = () => {
             className="absolute top-3 right-3 w-6 h-6 rounded-full glass flex items-center justify-center active:scale-90"
             aria-label="Dismiss"
           >
-            <X className="w-3.5 h-3.5 text-foreground/60" strokeWidth={2.5} />
+            <X className="w-3.5 h-3.5 text-foreground/60" strokeWidth={1.85} />
           </button>
           <div className="flex items-start gap-3 pr-6">
             <div
@@ -435,7 +435,7 @@ const Insights = () => {
               style={{ background: "var(--gradient-primary)" }}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent" />
-              <Shield className="relative w-6 h-6 text-white" strokeWidth={2.4} fill="currentColor" fillOpacity={0.2} />
+              <Shield className="relative w-6 h-6 text-white" strokeWidth={1.8} fill="currentColor" fillOpacity={0.2} />
             </div>
             <div className="flex-1 min-w-0">
               <h4 className="font-bold text-foreground text-sm">Health Tip</h4>
@@ -447,7 +447,7 @@ const Insights = () => {
               onClick={(e) => { e.stopPropagation(); navigate("/home/healthtip"); }}
               className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-primary self-end shrink-0 active:scale-95"
             >
-              Learn More <ChevronRight className="w-3 h-3" strokeWidth={2.6} />
+              Learn More <ChevronRight className="w-3 h-3" strokeWidth={1.9} />
             </button>
           </div>
         </section>
@@ -471,7 +471,7 @@ const PeriodPill = ({
         onClick={() => setOpen((o) => !o)}
         className="glass-subtle rounded-full px-3 py-1.5 inline-flex items-center gap-1 text-xs font-semibold text-foreground/80 active:scale-95"
       >
-        {PERIOD_LABEL[value]} <ChevronDown className="w-3.5 h-3.5" strokeWidth={2.4} />
+        {PERIOD_LABEL[value]} <ChevronDown className="w-3.5 h-3.5" strokeWidth={1.8} />
       </button>
       {open && (
         <>
@@ -524,7 +524,7 @@ const StatusCard = ({ icon: Icon, label, value, color, accent, progress }: Statu
         <div
           className={`w-7 h-7 rounded-lg ${colorClasses.bg} flex items-center justify-center shrink-0`}
         >
-          <Icon className={`w-4 h-4 ${colorClasses.text}`} strokeWidth={2.4} fill="currentColor" fillOpacity={0.15} />
+          <Icon className={`w-4 h-4 ${colorClasses.text}`} strokeWidth={1.8} fill="currentColor" fillOpacity={0.15} />
         </div>
         <span className={`font-semibold text-sm ${colorClasses.text}`}>{label}</span>
       </div>
