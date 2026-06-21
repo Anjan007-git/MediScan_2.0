@@ -1,4 +1,4 @@
-import { Camera, Upload, Sparkles } from "lucide-react";
+import { ScanLine, ImageUp, Stethoscope } from "lucide-react";
 
 interface ScanCardProps {
   onScanClick: () => void;
@@ -19,7 +19,7 @@ const ScanCard = ({ onScanClick, onUploadClick }: ScanCardProps) => {
             <div className="relative w-24 h-24 rounded-[28px] glass-strong flex items-center justify-center shadow-float overflow-hidden">
               <div className="absolute inset-0 gradient-primary opacity-95" />
               <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-transparent" />
-              <Sparkles className="relative w-11 h-11 text-white drop-shadow-lg" strokeWidth={1.8} />
+              <Stethoscope className="relative w-11 h-11 text-white drop-shadow-lg" strokeWidth={1.6} />
             </div>
             {/* Pulse ring */}
             <div className="absolute inset-0 rounded-[28px] border-2 border-primary/30 animate-pulse-soft" />
@@ -39,7 +39,7 @@ const ScanCard = ({ onScanClick, onUploadClick }: ScanCardProps) => {
             className="glossy shimmer relative w-full rounded-full py-5 px-8 flex items-center justify-center gap-3 font-semibold text-lg text-white shadow-glow transition-all duration-300 active:scale-[0.97] hover:shadow-float overflow-hidden"
             style={{ background: "var(--gradient-primary)" }}
           >
-            <Camera className="relative w-6 h-6" strokeWidth={2.2} />
+            <ScanLine className="relative w-6 h-6" strokeWidth={1.8} />
             <span className="relative">Scan Now</span>
           </button>
 
@@ -55,7 +55,7 @@ const ScanCard = ({ onScanClick, onUploadClick }: ScanCardProps) => {
             onClick={onUploadClick}
             className="glass shimmer w-full rounded-full py-4 px-8 flex items-center justify-center gap-3 font-semibold text-base text-primary border border-primary/30 transition-all duration-300 active:scale-[0.97] hover:border-primary/60 hover:shadow-glass-lg"
           >
-            <Upload className="w-5 h-5" strokeWidth={2.2} />
+            <ImageUp className="w-5 h-5" strokeWidth={1.8} />
             Upload Image
           </button>
         </div>
