@@ -142,6 +142,37 @@ serve(async (req) => {
       return jsonResponse({ error: "Image too large. Please upload an image under 10 MB.", scanId }, 413);
     }
 
+    // Enforce and consume the medicine scan allowance on the server before any
+    // paid AI work. The frontend does not reserve the quota separately.
+    const quotaResponse = await fetch(`${SUPABASE_URL}/functions/v1/consume-scan`, {
+      method: "POST",
+      headers: {
+        Authorization: authHeader,
+        apikey: SUPABASE_ANON_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ kind: "medicine" }),
+    });
+    const quotaResult = await quotaResponse.json().catch(() => null);
+    if (!quotaResponse.ok || !quotaResult?.ok) {
+      if (quotaResult?.reason === "limit") {
+        return jsonResponse(
+          {
+            error: "Weekly medicine scan limit reached.",
+            reason: "limit",
+            kind: "medicine",
+            used: quotaResult.used,
+            limit: quotaResult.limit,
+            resetAt: quotaResult.resetAt,
+            scanId,
+          },
+          429,
+        );
+      }
+      console.error("[analyze-medicine] Unable to verify scan allowance");
+      return jsonResponse({ error: "Unable to verify scan allowance. Please try again.", scanId }, 503);
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       console.error("LOVABLE_API_KEY is not configured");
@@ -229,8 +260,8 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
     let parsed;
     try {
       parsed = parseAiJson(content);
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", parseError, content);
+    } catch {
+      console.error("[analyze-medicine] Unable to parse AI response");
       return jsonResponse({ error: "Unable to process AI response", scanId }, 500);
     }
 
@@ -256,7 +287,7 @@ If isMedicine is true, confidence should reflect how sure you are about the iden
       );
     }
 
-    console.log(`[analyze-medicine] scanId=${scanId} | detected=${parsed.medicine.name} | confidence=${parsed.confidence}`);
+    console.log(`[analyze-medicine] Scan analysis completed | scanId=${scanId}`);
 
     return jsonResponse(
       {
