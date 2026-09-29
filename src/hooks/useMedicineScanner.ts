@@ -3,7 +3,6 @@ import { MedicineInfo } from "@/components/MedicineResult";
 import { supabase } from "@/lib/supabaseClient";
 import { useAppStore } from "@/store/appStore";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/runtimeConfig";
-import { consumeScan } from "@/lib/premium";
 
 export interface ScanResult {
   medicine: MedicineInfo | null;
@@ -135,6 +134,7 @@ export const useMedicineScanner = () => {
           body: responseBody,
         });
 
+        if (responseBody?.reason === "limit") return responseBody;
         if (response.ok) return responseBody;
 
         const message = responseBody?.error || responseBody?.message || `Scan service returned HTTP ${response.status}`;
@@ -173,14 +173,6 @@ export const useMedicineScanner = () => {
       console.log("[MediScan] Starting scan", { scanId, uploadedImage: getImageMeta(imageData) });
 
       try {
-        // Enforce free-plan weekly limit server-side BEFORE running analysis
-        const usage = await consumeScan("medicine");
-        if (!usage.ok && usage.reason === "limit") {
-          setLimitInfo({ used: usage.used ?? 10, limit: usage.limit ?? 10, resetAt: usage.resetAt });
-          setIsScanning(false);
-          return;
-        }
-
         const processedImageData = await preprocessImageForAnalysis(imageData);
 
         // Ensure we have a fresh session and explicitly pass the bearer token.
@@ -199,6 +191,11 @@ export const useMedicineScanner = () => {
         }
 
         const data = await callAnalyzeMedicine({ imageData: processedImageData, scanId }, accessToken);
+
+        if (data?.reason === "limit") {
+          setLimitInfo({ used: data.used ?? 10, limit: data.limit ?? 10, resetAt: data.resetAt });
+          return;
+        }
 
         // Only apply result if this scan is still the active one
         if (activeScanIdRef.current !== scanId) {
