@@ -1,9 +1,8 @@
 import { useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Bell, Pill, Settings2 } from "lucide-react";
 import GlassSurface from "./GlassSurface";
 import GlassIconButton from "./GlassIconButton";
-import { useAuth } from "@/contexts/AuthContext";
 
 const links = [
   { to: "/", label: "Home" },
@@ -17,12 +16,12 @@ const links = [
  * Hidden on mobile, where BottomNav takes over. Routes are unchanged.
  */
 const GlassNavbar = () => {
+  const navigate = useNavigate();
   const mouseContainer = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
 
   return (
-    <div
-      className="hidden md:flex fixed top-4 left-1/2 -translate-x-1/2 z-[60]"
+    <header
+      className="hidden md:block fixed top-4 left-1/2 -translate-x-1/2 z-[60]"
       aria-label="Primary"
     >
       <div ref={mouseContainer}>
@@ -41,7 +40,7 @@ const GlassNavbar = () => {
             <NavLink to="/" className="flex items-center gap-2.5 shrink-0">
               <span className="relative w-9 h-9 rounded-[12px] overflow-hidden flex items-center justify-center shadow-glow">
                 <span className="absolute inset-0 gradient-primary" />
-                <Pill className="relative w-4.5 h-4.5 w-[18px] h-[18px] text-white rotate-45" strokeWidth={1.8} />
+                <Pill className="relative w-[18px] h-[18px] text-white rotate-45" strokeWidth={1.8} />
               </span>
               <span className="text-[17px] font-extrabold tracking-tight">
                 <span className="text-gradient">Medi</span>
@@ -59,7 +58,7 @@ const GlassNavbar = () => {
                   className={({ isActive }) =>
                     "px-4 py-2 rounded-full text-[13.5px] font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring " +
                     (isActive
-                      ? "bg-primary/12 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
+                      ? "bg-primary/10 text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
                       : "text-muted-foreground hover:text-foreground hover:bg-white/40")
                   }
                 >
@@ -73,13 +72,13 @@ const GlassNavbar = () => {
               <GlassIconButton
                 aria-label="Reminders"
                 className="w-10 h-10"
-                onClick={() => (window.location.hash = "#")}
+                onClick={() => navigate("/home/reminders")}
               >
                 <Bell className="w-4 h-4 text-primary" strokeWidth={1.8} />
               </GlassIconButton>
               <button
                 aria-label="Settings"
-                onClick={() => (window.location.hash = "#settings")}
+                onClick={() => navigate("/settings")}
                 className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/80 shadow-glass active:scale-95 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span className="w-full h-full rounded-full gradient-primary flex items-center justify-center">
@@ -90,7 +89,7 @@ const GlassNavbar = () => {
           </div>
         </GlassSurface>
       </div>
-    </div>
+    </header>
   );
 };
 

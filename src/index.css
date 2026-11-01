@@ -14,7 +14,7 @@
 @layer base {
   :root {
     /* Primary blue gradient (#60A5FA → #3B82F6 → #1D4ED8) */
-    --primary: 217 91% 60%;
+    --primary: 222 84% 53%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 214 100% 96%;
     --primary-muted: 217 60% 65%;
